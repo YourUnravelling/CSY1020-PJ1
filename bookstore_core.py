@@ -4,8 +4,9 @@ Autumn Hickinbotham - 11/25
 '''
 
 import os
+import sqlite3 as sqlite
 
-DEFAULT_PATH:str = "bookstore"
+DEFAULT_PATH:str = "bookstore.sqlite"
 
 base_path:str = DEFAULT_PATH
 
@@ -39,3 +40,24 @@ def validate_int(inp:str|int, max:int|None = None, min:int|None = None):
         return False
     
     return True
+
+
+def initialise_database() -> void:
+    """Creates the sqlite database if it doesn't already exist, also creates all existing files"""
+
+    with conn() as c:
+        c.execute("CREATE TABLE IF NOT EXISTS book")
+
+    
+
+def conn() -> sqlite.Connection:
+    return sqlite.connect(base_path)
+
+def exe(sql:str):
+    """Executes sql in the database"""
+    with conn() as c:
+        cur = c.cursor
+        cur.execute(sql)
+
+
+initialise_database()
