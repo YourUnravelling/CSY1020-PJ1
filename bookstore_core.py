@@ -53,15 +53,9 @@ def initialise_database() -> None:
 
     for table_sql in TABLE_SQLS: # Iterate through the table constant to initialise the tables
         exe(f"CREATE TABLE IF NOT EXISTS {table_sql[0]} ({table_sql[1]})")
-
-    
-
-def conn() -> sqlite.Connection:
-    return sqlite.connect(base_path)
-
 def exe(sql:str, *args):
     """Executes sql in the database"""
-    with conn() as c:
+    with sqlite.connect(base_path) as c:
         cur = c.cursor()
         cur.execute(sql,*args)
 
