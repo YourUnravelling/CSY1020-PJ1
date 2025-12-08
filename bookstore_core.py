@@ -7,6 +7,12 @@ import os
 import sqlite3 as sqlite
 
 DEFAULT_PATH:str = "bookstore.sqlite"
+TABLE_SQLS:list[list[str]] = [
+    ["book", "id INTEGER PRIMARY KEY AUTOINCREMENT, author INTEGER, title TEXT, date_published DATE, genre TEXT, price NUMBER"],
+    ["author", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, nationality TEXT"],
+    ["customer", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, phone TEXT, email TEXT"],
+    ["invoice", "id INTEGER PRIMARY KEY AUTOINCREMENT, customer INTEGER, book INTEGER"]
+]
 
 base_path:str = DEFAULT_PATH
 
@@ -42,22 +48,22 @@ def validate_int(inp:str|int, max:int|None = None, min:int|None = None):
     return True
 
 
-def initialise_database() -> void:
+def initialise_database() -> None:
     """Creates the sqlite database if it doesn't already exist, also creates all existing files"""
 
-    with conn() as c:
-        c.execute("CREATE TABLE IF NOT EXISTS book")
+    for table_sql in TABLE_SQLS: # Iterate through the table constant to initialise the tables
+        exe(f"CREATE TABLE IF NOT EXISTS {table_sql[0]} ({table_sql[1]})")
 
     
 
 def conn() -> sqlite.Connection:
     return sqlite.connect(base_path)
 
-def exe(sql:str):
+def exe(sql:str, *args):
     """Executes sql in the database"""
     with conn() as c:
-        cur = c.cursor
-        cur.execute(sql)
+        cur = c.cursor()
+        cur.execute(sql,*args)
 
 
 initialise_database()
