@@ -6,13 +6,14 @@ Autumn Hickinbotham - 11/25
 # Lib imports
 import os
 import sqlite3 as sqlite
+import datetime as dt
 
 #Class imports
 from SQLManager import SQLManager
 
 DEFAULT_PATH:str = "bookstore.sqlite"
 TABLE_SQLS:list[list[str]] = [
-    ["book", "id INTEGER PRIMARY KEY AUTOINCREMENT, author INTEGER, title TEXT, date_published DATE, genre TEXT, price NUMBER"],
+    ["book", "isbn TEXT PRIMARY KEY, author INTEGER, title TEXT, date_published DATE, genre TEXT, price NUMBER"],
     ["author", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, nationality TEXT"],
     ["customer", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, phone TEXT, email TEXT"],
     ["invoice", "id INTEGER PRIMARY KEY AUTOINCREMENT, customer INTEGER, book INTEGER"]
@@ -52,18 +53,29 @@ def validate_int(inp:str|int, max:int|None = None, min:int|None = None):
     
     return True
 
+def sanitise_date(date_string, form):
+    try:
+        date = dt.strptime(date_string, form)
+        return date
+    except:
+        return False
 
 def initialise_database() -> None:
-    """Creates the sqlite database if it doesn't already exist, also creates all existing files"""
+    """Creates the sqlite database if it doesn't already exist, also creates files"""
 
     for table_sql in TABLE_SQLS: # Iterate through the table constant to initialise the tables
         sm.exe(f"CREATE TABLE IF NOT EXISTS {table_sql[0]} ({table_sql[1]})")
 
-def exe(sql:str, *args):
-    """Executes sql in the database"""
-    with sqlite.connect(base_path) as c:
-        cur = c.cursor()
-        cur.execute(sql,*args)
+def add_book(
+        isbn:str|None,
+        author:str|None=None,
+        title:str|None=None,
+        date_published:dt.date|None=None,
+        genre:str|None=None,
+        price:float|None=None
+        ):
+    dict = kwargs
+    sm.exe(f"INSERT INTO {"book"}")
 
 
 initialise_database()
