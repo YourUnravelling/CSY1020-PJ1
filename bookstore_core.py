@@ -3,8 +3,12 @@ Core functions of the bookstore app
 Autumn Hickinbotham - 11/25
 '''
 
+# Lib imports
 import os
 import sqlite3 as sqlite
+
+#Class imports
+from SQLManager import SQLManager
 
 DEFAULT_PATH:str = "bookstore.sqlite"
 TABLE_SQLS:list[list[str]] = [
@@ -15,8 +19,9 @@ TABLE_SQLS:list[list[str]] = [
 ]
 
 base_path:str = DEFAULT_PATH
+sm = SQLManager(base_path)
 
-def rangecalc(value:int|float,max:int|float|None=None,min:int|float|None=None) -> bool:
+def rangecalc(value:int|float, max:int|float|None=None, min:int|float|None=None) -> bool:
     if min:
         if value < min:
             return False
@@ -52,7 +57,8 @@ def initialise_database() -> None:
     """Creates the sqlite database if it doesn't already exist, also creates all existing files"""
 
     for table_sql in TABLE_SQLS: # Iterate through the table constant to initialise the tables
-        exe(f"CREATE TABLE IF NOT EXISTS {table_sql[0]} ({table_sql[1]})")
+        sm.exe(f"CREATE TABLE IF NOT EXISTS {table_sql[0]} ({table_sql[1]})")
+
 def exe(sql:str, *args):
     """Executes sql in the database"""
     with sqlite.connect(base_path) as c:
