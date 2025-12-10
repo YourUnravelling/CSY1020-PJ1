@@ -6,6 +6,7 @@ Autumn Hickinbotham - 11/25
 # Lib imports
 import os
 import sqlite3 as sqlite
+#from datetime import datetime as dt
 import datetime as dt
 
 #Class imports
@@ -53,9 +54,13 @@ def validate_int(inp:str|int, max:int|None = None, min:int|None = None):
     
     return True
 
+def sanitise_string(string):
+    """Returns false if the string is invalid, otherwise sanitises it and returns"""
+
 def sanitise_date(date_string, form):
+    
     try:
-        date = dt.strptime(date_string, form)
+        date = dt.datetime.strptime(date_string, form)
         return date
     except:
         return False
@@ -67,15 +72,14 @@ def initialise_database() -> None:
         sm.exe(f"CREATE TABLE IF NOT EXISTS {table_sql[0]} ({table_sql[1]})")
 
 def add_book(
-        isbn:str|None,
+        ISBN:str|None,
         author:str|None=None,
         title:str|None=None,
         date_published:dt.date|None=None,
         genre:str|None=None,
         price:float|None=None
         ):
-    dict = kwargs
-    sm.exe(f"INSERT INTO {"book"}")
-
+    sm.exe(f"INSERT INTO book VALUES(?,?,?,?,?,?)", (ISBN, author, title, date_published, genre, price))
 
 initialise_database()
+add_book("3232", "me", "title", dt.datetime.strptime("05/05/2005",r"%d/%m/%Y"), "bad genre", 5000.0)
