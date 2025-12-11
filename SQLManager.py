@@ -9,15 +9,34 @@ class SQLManager():
         self.__path = path.abspath(file_path) # Private - Convert given path to an absolute path
 
     def exe(self, sql, args=()):
-        with sqlite.connect(self.__path) as conn:
-            cur = conn.cursor() # Create cursor object
-            cur.execute(sql, args) # Execute on cursor object
+        """
+        Executes sql on the database at `__path`
+        """
+        try:
+            with sqlite.connect(self.__path) as conn:
+                cur = conn.cursor() # Create cursor object
+                cur.execute(sql, args) # Execute on cursor object
+                print(cur.fetchone())
+        except sqlite.IntegrityError as error:
+            print(cur.fetchone())
+            return error
     
-    def add_record(self, table:str, values:dict):
+    def add(self, table:str, values:dict):
         """Helper function to add a record to a table"""
         
         formatted = self.format_dict_as_sql(values)
         self.exe(f"INSERT INTO book VALUES({formatted[0]})", formatted[1])
+
+    def delete(self, table:str, pk_row:str, pk_value_to_remove):
+        """Helper function to delete a record."""
+        self.exe(f"DELETE FROM {table} WHERE ({pk_row}={pk_value_to_remove})")
+    
+    def update(self, table:str, values:dict) -> None:
+        """Helper function to ammend a record"""
+        
+        formatted = self.format_dict_as_sql(values)
+        self.exe(f"UPDATE {table} SET ")
+
 
     def format_dict_as_sql(self, inp:dict):
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""
