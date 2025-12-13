@@ -8,6 +8,7 @@ import os
 import sqlite3 as sqlite
 #from datetime import datetime as dt
 import datetime as dt
+import pickle as pik
 
 #Class imports
 from SQLManager import SQLManager
@@ -24,6 +25,10 @@ base_path:str = DEFAULT_PATH
 sm = SQLManager(base_path)
 
 def rangecalc(value:int|float, max:int|float|None=None, min:int|float|None=None) -> bool:
+    """
+    Helper function, returns True if `value` is between `max` and `min`
+    Max and min can be null to have no limit.
+    """
     if min:
         if value < min:
             return False
@@ -64,6 +69,13 @@ def sanitise_date(date_string, form):
         return date
     except:
         return False
+
+def get_setting(setting:str|None=None) -> any:
+    """
+    Returns the value of a specified `setting`
+    Leave `setting` blank to return the whole settings dictionary
+    """
+
 
 def initialise_database() -> None:
     """Creates the sqlite database if it doesn't already exist, also creates files"""

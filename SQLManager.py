@@ -1,12 +1,12 @@
 import sqlite3 as sqlite
-from os import path
+from pathlib import Path
 
 class SQLManager():
     """
     Creates an object which can execute sql on an sqlite file.
     """
     def __init__(self, file_path:str) -> None:
-        self.__path = path.abspath(file_path) # Private - Convert given path to an absolute path
+        self.__path = Path(file_path) # Private - Convert given path to a pathlib object
 
     def exe(self, sql, args=()):
         """
@@ -54,4 +54,4 @@ class SQLManager():
 
     @path.setter # Path setter
     def path(self, file_path):
-        self.__path = path.abspath(file_path)
+        self.__path = Path(file_path)
