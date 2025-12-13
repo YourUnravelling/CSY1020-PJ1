@@ -50,4 +50,8 @@ tree.insert(parent="3",index=0,text="test2")
 #tk.Button(grid,text="Normal",background="pink",foreground="purple").grid(column=0,row=15,padx=10,pady=10)
 #ttk.Button(grid,text="Themed").grid(column=1,row=15,padx=10,pady=10)
 
+
+style = ttk.Style()
+style.configure(".", background="black")
+
 w.mainloop()

@@ -100,7 +100,14 @@ def add_book(
         genre:str|None=None,
         price:float|None=None
         ):
-    sm.exe(f"INSERT INTO book VALUES(?,?,?,?,?,?)", (ISBN, author, title, date_published, genre, price))
+    sm.add("book",{
+            "isbn": ISBN,
+            "author": author,
+            "title": title,
+            "date_published": date_published,
+            "genre": genre,
+            "price": price,
+    })
 
 initialise_database()
 add_book("3232", "me", "title", dt.datetime.strptime("05/05/2005",r"%d/%m/%Y"), "bad genre", 5000.0)
