@@ -70,11 +70,20 @@ def sanitise_date(date_string, form):
     except:
         return False
 
-def get_setting(setting:str|None=None) -> any:
+def get_setting(setting:str|None=None):
     """
     Returns the value of a specified `setting`
     Leave `setting` blank to return the whole settings dictionary
     """
+    settings_dict:dict = pik.load(open("settings.pk","rb"))
+
+    if setting:
+        if setting in settings_dict:
+            return settings_dict[setting]
+        else:
+            raise
+    else:
+        return settings_dict
 
 
 def initialise_database() -> None:
