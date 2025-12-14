@@ -5,6 +5,7 @@ Autumn Hickinbotham - 12/25
 
 import bookstore_core as core
 import tkinter as tk
+from tkinter import ttk
 
 class ThemeManager():
     all_widgets:list
@@ -16,6 +17,15 @@ class ThemeManager():
     @property
     def mode(self):
         return self.__mode
+
+class ScrollFrame():
+    def __init__(self):
+        self.__scrollbar = ttk.Scrollbar(self)
+        self.__scrollbar.pack(self, side="right")
+
+    @property
+    def scrollbar(self):
+        return self.__scrollbar
 
 
 w = tk.Tk()
