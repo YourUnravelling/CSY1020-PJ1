@@ -36,6 +36,10 @@ ttk.Radiobutton(grid,text="Themed").grid(column=1,row=8,padx=10,pady=10)
 
 v= (tk.StringVar(value="Test1"))
 tk.Listbox(grid,listvariable=v).grid(column=0,row=9,padx=10,pady=10)
+ttkf = ttk.Frame(grid)
+ttkf.grid(column=1,row=9,padx=10,pady=10)
+ttk.Button(ttkf,text="Themed").grid(column=1,row=0,padx=10,pady=10)
+
 
 
 tree = ttk.Treeview(grid,columns=["Test"])
@@ -52,6 +56,6 @@ tree.insert(parent="3",index=0,text="test2")
 
 
 style = ttk.Style()
-style.configure(".", background="black")
+style.configure(".", background="grey", foreground="blue")
 
 w.mainloop()
