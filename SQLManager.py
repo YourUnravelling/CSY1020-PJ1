@@ -15,8 +15,9 @@ class SQLManager():
         try:
             with sqlite.connect(self.__path) as conn:
                 cur = conn.cursor() # Create cursor object
+                print(sql, args)
                 cur.execute(sql, args) # Execute on cursor object
-                print(cur.fetchone())
+                # TODO change
         except sqlite.IntegrityError as error:
             print(cur.fetchone())
             return error
@@ -42,9 +43,11 @@ class SQLManager():
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""
         values = []
         formatted_string = ""
-        for key, value in inp.values():
-            formatted_string = formatted_string + str(key) + ":?, "
-            values.append(value)
+        for key in inp:
+            #formatted_string = formatted_string + str(key) + ":?, "
+            formatted_string = formatted_string + "?, "
+            values.append(inp[key])
+        formatted_string = formatted_string[0: len(formatted_string) - 2] # Remove last comma # TODO replace with join()
         return formatted_string, tuple(values)
 
     @property
