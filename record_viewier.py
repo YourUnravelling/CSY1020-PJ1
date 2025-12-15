@@ -95,13 +95,20 @@ class RecordViewer(DFrame):
         names = ANIMAL_TABLE[0]
         types = ANIMAL_TABLE[1]
 
-        self.__meta_feild_selector = ttk.Combobox(self, values=names, state="readonly")
-        self.__meta_feild_selector.pack()
-        self.__record_selector = ttk.Combobox(self)
-        self.__record_selector.pack()
-        self.__rename_delete = (
-            ttk.Button()
-        )
+        self.__meta_bar = DFrame(self) # Highest bar, for the controls
+        self.__meta_bar.pack(fill="x")
+        self.__meta_bar.columnconfigure(1, weight=2)
+        
+        self.__meta_feild_selector = ttk.Combobox(self.__meta_bar, values=names, state="readonly")
+        self.__meta_feild_selector.grid(row=0, column=0)
+        
+        self.__record_selector = ttk.Combobox(self.__meta_bar)
+        self.__record_selector.grid(row=1, column=0)
+
+        self.__rename = ttk.Button(self.__meta_bar, text="Rename")
+        self.__delete = ttk.Button(self.__meta_bar, text="Delete")
+        for i, item in enumerate([self.__rename, self.__delete]):
+            item.grid(row=1, column=2+i)
 
         self.__feilds_img_grid = DFrame(self)
         self.__feilds_img_grid.pack()
@@ -111,6 +118,11 @@ class RecordViewer(DFrame):
 
         if False:
             pass # Pack the image to self.__feilds_img_grid
+
+        self.__foreigns_frame = DFrame(self)
+        self.__foreigns_frame.pack(fill="both", expand=True)
+        tk.Button(self.__foreigns_frame).pack()
+
     
     def display_new_record(self, id):
         """
