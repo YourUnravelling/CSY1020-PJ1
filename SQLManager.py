@@ -44,7 +44,6 @@ class SQLManager():
         values = []
         formatted_string = ""
         for key in inp:
-            #formatted_string = formatted_string + str(key) + ":?, "
             formatted_string = formatted_string + "?, "
             values.append(inp[key])
         formatted_string = formatted_string[0: len(formatted_string) - 2] # Remove last comma # TODO replace with join()
