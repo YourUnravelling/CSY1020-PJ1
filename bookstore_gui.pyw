@@ -6,7 +6,7 @@ Autumn Hickinbotham - 12/25
 import bookstore_core as core
 import tkinter as tk
 from tkinter import ttk
-from scrollable_external import AdvancedScrollableFrame
+from scrollable_external import ScrollFrame
 
 class ThemeManager():
     all_widgets:list
@@ -19,7 +19,7 @@ class ThemeManager():
     def mode(self):
         return self.__mode
 
-class ScrollFrame(tk.Canvas):
+class ScrollFrameOld(tk.Canvas):
     def __init__(self, master):
         super().__init__(master=master)
         self.__scrollbar = ttk.Scrollbar(self)
@@ -32,11 +32,11 @@ class ScrollFrame(tk.Canvas):
 
 
 w = tk.Tk()
-s = AdvancedScrollableFrame(w)
+s = ScrollFrame(w)
 s.pack()
 
-for i in range(100):
-    ttk.Button(s.inner_frame, text="test").pack()
+for i in range(8):
+    ttk.Button(s.viewPort, text="test").pack()
 
 
 def main():

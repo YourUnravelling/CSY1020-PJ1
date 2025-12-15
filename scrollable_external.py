@@ -1,65 +1,67 @@
-"""
-NOT MY CODE! From:
-https://sqlpey.com/python/tkinter-implementing-scrollbars-for-frames/
-"""
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+# https://gist.github.com/mp035/9f2027c3ef9172264532fcd6262f3b01?permalink_comment_id=3799544
 
 import tkinter as tk
-#from tkinter import ttk
+from tkinter import ttk
+import platform
 
-class AdvancedScrollableFrame(tk.Frame):
-    """
-    Encapsulates Frame scrolling using Canvas, requiring an .update() call 
-    after content modification.
-    """
-    def __init__(self, parent, scrollbar_width=18):
-        # Initialize the base Frame container (the 'parent' argument of this constructor)
-        tk.Frame.__init__(self, parent)
+# ************************
+# Scrollable Frame Class
+# ************************
+class ScrollFrame(tk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent) # create a frame (self)
 
-        # Setup Scrollbar (vertical)
-        self.scrollbar = tk.Scrollbar(self, width=scrollbar_width)
-        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y, expand=False)
+        self.canvas = tk.Canvas(self, borderwidth=0, background="#ffffff")          #place canvas on self
+        self.viewPort = tk.Frame(self.canvas, background="#ffffff")                    #place a frame on the canvas, this frame will hold the child widgets 
+        self.vsb = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview) #place a scrollbar on self 
+        self.canvas.configure(yscrollcommand=self.vsb.set)                          #attach scrollbar action to scroll of canvas
 
-        # Setup Canvas
-        self.canvas = tk.Canvas(self, yscrollcommand=self.scrollbar.set, background="#ffffff")
-        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.vsb.pack(side="right", fill="y")                                       #pack scrollbar to right of self
+        self.canvas.pack(side="left", fill="both", expand=True)                     #pack canvas to left of self and expand to fil
+        self.canvas_window = self.canvas.create_window((4,4), window=self.viewPort, anchor="nw",            #add view port frame to canvas
+                                  tags="self.viewPort")
 
-        self.scrollbar.config(command=self.canvas.yview)
+        self.viewPort.bind("<Configure>", self.onFrameConfigure)                       #bind an event whenever the size of the viewPort frame changes.
+        self.canvas.bind("<Configure>", self.onCanvasConfigure)                       #bind an event whenever the size of the canvas frame changes.
+            
+        self.viewPort.bind('<Enter>', self.onEnter)                                 # bind wheel events when the cursor enters the control
+        self.viewPort.bind('<Leave>', self.onLeave)                                 # unbind wheel events when the cursorl leaves the control
 
-        # Create the internal frame that holds the content
-        self.inner_frame = tk.Frame(self.canvas, background="#ffffff")
-        
-        # Create the window item linking the inner frame to the canvas
-        self.window_item = self.canvas.create_window(0, 0, window=self.inner_frame, anchor=tk.NW)
+        self.onFrameConfigure(None)                                                 #perform an initial stretch on render, otherwise the scroll region has a tiny border until the first resize
 
-        # Bind configuration to adjust window width and later refresh scroll region
-        self.canvas.bind('<Button-1>', self.__adjust_canvas_width)
-        
-        # Use the inner frame's configuration to update the scroll region
-        self.inner_frame.bind('<Configure>', self.refresh_scroll_region)
+    def onFrameConfigure(self, event):                                              
+        '''Reset the scroll region to encompass the inner frame'''
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))                 #whenever the size of the frame changes, alter the scroll region respectively.
 
-        self.bind("<Button-4>", "scroll_up")
-
-
-    def __adjust_canvas_width(self, event):
-        '''Ensures the internal frame spans the width of the canvas'''
+    def onCanvasConfigure(self, event):
+        '''Reset the canvas window to encompass inner frame when required'''
         canvas_width = event.width
-        self.canvas.itemconfig(self.window_item, width=canvas_width)
+        self.canvas.itemconfig(self.canvas_window, width = canvas_width)            #whenever the size of the canvas changes alter the window region respectively.
 
-    def refresh_scroll_region(self, event=None):
-        '''Calculates and sets the new scrollable area'''
-        self.update_idletasks() # Crucial for accurate bounding box calculation
-        bbox = self.canvas.bbox(self.window_item)
-        if bbox:
-             self.canvas.config(scrollregion=bbox)
-
-    def update(self):
-        '''Public method to force a refresh, mainly calls refresh_scroll_region'''
-        self.refresh_scroll_region()
+    def onMouseWheel(self, event):                                                  # cross platform scroll wheel event
+        if platform.system() == 'Windows':
+            self.canvas.yview_scroll(int(-1* (event.delta/120)), "units")
+        elif platform.system() == 'Darwin':
+            self.canvas.yview_scroll(int(-1 * event.delta), "units")
+        else:
+            if event.num == 4:
+                self.canvas.yview_scroll( -1, "units" )
+            elif event.num == 5:
+                self.canvas.yview_scroll( 1, "units" )
     
-    def scroll_up(self):
-        print("test")
-        
-    @property
-    def content_parent(self):
-        '''Property to easily access the frame where users should pack/grid widgets'''
-        return self.inner_frame
+    def onEnter(self, event):                                                       # bind wheel events when the cursor enters the control
+        if platform.system() == 'Linux':
+            self.canvas.bind_all("<Button-4>", self.onMouseWheel)
+            self.canvas.bind_all("<Button-5>", self.onMouseWheel)
+        else:
+            self.canvas.bind_all("<MouseWheel>", self.onMouseWheel)
+
+    def onLeave(self, event):                                                       # unbind wheel events when the cursorl leaves the control
+        if platform.system() == 'Linux':
+            self.canvas.unbind_all("<Button-4>")
+            self.canvas.unbind_all("<Button-5>")
+        else:
+            self.canvas.unbind_all("<MouseWheel>")
