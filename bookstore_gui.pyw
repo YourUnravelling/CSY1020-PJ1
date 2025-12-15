@@ -10,9 +10,9 @@ from tkinter import ttk
 
 # Class imports
 from scrollable_external import ScrollFrame
-from record_viewier import RecordViewer
+from record_viewier import RecordViewer, DFrame
 
-ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] #[["id","INTEGER"],["name","TEXT"]] TODO remove
+ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] # TODO remove
 
 
 
@@ -38,20 +38,15 @@ class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
         return self.__scrollbar
     # No setter as scrollbar shouldn't be changed
 
-w = tk.Tk()
-w.iconphoto(True,tk.PhotoImage(file="icon.png"))
-#s = ScrollFrame(w)
-
-
-class EntryView(tk.Frame):
+class EntryView(DFrame):
     def __init__(self, parent, exe):
         super().__init__(parent)
         self.__parent = parent
-        self.__exe = exe
+        self.__exe = exe # Private | Pointer to a function which executes sql
 
-        self.__topbar = tk.Frame(self)
+        self.__topbar = DFrame(self)
         self.__topbar.pack(fill="x", padx=5, pady=5)
-        self.__content = tk.Frame(self, background="blue")
+        self.__content = DFrame(self)
         self.__content.pack(expand=True, fill="both")
 
         self.__table_selector = ttk.Combobox(self.__topbar, state="readonly", values=["Books", "Customers", "Authors", "Invoices"])
@@ -61,13 +56,19 @@ class EntryView(tk.Frame):
         self.__view_edit_button.pack(side="right")
 
 
-        self.__sub_content = tk.Frame(self.__content, width=500)
+        self.__sub_content = DFrame(self.__content, width=400)
+
         self.__sub_content.pack(fill="y", expand=True)
+        self.__sub_content.pack_propagate(False) # Ensure correct size
         self.pack(fill="both", expand=True)
 
         self.__viewer = RecordViewer("book", self.__sub_content, exe=self.__exe)
-        self.__viewer.pack()
+        self.__viewer.pack(fill="x",)
 
+
+w = tk.Tk()
+w.iconphoto(True,tk.PhotoImage(file="icon.png"))
+w.minsize(width=600, height=300)
 
 EntryView(w, core.sm.exe).pack()
 

@@ -1,8 +1,18 @@
 import tkinter as tk
 from tkinter import ttk
+from numpy.random import choice as nprc
 
+class DFrame(tk.Frame):
+    DEBUG_MODE = True
+    def __init__(self, master=None, cnf={}, **kw):
+        super().__init__(master, cnf, **kw)
+        if DFrame.DEBUG_MODE:
+            self.config(background="#" + (self.__randhex() + self.__randhex()) * 6)
+    
+    def __randhex(self) -> str:
+        return nprc(list("ABCDEF"))#"0123456789ABCDEF"))
 
-class FeildsGrid(tk.Frame):
+class FeildsGrid(DFrame):
     """A frame containing all feilds of a record
     `parent` The parent widget
     `tablename` The table's name in the sql
@@ -22,12 +32,11 @@ class FeildsGrid(tk.Frame):
         types = schema[1]
 
         for i in range(len(schema[0])):
-            tk.Label(self, text=names[i]).grid(row=i, column=0)
+            tk.Label(self, text=names[i]).grid(row=i, column=0, sticky="w")
 
             # Read widgets
             self.__read_widgets.append(tk.Label(self, text="VAL"))
 
-            # 
             if types[i] == "INTEGER":
                 self.__write_widgets.append(tk.Spinbox(self, text="VAL"))
             elif types[i] == "TEXT":
@@ -45,7 +54,7 @@ class FeildsGrid(tk.Frame):
         for i,widget in enumerate(self.__write_widgets):
             widget.grid_forget()
         for i,widget in enumerate(self.__read_widgets):
-            widget.grid(row=i,column=1)
+            widget.grid(row=i,column=1, sticky="nsew")
         self.__writing = False
             
 
@@ -53,7 +62,7 @@ class FeildsGrid(tk.Frame):
         for i,widget in enumerate(self.__read_widgets):
             widget.grid_forget()
         for i,widget in enumerate(self.__write_widgets):
-            widget.grid(row=i,column=1)
+            widget.grid(row=i,column=1, sticky="nsew")
         self.__writing = True
 
     
@@ -69,7 +78,7 @@ class FeildsGrid(tk.Frame):
         else:
             self.read()
 
-class RecordViewer(tk.Frame):
+class RecordViewer(DFrame):
     """A frame which allows viewing of an sqlite table.
     `tablename` The name of the table to be viewed
     `parent` The parent of the frame
@@ -86,16 +95,22 @@ class RecordViewer(tk.Frame):
         names = ANIMAL_TABLE[0]
         types = ANIMAL_TABLE[1]
 
-        meta_feild_selector = ttk.Combobox(self, values=names, state="readonly")
-        record_selector = ttk.Combobox(self)
+        self.__meta_feild_selector = ttk.Combobox(self, values=names, state="readonly")
+        self.__meta_feild_selector.pack()
+        self.__record_selector = ttk.Combobox(self)
+        self.__record_selector.pack()
+        self.__rename_delete = (
+            ttk.Button()
+        )
 
-        meta_feild_selector.pack()
-        record_selector.pack()
+        self.__feilds_img_grid = DFrame(self)
+        self.__feilds_img_grid.pack()
 
+        self.__feilds_frame = FeildsGrid(self.__feilds_img_grid,"animal", 0, ANIMAL_TABLE, writing=True)
+        self.__feilds_frame.pack(side="left", fill="both", expand=True)
 
-        objects_frame = FeildsGrid(self,"animal",0,ANIMAL_TABLE, writing=True)
-        
-        objects_frame.pack()
+        if False:
+            pass # Pack the image to self.__feilds_img_grid
     
     def display_new_record(self, id):
         """
