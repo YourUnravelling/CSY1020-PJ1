@@ -7,7 +7,7 @@ class DFrame(tk.Frame):
     def __init__(self, master=None, cnf={}, **kw):
         super().__init__(master, cnf, **kw)
         if DFrame.DEBUG_MODE:
-            self.config(background="#" + (self.__randhex() + self.__randhex()) * 6)
+            self.config(background="#" + (self.__randhex() + self.__randhex()) * 3)
     
     def __randhex(self) -> str:
         return nprc(list("ABCDEF"))#"0123456789ABCDEF"))
@@ -38,13 +38,13 @@ class FeildsGrid(DFrame):
             self.__read_widgets.append(tk.Label(self, text="VAL"))
 
             if types[i] == "INTEGER":
-                self.__write_widgets.append(tk.Spinbox(self, text="VAL"))
+                widget = tk.Spinbox(self)
             elif types[i] == "TEXT":
-                self.__write_widgets.append(tk.Entry(self, text="VAL"))
+                widget = tk.Entry(self)
             elif types[i] == "BOOL":
-                self.__write_widgets.append(tk.Checkbutton(self))
+                widget = tk.Checkbutton(self)
+            self.__write_widgets.append(widget)
 
-        
         if writing:
             self.write()
         else:
@@ -85,11 +85,11 @@ class RecordViewer(DFrame):
     `exe` Function which is called to query the database `(sql,*args)`
 
     """
-    def __init__(self, tablename, parent, exe):
+    def __init__(self, tablename, parent, sm):
         super().__init__(parent)
-        self.__tablename = tablename # Private, The name of the table 
+        self.current_table = tablename # Private, The name of the table 
         self.__parent = parent # Private
-        self.__exe = exe # Private
+        self.__sm = sm # Private | Pointer to SQLManager class
 
         ANIMAL_TABLE = ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]]# TODO remove
         names = ANIMAL_TABLE[0]

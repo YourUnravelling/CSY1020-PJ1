@@ -1,5 +1,6 @@
 import sqlite3 as sqlite
 from pathlib import Path
+from typing import Literal
 
 class SQLManager():
     """
@@ -8,18 +9,24 @@ class SQLManager():
     def __init__(self, file_path:str) -> None:
         self.__path = Path(file_path) # Private - Convert given path to a pathlib object
 
-    def exe(self, sql, args=()):
+    def exe(self, sql:str, args:tuple=(), ret: Literal["one", "desc", "all"]="one"):
         """
-        Executes sql on the database at `__path`
+        Executes sql on the database at `__path`, returns a tuple of the returned value and cur.description, or the error if an sql error occurs.
         """
         try:
             with sqlite.connect(self.__path) as conn:
                 cur = conn.cursor() # Create cursor object
-                print(sql, args)
+                print("Executing:", sql, args)
                 cur.execute(sql, args) # Execute on cursor object
+                if ret == "one":
+                    return cur.fetchone()
+                elif ret == "all":
+                    return cur.fetchall()
+                elif ret == "desc":
+                    return cur.description
                 # TODO change
         except sqlite.IntegrityError as error:
-            print(cur.fetchone())
+            print("There has been an error:", error)
             return error
     
     def add(self, table:str, values:dict):
@@ -38,7 +45,6 @@ class SQLManager():
         formatted = self.format_dict_as_sql(values)
         self.exe(f"UPDATE {table} SET ")
 
-
     def format_dict_as_sql(self, inp:dict):
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""
         values = []
@@ -48,6 +54,25 @@ class SQLManager():
             values.append(inp[key])
         formatted_string = formatted_string[0: len(formatted_string) - 2] # Remove last comma # TODO replace with join()
         return formatted_string, tuple(values)
+
+    def get_full_schema(self) -> dict:
+        """
+        Returns the full schema of every table in a dictionary
+        """
+        table_list = self.exe("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';", ret="all")
+        schema = {}
+        for table_tup in table_list: # type: ignore | Iterate through table names
+            table = table_tup[0]
+            schema[table] = self.get_table_schema(table)
+        
+        return schema
+    
+    def get_table_schema(self, table) -> list:
+        """
+        Returns the schema for a specified `table`
+        """
+        return self.exe(f"PRAGMA table_info('{table}')", ret="all") # type: ignore
+
 
     @property
     # Path getter

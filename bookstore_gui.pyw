@@ -5,6 +5,7 @@ Autumn Hickinbotham - 12/25
 
 # Lib imports
 import bookstore_core as core
+import sys
 import tkinter as tk
 from tkinter import ttk
 
@@ -13,8 +14,6 @@ from scrollable_external import ScrollFrame
 from record_viewier import RecordViewer, DFrame
 
 ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] # TODO remove
-
-
 
 class ThemeManager():
     all_widgets:list
@@ -39,10 +38,13 @@ class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
     # No setter as scrollbar shouldn't be changed
 
 class EntryView(DFrame):
-    def __init__(self, parent, exe):
+    def __init__(self, parent, sql_manager, default_table:str|None=None):
         super().__init__(parent)
         self.__parent = parent
-        self.__exe = exe # Private | Pointer to a function which executes sql
+        self.__sm = sql_manager # Private | Pointer to an SQLManager instance which executes sql
+
+
+        #print("Schema:", self.__sm.exe("SELECT sql FROM sqlite_schema WHERE name = 'book';"))
 
         self.__topbar = DFrame(self)
         self.__topbar.pack(fill="x", padx=5, pady=5)
@@ -62,9 +64,8 @@ class EntryView(DFrame):
         self.__sub_content.pack_propagate(False) # Ensure correct size
         self.pack(fill="both", expand=True)
 
-        self.__viewer = RecordViewer("book", self.__sub_content, exe=self.__exe)
+        self.__viewer = RecordViewer("book", self.__sub_content, sm=self.__sm)
         self.__viewer.pack(fill="x",)
-
 
 w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="icon.png"))
@@ -72,8 +73,11 @@ w.minsize(width=600, height=300)
 
 EntryView(w, core.sm.exe).pack()
 
+print(core.sm.get_full_schema())
+
 def main():
     w.mainloop()
 
 if __name__ == "__main__":
     main()
+    sys.exit()
