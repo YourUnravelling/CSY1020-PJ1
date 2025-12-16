@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from numpy.random import choice as nprc
+from typing import Literal
+from constants import READ_WRITE as RW
 
 class DFrame(tk.Frame):
     DEBUG_MODE = True
@@ -8,9 +10,75 @@ class DFrame(tk.Frame):
         super().__init__(master, cnf, **kw)
         if DFrame.DEBUG_MODE:
             self.config(background="#" + (self.__randhex() + self.__randhex()) * 3)
-    
+        
     def __randhex(self) -> str:
         return nprc(list("ABCDEF"))#"0123456789ABCDEF"))
+
+class RWController(DFrame):
+    """
+    A frame which has its w/r changed by mode()
+    """
+    def __init__(self, initial_mode: RW = "read"):
+        super.__init__()
+        self._mode:RW = initial_mode # Protected
+        self._value = None
+    
+    def mode(self, mod:RW):
+        """
+        Changes the mode to read or write
+        """
+        if mode in ["read", "write"]:
+            self._mode = mode
+        else: raise
+        if mode == "read":
+            _read()
+        elif mode == "write":
+            _write()
+
+    def set_value(value):
+        """Sets the value both in the read widget and write widget
+        Should be overwritten by children"""
+        raise
+
+    def _read():
+        """
+        This method should be overwritten by children"""
+        pass
+
+    def _write():
+        """This method should be overwritten by children"""
+        pass
+
+
+class Text(RWController):
+    """
+    Viewer for the TEXT type, used in FeildsGrid
+    """
+    def __init__(self, initial_mode:RW="read", value = ""):
+        DFrame.__init__(self)
+        RWController.__init__(self, initial_mode=initial_mode)
+        self.set_value(value)
+
+        self.__readbox = ttk.Label(self, text=value)
+        self.__writebox = ttk.Entry(self)
+        self.set_value(value)
+
+    def _read():
+        self.__writebox.pack()
+        self.__readbox.pack_forget()
+
+    def _write():
+        self.__readbox.pack()
+        self.__writebox.pack_forget()
+
+    def get_value():
+        return self.__label.text
+
+    def set_value(val):
+        self.__label = ttk.Label(self, text=str(val))
+        self.__writebox
+        self.__writebox.insert(value)
+
 
 class FeildsGrid(DFrame):
     """A frame containing all feilds of a record
@@ -87,7 +155,7 @@ class RecordViewer(DFrame):
     """
     def __init__(self, tablename, parent, sm):
         super().__init__(parent)
-        self.current_table = tablename # Private, The name of the table 
+        self.current_table:str = tablename # Public, The name of the table 
         self.__parent = parent # Private
         self.__sm = sm # Private | Pointer to SQLManager class
 
@@ -117,8 +185,7 @@ class RecordViewer(DFrame):
         self.__feilds_frame.pack(side="left", fill="both", expand=True)
 
         if False:
-            pass # Pack the image to self.__feilds_img_grid
-
+            pass # Pack the image to self.__feilds_img_grid, only if the table has an image
         self.__foreigns_frame = DFrame(self)
         self.__foreigns_frame.pack(fill="both", expand=True)
         tk.Button(self.__foreigns_frame).pack()
@@ -126,5 +193,5 @@ class RecordViewer(DFrame):
     
     def display_new_record(self, id):
         """
-        Displays a new record with the id as id
+        Displays a new record with the id as uid
         """
