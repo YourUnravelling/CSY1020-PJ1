@@ -6,8 +6,9 @@ class SQLManager():
     """
     Creates an object which can execute sql on an sqlite file.
     """
-    def __init__(self, file_path:str) -> None:
+    def __init__(self, file_path:Path|str) -> None:
         self.__path = Path(file_path) # Private - Convert given path to a pathlib object
+        self.__schema = self.__generate_full_schema()
 
     def exe(self, sql:str, args:tuple=(), ret: Literal["one", "desc", "all"]="one"):
         """
@@ -55,7 +56,7 @@ class SQLManager():
         formatted_string = formatted_string[0: len(formatted_string) - 2] # Remove last comma # TODO replace with join()
         return formatted_string, tuple(values)
 
-    def get_full_schema(self) -> dict:
+    def __generate_full_schema(self) -> dict:
         """
         Returns the full schema of every table in a dictionary
         """
@@ -63,11 +64,11 @@ class SQLManager():
         schema = {}
         for table_tup in table_list: # type: ignore | Iterate through table names
             table = table_tup[0]
-            schema[table] = self.get_table_schema(table)
+            schema[table] = self.__generate_table_schema(table)
         
         return schema
     
-    def get_table_schema(self, table) -> list:
+    def __generate_table_schema(self, table) -> list: # TODO delete as a small function and no longer public?
         """
         Returns the schema for a specified `table`
         """
@@ -82,3 +83,8 @@ class SQLManager():
     @path.setter # Path setter
     def path(self, file_path):
         self.__path = Path(file_path)
+
+    @property
+    # Schema getter
+    def schema(self):
+        return self.__schema

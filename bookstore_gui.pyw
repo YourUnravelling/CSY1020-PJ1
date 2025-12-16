@@ -73,7 +73,7 @@ w.minsize(width=600, height=300)
 
 EntryView(w, core.sm.exe).pack()
 
-print(core.sm.get_full_schema())
+print(core.sm.schema)
 
 def main():
     w.mainloop()

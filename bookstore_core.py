@@ -6,22 +6,22 @@ Autumn Hickinbotham - 11/25
 # Lib imports
 import os
 import sqlite3 as sqlite
-#from datetime import datetime as dt
 import datetime as dt
 import pickle as pik
+from pathlib import Path
 
 #Class imports
 from SQLManager import SQLManager
 
-DEFAULT_PATH:str = "bookstore.sqlite"
-TABLE_SQLS:list[list[str]] = [
+DEFAULT_PATH:Path = Path("bookstore.sqlite")
+TABLE_SQLS:list[list[str]] = [ # Used for initial creation only
     ["book", "isbn TEXT PRIMARY KEY, author INTEGER, title TEXT, date_published DATE, genre TEXT, price NUMBER"],
     ["author", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, nationality TEXT"],
     ["customer", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, phone TEXT, email TEXT"],
     ["invoice", "id INTEGER PRIMARY KEY AUTOINCREMENT, customer INTEGER, book INTEGER"]
 ]
 
-base_path:str = DEFAULT_PATH
+base_path:Path = DEFAULT_PATH
 sm = SQLManager(base_path)
 
 def rangecalc(value:int|float, max:int|float|None=None, min:int|float|None=None) -> bool:
