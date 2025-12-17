@@ -84,7 +84,6 @@ class SQLManager():
     def path(self, file_path):
         self.__path = Path(file_path)
 
-    @property
-    # Schema getter
+    @property # Schema getter
     def schema(self):
         return self.__schema

@@ -71,7 +71,7 @@ w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="icon.png"))
 w.minsize(width=600, height=300)
 
-EntryView(w, core.sm.exe).pack()
+EntryView(w, core.sm).pack()
 
 print(core.sm.schema)
 

@@ -5,6 +5,9 @@ from typing import Literal
 from constants import READ_WRITE as RW
 
 class DFrame(tk.Frame):
+    """
+    Extension of tk.Frame with an optional debug mode, which randomises the colour within greyscale, for easy debugging frame structure.
+    """
     DEBUG_MODE = True
     def __init__(self, master=None, cnf={}, **kw):
         super().__init__(master, cnf, **kw)
@@ -12,18 +15,18 @@ class DFrame(tk.Frame):
             self.config(background="#" + (self.__randhex() + self.__randhex()) * 3)
         
     def __randhex(self) -> str:
-        return nprc(list("ABCDEF"))#"0123456789ABCDEF"))
+        return nprc(list("ABCDEF"))
 
 class RWController(DFrame):
     """
     A frame which has its w/r changed by mode()
     """
     def __init__(self, initial_mode: RW = "read"):
-        super.__init__()
+        super().__init__(self)
         self._mode:RW = initial_mode # Protected
         self._value = None
     
-    def mode(self, mod:RW):
+    def mode(self, mode:RW):
         """
         Changes the mode to read or write
         """
@@ -31,21 +34,21 @@ class RWController(DFrame):
             self._mode = mode
         else: raise
         if mode == "read":
-            _read()
+            self._read()
         elif mode == "write":
-            _write()
+            self._write()
 
-    def set_value(value):
+    def set_value(self, value):
         """Sets the value both in the read widget and write widget
         Should be overwritten by children"""
         raise
 
-    def _read():
+    def _read(self):
         """
         This method should be overwritten by children"""
         pass
 
-    def _write():
+    def _write(self):
         """This method should be overwritten by children"""
         pass
 
@@ -57,27 +60,27 @@ class Text(RWController):
     def __init__(self, initial_mode:RW="read", value = ""):
         DFrame.__init__(self)
         RWController.__init__(self, initial_mode=initial_mode)
-        self.set_value(value)
 
         self.__readbox = ttk.Label(self, text=value)
         self.__writebox = ttk.Entry(self)
         self.set_value(value)
 
-    def _read():
+    def _read(self): # TODO make this a single function with literal
         self.__writebox.pack()
         self.__readbox.pack_forget()
 
-    def _write():
+    def _write(self):
         self.__readbox.pack()
         self.__writebox.pack_forget()
 
-    def get_value():
-        return self.__label.text
+    def get_value(self):
+        return self._value
 
-    def set_value(val):
+    def set_value(self, val):
         self.__label = ttk.Label(self, text=str(val))
         self.__writebox
-        self.__writebox.insert(value)
+        self.__writebox.delete(0, tk.END)
+        self.__writebox.insert(0, str(val))
 
 
 class FeildsGrid(DFrame):
@@ -89,62 +92,41 @@ class FeildsGrid(DFrame):
     `writemode` True if the frame should allow writing to the table.
     ADD `require_apply` If true, the changes are not applied until the apply() method is called.
     """
-    def __init__(self, parent, tablename, key, schema, writing=False):
+    TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
+        "TEXT" : Text,
+        "REAL" : Text, # TODO
+        "INTEGER" : Text, # TODO
+        "DATE" : Text, # TODO
+        "BLOB" : Text, # TODO
+    }
+
+    def __init__(self, parent, tablename, key, schema, mode:RW="read"):
         super().__init__(parent)
 
-        self.__read_widgets:list = []
-        self.__write_widgets:list = []
-        self.__writing:bool = writing # TODO Decide if this should even be a param, TODO decide if this should be "editing" and "viewing" instead
+        self.__widgets:list = []
+        self.__mode:RW = mode # TODO Decide if this should even be a param, TODO decide if this should be "editing" and "viewing" instead
 
         names = schema[0]
         types = schema[1]
 
-        for i in range(len(schema[0])):
+        for i in range(len(schema[0])): # Iterate over each column
             tk.Label(self, text=names[i]).grid(row=i, column=0, sticky="w")
 
             # Read widgets
-            self.__read_widgets.append(tk.Label(self, text="VAL"))
+            pointer_to_class = FeildsGrid.TYPE_CLASSES["TEXT"]
+            self.__widgets.append(pointer_to_class(initial_mode=mode, value="")) # Change to the schema
+            self.__widgets[i]
 
-            if types[i] == "INTEGER":
-                widget = tk.Spinbox(self)
-            elif types[i] == "TEXT":
-                widget = tk.Entry(self)
-            elif types[i] == "BOOL":
-                widget = tk.Checkbutton(self)
-            self.__write_widgets.append(widget)
-
-        if writing:
-            self.write()
-        else:
-            self.read()
+        self.set_mode(mode)
     
-    def read(self):
-        for i,widget in enumerate(self.__write_widgets):
-            widget.grid_forget()
-        for i,widget in enumerate(self.__read_widgets):
-            widget.grid(row=i,column=1, sticky="nsew")
-        self.__writing = False
-            
-
-    def write(self):
-        for i,widget in enumerate(self.__read_widgets):
-            widget.grid_forget()
-        for i,widget in enumerate(self.__write_widgets):
-            widget.grid(row=i,column=1, sticky="nsew")
-        self.__writing = True
-
-    
+    def set_mode(self, mode:RW):
+        for widget in self.__widgets:
+            widget.mode(mode)
+        self.__mode = mode
+        
     @property 
-    def writing(self):
-        return self.__writing
-    
-    @writing.setter
-    def writing(self, val):
-        self.__writing = val
-        if val:
-            self.write()
-        else:
-            self.read()
+    def mode(self):
+        return self.__mode
 
 class RecordViewer(DFrame):
     """A frame which allows viewing of an sqlite table.
@@ -159,15 +141,12 @@ class RecordViewer(DFrame):
         self.__parent = parent # Private
         self.__sm = sm # Private | Pointer to SQLManager class
 
-        ANIMAL_TABLE = ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]]# TODO remove
-        names = ANIMAL_TABLE[0]
-        types = ANIMAL_TABLE[1]
-
         self.__meta_bar = DFrame(self) # Highest bar, for the controls
         self.__meta_bar.pack(fill="x")
         self.__meta_bar.columnconfigure(1, weight=2)
         
-        self.__meta_feild_selector = ttk.Combobox(self.__meta_bar, values=names, state="readonly")
+        #print("The schema:", list((col[1], col[2]) for col in list(self.__sm.schema[self.current_table])))
+        self.__meta_feild_selector = ttk.Combobox(self.__meta_bar, values=list((col[1]) for col in (self.__sm.schema[self.current_table])), state="readonly") # type: ignore
         self.__meta_feild_selector.grid(row=0, column=0)
         
         self.__record_selector = ttk.Combobox(self.__meta_bar)
@@ -181,7 +160,7 @@ class RecordViewer(DFrame):
         self.__feilds_img_grid = DFrame(self)
         self.__feilds_img_grid.pack()
 
-        self.__feilds_frame = FeildsGrid(self.__feilds_img_grid,"animal", 0, ANIMAL_TABLE, writing=True)
+        self.__feilds_frame = FeildsGrid(self.__feilds_img_grid,"animal", 0, sm.schema[self.current_table])
         self.__feilds_frame.pack(side="left", fill="both", expand=True)
 
         if False:
