@@ -15,6 +15,9 @@ class DFrame(tk.Frame):
             self.config(background="#" + (self.__randhex() + self.__randhex()) * 3)
         
     def __randhex(self) -> str:
+        """
+        Returns a random hex digit between A and F
+        """
         return nprc(list("ABCDEF"))
 
 class RWController(DFrame):
@@ -38,19 +41,22 @@ class RWController(DFrame):
         elif mode == "write":
             self._write()
 
-    def set_value(self, value):
+    def get_value(self):
+        return self._value
+        
+    def set_value(self, val) -> None:
         """Sets the value both in the read widget and write widget
         Should be overwritten by children"""
-        raise
+        raise NotImplementedError
 
-    def _read(self):
+    def _read(self) -> None:
         """
         This method should be overwritten by children"""
-        pass
+        raise NotImplementedError
 
-    def _write(self):
+    def _write(self) -> None:
         """This method should be overwritten by children"""
-        pass
+        raise NotImplementedError
 
 
 class Text(RWController):
@@ -72,10 +78,7 @@ class Text(RWController):
     def _write(self):
         self.__readbox.pack()
         self.__writebox.pack_forget()
-
-    def get_value(self):
-        return self._value
-
+    
     def set_value(self, val):
         self.__label = ttk.Label(self, text=str(val))
         self.__writebox
