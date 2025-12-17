@@ -73,8 +73,6 @@ w.minsize(width=600, height=300)
 
 EntryView(w, core.sm).pack()
 
-print(core.sm.schema)
-
 def main():
     w.mainloop()
 

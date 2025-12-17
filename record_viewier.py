@@ -24,7 +24,7 @@ class RWController(DFrame):
     """
     A frame which has its w/r changed by mode()
     """
-    def __init__(self, initial_mode: RW = "read"):
+    def __init__(self, parent, initial_mode: RW = "read"):
         super().__init__(self)
         self._mode:RW = initial_mode # Protected
         self._value = None
@@ -63,9 +63,9 @@ class Text(RWController):
     """
     Viewer for the TEXT type, used in FeildsGrid
     """
-    def __init__(self, initial_mode:RW="read", value = ""):
-        DFrame.__init__(self)
-        RWController.__init__(self, initial_mode=initial_mode)
+    def __init__(self, parent, initial_mode:RW="read", value = ""):
+        DFrame.__init__(self, parent)
+        RWController.__init__(self, parent=parent, initial_mode=initial_mode)
 
         self.__readbox = ttk.Label(self, text=value)
         self.__writebox = ttk.Entry(self)
@@ -112,13 +112,17 @@ class FeildsGrid(DFrame):
         names = schema[0]
         types = schema[1]
 
-        for i in range(len(schema[0])): # Iterate over each column
-            tk.Label(self, text=names[i]).grid(row=i, column=0, sticky="w")
+        for i, column_tuple in enumerate(schema): # Iterate over each column
+            print(column_tuple, i)
+            tk.Label(self, text=column_tuple[1]).grid(row=i, column=0, sticky="w")
 
             # Read widgets
             pointer_to_class = FeildsGrid.TYPE_CLASSES["TEXT"]
-            self.__widgets.append(pointer_to_class(initial_mode=mode, value="")) # Change to the schema
-            self.__widgets[i]
+            
+            type_class_instance = pointer_to_class(self, initial_mode=mode, value="6")
+            print(type_class_instance)
+            self.__widgets.append(type_class_instance) # Change to the schema
+            self.__widgets[i].grid(row=i, column=1, sticky="w")
 
         self.set_mode(mode)
     
