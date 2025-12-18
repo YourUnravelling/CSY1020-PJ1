@@ -113,19 +113,19 @@ class FeildsGrid(DFrame):
         self.__widgets:list = []
         self.__mode:RW = mode # TODO Decide if this should even be a param, TODO decide if this should be "editing" and "viewing" instead
 
-        this_record = sm.read
+        this_record = sm.read(table, pk, pk_column_name=pk_column_name)
+        try:
+            for i, column_tuple in enumerate(sm.schema[table]): # Iterate over each column
+                print(column_tuple, i)
+                tk.Label(self, text=column_tuple[1]).grid(row=i, column=0, sticky="w")
 
-        for i, column_tuple in enumerate(sm.schema): # Iterate over each column
-            print(column_tuple, i)
-            tk.Label(self, text=column_tuple[1]).grid(row=i, column=0, sticky="w")
-
-            # Read widgets
-            pointer_to_class = FeildsGrid.TYPE_CLASSES["TEXT"]
-            
-            type_class_instance = pointer_to_class(self, initial_mode=mode, value=sm.read(table, pk, pk_column_name)) # TODO add pk_column_name
-            self.__widgets.append(type_class_instance)
-            self.__widgets[i].grid(row=i, column=1, sticky="w")
-
+                # Read widgets
+                pointer_to_class = FeildsGrid.TYPE_CLASSES["TEXT"]
+                
+                type_class_instance = pointer_to_class(self, initial_mode=mode, value=this_record[i])
+                self.__widgets.append(type_class_instance)
+                self.__widgets[i].grid(row=i, column=1, sticky="w")
+        except: pass
         self.set_mode(mode)
     
     def set_mode(self, mode:RW):
@@ -146,16 +146,16 @@ class RecordViewer(DFrame):
     """
     def __init__(self, tablename, parent, sm):
         super().__init__(parent)
-        self.current_table:str = tablename # Public, The name of the table 
+        self.__table:str = tablename # Private, The name of the table 
         self.__parent = parent # Private
-        self.__sm = sm # Private | Pointer to SQLManager class
+        self.__sm = sm # Private, Pointer to SQLManager class
 
         self.__meta_bar = DFrame(self) # Highest bar, for the controls
         self.__meta_bar.pack(fill="x")
         self.__meta_bar.columnconfigure(1, weight=2)
         
-        self.__meta_feild_selector = ttk.Combobox(self.__meta_bar, values=list((col[1]) for col in (self.__sm.schema[self.current_table])), state="readonly", ) # type: ignore
-        self.__meta_feild_selector.bind('<<ComboboxSelected>>', lambda e: self.display_new_table(), False) # Why the hell does adding and e fix the overload problem
+        self.__meta_feild_selector = ttk.Combobox(self.__meta_bar, values=list((col[1]) for col in (self.__sm.schema[self.__table])), state="readonly", ) # type: ignore
+        self.__meta_feild_selector.bind('<<ComboboxSelected>>', lambda e: self.display_record(), False) # Why the hell does adding and e fix the overload problem
         self.__meta_feild_selector.grid(row=0, column=0)
 
         
@@ -170,7 +170,7 @@ class RecordViewer(DFrame):
         self.__feilds_img_grid = DFrame(self)
         self.__feilds_img_grid.pack()
 
-        self.display_new_table()
+        self.set_table(tablename)
 
         if False:
             pass # Pack the image to self.__feilds_img_grid, only if the table has an image
@@ -179,17 +179,24 @@ class RecordViewer(DFrame):
         tk.Button(self.__foreigns_frame).pack()
 
     
-    def display_new_table(self):
-        try:
+    def set_table(self, new_table:str):
+        """
+        Changes the table being viewed
+        """
+        self.__table = new_table # Change table variable
+        try: # Delete te feilds frame (ignore if it doesn't exist yet)
             self.__feilds_frame.pack_forget()
             del self.__feilds_frame
-        except:
-            pass
+        except: pass
+        
         # TODO It needs to make a new feilds_frame when the table changes
-        self.__feilds_frame = FeildsGrid(self.__feilds_img_grid, self.__sm, self.current_table, pk=self.__meta_feild_selector.get(), pk_column_name=self.__record_selector.get())
+        self.__feilds_frame = FeildsGrid(self.__feilds_img_grid, self.__sm, self.__table, pk=self.__meta_feild_selector.get(), pk_column_name=self.__record_selector.get())
         self.__feilds_frame.pack(side="left", fill="both", expand=True)
 
-    def display_new_record(self, id):
+    def get_table(self):
+        return self.__table
+
+    def display_record(self, id): # TODO remove handled itself I think
         """
         Displays a new record with the id as uid
         """

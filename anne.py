@@ -168,7 +168,7 @@ class SelfPayKiosk:
 
     # Return number of customers served
     def get_num_customers(self):
-        return self.num_customers
+        return self.num_customers -1
 
     # Scan one item
     def scan_item(self, price):
@@ -202,7 +202,11 @@ class SelfPayKiosk:
 
     # Simulate multiple transactions
     def simulate_sales(self, num_sales, initial_price, incr_price):
-        # Type your code here and remove the return statement
+        for i in range(num_sales):
+            self.scan_item(initial_price)
+            self.check_out()
+            self.make_payment(self.current_amount_due + 1)
+            self.i
         return -1
 
 

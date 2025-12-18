@@ -51,8 +51,10 @@ class SQLManager():
 
     def read(self, table:str, id, pk_column_name:str="id"):
         """Helper function to read a record"""
-        
-        self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == \"{id}\"")
+        q = ""
+        if type(id) == str: # If the id is a string, format the sql query in quotes
+            q = "\"" # TODO Decide if needed
+        return self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == {q}{id}{q}")
 
     def format_dict_as_sql(self, inp:dict):
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""

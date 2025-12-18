@@ -43,15 +43,12 @@ class EntryView(DFrame):
         self.__parent = parent
         self.__sm = sql_manager # Private | Pointer to an SQLManager instance which executes sql
 
-
-        #print("Schema:", self.__sm.exe("SELECT sql FROM sqlite_schema WHERE name = 'book';"))
-
         self.__topbar = DFrame(self)
         self.__topbar.pack(fill="x", padx=5, pady=5)
         self.__content = DFrame(self)
         self.__content.pack(expand=True, fill="both")
 
-        self.__table_selector = ttk.Combobox(self.__topbar, state="readonly", values=["Books", "Customers", "Authors", "Invoices"])
+        self.__table_selector = ttk.Combobox(self.__topbar, state="readonly", values=list(table for table in self.__sm.schema))#["Books", "Customers", "Authors", "Invoices"])
         self.__table_selector.pack(side=tk.LEFT)
 
         self.__view_edit_button = tk.Button(self.__topbar, text="Viewing")
@@ -66,6 +63,10 @@ class EntryView(DFrame):
 
         self.__viewer = RecordViewer("book", self.__sub_content, sm=self.__sm)
         self.__viewer.pack(fill="x",)
+
+        # Bind update table command from the table selector combobox
+        self.__table_selector.bind('<<ComboboxSelected>>', lambda e: self.__viewer.set_table(self.__table_selector.get()), False)
+
 
 w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="icon.png"))
