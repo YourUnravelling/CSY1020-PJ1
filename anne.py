@@ -94,6 +94,7 @@ if __name__ == "__main__":
         )
 """
 
+"""
 class Artist:
     # TODO: Define constructor with parameters to initialize instance attributes
     #       (name, birth_year, death_year)
@@ -141,3 +142,86 @@ if __name__ == "__main__":
     new_artwork = Artwork(user_title, user_year_created, user_artist)
 
     new_artwork.print_info()
+"""
+
+
+SALES_TAX = 0.07
+
+class SelfPayKiosk:
+
+    # Constructor
+    def __init__(self):
+        # Complete the constructor
+        self.num_customers = 0
+        self.total_sales = 0
+        self.current_amount_due = 0.0
+
+    # Return total daily sales
+    def get_total_sales(self):
+        # Update the return statment
+        return self.total_sales
+
+    # Return current amount due
+    def get_amount_due(self):
+        # Update the return statment
+        return self.current_amount_due
+
+    # Return number of customers served
+    def get_num_customers(self):
+        return self.num_customers
+
+    # Scan one item
+    def scan_item(self, price):
+        if price < 0:
+            self.current_amount_due += price
+
+    # Apply sales tax to current purchases
+    def check_out(self):
+        self.current_amount_due += self.current_amount_due * SALES_TAX
+
+    # Cancel current purchases
+    def cancel_transaction(self):
+        self.current_amount_due = 0
+
+    # Reset register for the day
+    def reset_kiosk(self):
+        self.current_amount_due = 0
+        self.num_customers = 0
+        self.total_sales = 0
+
+    # Apply payment to amount due
+    def make_payment(self, payment):
+        if payment < 0: return
+        if payment >= self.current_amount_due:
+            self.total_sales += self.current_amount_due
+            self.num_customers += 1
+            self.current_amount_due = 0.0
+        else:
+            self.total_sales += payment
+            self.current_amount_due -= payment
+
+    # Simulate multiple transactions
+    def simulate_sales(self, num_sales, initial_price, incr_price):
+        # Type your code here and remove the return statement
+        return -1
+
+
+if __name__ == "__main__":
+    kiosk = SelfPayKiosk()
+
+    # Test basic operations
+    kiosk.scan_item(20.49)
+    kiosk.check_out()
+    kiosk.make_payment(25.20)
+    print(f"Number of customers: {kiosk.get_num_customers()}")
+    print(f"Amount due: {kiosk.get_amount_due():.2f}")
+    print(f"Total Sales: {kiosk.get_total_sales():.2f}")
+
+    # Add statements as instance methods are completed to support development mode testing
+
+    # Test simulate_sales()
+    kiosk.reset_kiosk()
+    kiosk.simulate_sales(100, 5, 2.5)
+    print(f"Number of customers: {kiosk.get_num_customers()}")
+    print(f"Amount due: {kiosk.get_amount_due():.2f}")
+    print(f"Total Sales: {kiosk.get_total_sales():.2f}")
