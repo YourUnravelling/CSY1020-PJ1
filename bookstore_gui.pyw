@@ -40,8 +40,8 @@ class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
 class EntryView(DFrame):
     def __init__(self, parent, sql_manager, default_table:str|None=None):
         super().__init__(parent)
-        self.__parent = parent
-        self.__sm = sql_manager # Private | Pointer to an SQLManager instance which executes sql
+        self.__parent = parent # Private, TODO maybe delete
+        self.__sm = sql_manager # Private, Pointer to an SQLManager instance which executes sql
 
         self.__topbar = DFrame(self)
         self.__topbar.pack(fill="x", padx=5, pady=5)
