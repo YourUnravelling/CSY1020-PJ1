@@ -97,23 +97,36 @@ if __name__ == "__main__":
 class Artist:
     # TODO: Define constructor with parameters to initialize instance attributes
     #       (name, birth_year, death_year)
-    def __init__(self, name, birth_year, death_year):
+    def __init__(self, name="unknown", birth_year=-1, death_year=-1):
         self.name = name
         self.birth_year = birth_year
         self.death_year = death_year
 
     # TODO: Define print_info() method
     def print_info(self):
-        print(f"Artist: {self.name} ({self.birth_year} to {self.death_year})")
+        if self.birth_year > 0 and self.death_year > 0:
+            print(f"Artist: {self.name} ({self.birth_year} to {self.death_year})")
+        elif self.birth_year > 0 and self.death_year < 0:
+            print(f"Artist: {self.name} ({self.birth_year} to present)")
+        else:
+            print(f"Artist: {self.name} (unknown)")
+
 
 
       
 class Artwork:
     # TODO: Define constructor with parameters to initialize instance attributes
     #       (title, year_created, artist)
+    def __init__(self, title="unknown", year_created=-1, artist=Artist()):
+        self.title = title
+        self.year_created = year_created
+        self.artist = artist
 
     # TODO: Define print_info() method
-    def
+    def print_info(self):
+        self.artist.print_info()
+        print(f"Title: {self.title}, {self.year_created}")
+
 
 
 if __name__ == "__main__":

@@ -18,7 +18,10 @@ class SQLManager():
             with sqlite.connect(self.__path) as conn:
                 cur = conn.cursor() # Create cursor object
                 print("Executing:", sql, args)
-                cur.execute(sql, args) # Execute on cursor object
+                try:
+                    cur.execute(sql, args) # Execute on cursor object
+                except Exception as e:
+                    print(e)
                 if ret == "one":
                     return cur.fetchone()
                 elif ret == "all":
@@ -44,7 +47,12 @@ class SQLManager():
         """Helper function to ammend a record"""
         
         formatted = self.format_dict_as_sql(values)
-        self.exe(f"UPDATE {table} SET ")
+        self.exe(f"UPDATE {table} SET ") # TODO
+
+    def read(self, table:str, id, pk_column_name:str="id"):
+        """Helper function to read a record"""
+        
+        self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == \"{id}\"")
 
     def format_dict_as_sql(self, inp:dict):
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""
