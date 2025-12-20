@@ -12,6 +12,7 @@ from tkinter import ttk
 # Class imports
 from scrollable_external import ScrollFrame
 from record_viewier import RecordViewer, DFrame
+from resources import config as configuration
 
 ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] # TODO remove
 
@@ -38,7 +39,7 @@ class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
     # No setter as scrollbar shouldn't be changed
 
 class EntryView(DFrame):
-    def __init__(self, parent, sql_manager, default_table:str|None=None):
+    def __init__(self, parent, sql_manager, config):
         super().__init__(parent)
         self.__parent = parent # Private, TODO maybe delete
         self.__sm = sql_manager # Private, Pointer to an SQLManager instance which executes sql
@@ -69,10 +70,10 @@ class EntryView(DFrame):
 
 
 w = tk.Tk()
-w.iconphoto(True,tk.PhotoImage(file="icon.png"))
+w.iconphoto(True,tk.PhotoImage(file="resources/icon.png"))
 w.minsize(width=600, height=300)
 
-EntryView(w, core.sm).pack()
+EntryView(w, core.sm, config=configuration.c).pack()
 
 def main():
     w.mainloop()
