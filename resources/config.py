@@ -4,7 +4,7 @@ All variables spesific to the database, including the schema, and functions
 # TODO Decide if this should be a class that is instanciated to defaultise var names, would make functions more complex?
 # Or just a regular file with spesific var names
 
-from spesific_class import SpesificClass
+from config_class import ConfigClass
 
 table_sqls = {
     "tables": [
@@ -19,11 +19,12 @@ table_sqls = {
 def generate_invoice(record):...
 
 
-c = SpesificClass(
-    schema="\n".join(table_sqls),
+c = ConfigClass(
+    schema=table_sqls,
     default_settings={},
     custom_commands= {
         "invoice": [generate_invoice]
-    }
+    },
+    default_table="book"
 )
 

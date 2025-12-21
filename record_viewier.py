@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from numpy.random import choice as nprc
 from typing import Literal
+
 from constants import READ_WRITE as RW
+from widgets import DFrame
 
 class DFrame(tk.Frame):
     """
@@ -102,6 +104,7 @@ class FeildsGrid(DFrame):
     }
 
     def __init__(self, 
+                 owner, # Pointer to this widget's owner
                  parent, # The parent widget
                  sm, # Instance of SQLManager class
                  table:str, 
@@ -110,6 +113,7 @@ class FeildsGrid(DFrame):
                  mode:RW="read"):
         super().__init__(parent)
 
+        self.owner = owner
         self.__widgets:list = []
         self.__mode:RW = mode # TODO Decide if this should even be a param, TODO decide if this should be "editing" and "viewing" instead
 
@@ -144,54 +148,84 @@ class RecordViewer(DFrame):
     `exe` Function which is called to query the database `(sql,*args)`
 
     """
-    def __init__(self, tablename, parent, sm):
+    def __init__(self, owner, tablename, parent, sm, advanced_mode:bool=False):
         super().__init__(parent)
+        self.owner = owner # Public, Pointer to this instance's owner
         self.__table:str = tablename # Private, The name of the table 
-        self.__parent = parent # Private
         self.__sm = sm # Private, Pointer to SQLManager class
+        self.__advanced_mode:bool = advanced_mode # Private
 
-        self.__meta_bar = DFrame(self) # Highest bar, for the controls
+        # Private
+        self.__meta_bar = DFrame(self) # Private, Highest bar, for the controls
         self.__meta_bar.pack(fill="x")
         self.__meta_bar.columnconfigure(1, weight=2)
         
-        self.__meta_feild_selector = ttk.Combobox(self.__meta_bar, values=list((col[1]) for col in (self.__sm.schema[self.__table])), state="readonly", ) # type: ignore
-        self.__meta_feild_selector.bind('<<ComboboxSelected>>', lambda e: self.display_record(), False) # Why the hell does adding and e fix the overload problem
-        self.__meta_feild_selector.grid(row=0, column=0)
+        # TODO Combobox for selecting the viewed field in the main combobox
 
-        
+        # Private, combobox for selecting the primary key feild
+        self.__meta_feild_selector = ttk.Combobox(self.__meta_bar, state="readonly", ) # type: ignore
+        self.__meta_feild_selector.bind('<<ComboboxSelected>>', lambda e: self.display_record(), False) # Why the hell does adding and e fix the overload problem
+        if self.__advanced_mode:
+            self.__meta_feild_selector.grid(row=0, column=0)
+
+        # Private, selector for spesific record
         self.__record_selector = ttk.Combobox(self.__meta_bar)
         self.__record_selector.grid(row=1, column=0)
 
-        self.__rename = ttk.Button(self.__meta_bar, text="Rename")
+        # Private
         self.__delete = ttk.Button(self.__meta_bar, text="Delete")
-        for i, item in enumerate([self.__rename, self.__delete]):
-            item.grid(row=1, column=2+i)
+        self.__delete.grid(row=1, column=3)
 
+        # Private, Frame for the feilds and image if it's present
         self.__feilds_img_grid = DFrame(self)
         self.__feilds_img_grid.pack()
 
         self.set_table(tablename)
-
-        if False:
-            pass # Pack the image to self.__feilds_img_grid, only if the table has an image
-        self.__foreigns_frame = DFrame(self)
-        self.__foreigns_frame.pack(fill="both", expand=True)
-        tk.Button(self.__foreigns_frame).pack()
 
     
     def set_table(self, new_table:str):
         """
         Changes the table being viewed
         """
+        if not new_table.strip():
+            # TODO Error message
+            print("No tabel")
+            return
+        
         self.__table = new_table # Change table variable
-        try: # Delete te feilds frame (ignore if it doesn't exist yet)
+
+        # Set pk_column selector
+        self.__meta_feild_selector.config(values=list((col[1]) for col in (self.__sm.schema[self.__table])))
+        self.__meta_feild_selector.config(state="normal")
+        self.__meta_feild_selector.delete(0,tk.END) # Remove contents of the box so that we dont get a 'isbnisbn' table not found error
+        self.__meta_feild_selector.insert(0, "isbn")
+        self.__meta_feild_selector.config(state="readonly")
+
+        # Set record selector
+        #all_
+        self.__record_selector.config(values=list(self.__sm.exe(f"SELECT {self.__meta_feild_selector.get()} FROM {self.__table}")))
+
+        try: # Delete the feilds frame (ignore if it doesn't exist yet)
             self.__feilds_frame.pack_forget()
             del self.__feilds_frame
         except: pass
+
+        try: # Delete foreigns_frame (ignore if it doesnt exist)
+            self.__foreigns_frame.pack_forget()
+            del self.__foreigns_frame
+        except: pass
         
         # TODO It needs to make a new feilds_frame when the table changes
-        self.__feilds_frame = FeildsGrid(self.__feilds_img_grid, self.__sm, self.__table, pk=self.__meta_feild_selector.get(), pk_column_name=self.__record_selector.get())
+        self.__feilds_frame = FeildsGrid(self, self.__feilds_img_grid, self.__sm, self.__table, pk=self.__meta_feild_selector.get(), pk_column_name=self.__record_selector.get())
         self.__feilds_frame.pack(side="left", fill="both", expand=True)
+
+        if False:
+            pass # Pack the image to self.__feilds_img_grid, only if the table has an image
+
+        self.__foreigns_frame = DFrame(self)
+        self.__foreigns_frame.pack(fill="both", expand=True)
+
+        tk.Button(self.__foreigns_frame).pack() # TODO Placeholder
 
     def get_table(self):
         return self.__table

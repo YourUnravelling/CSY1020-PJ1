@@ -49,8 +49,10 @@ class EntryView(DFrame):
         self.__content = DFrame(self)
         self.__content.pack(expand=True, fill="both")
 
-        self.__table_selector = ttk.Combobox(self.__topbar, state="readonly", values=list(table for table in self.__sm.schema))#["Books", "Customers", "Authors", "Invoices"])
+        self.__table_selector = ttk.Combobox(self.__topbar, state="normal", values=list(table for table in self.__sm.schema))#["Books", "Customers", "Authors", "Invoices"])
         self.__table_selector.pack(side=tk.LEFT)
+        self.__table_selector.insert(0, config.default_table)
+        self.__table_selector.config(state="readonly") # TODO Make setting?
 
         self.__view_edit_button = tk.Button(self.__topbar, text="Viewing")
         self.__view_edit_button.pack(side="right")
@@ -62,7 +64,7 @@ class EntryView(DFrame):
         self.__sub_content.pack_propagate(False) # Ensure correct size
         self.pack(fill="both", expand=True)
 
-        self.__viewer = RecordViewer("book", self.__sub_content, sm=self.__sm)
+        self.__viewer = RecordViewer(self, "book", self.__sub_content, sm=self.__sm)
         self.__viewer.pack(fill="x",)
 
         # Bind update table command from the table selector combobox
