@@ -3,7 +3,7 @@ from tkinter import ttk
 from typing import Literal
 
 from constants import READ_WRITE as RW
-from widgets import DFrame
+from widgets import DFrame, VCombobox
 
 class RWController(DFrame):
     """
@@ -18,7 +18,7 @@ class RWController(DFrame):
         """
         Changes the mode to read or write
         """
-        if mode in ["read", "write"]:
+        if mode in RW:
             self._mode = mode
         else: raise
         if mode == "read":

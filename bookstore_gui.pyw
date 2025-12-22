@@ -50,10 +50,16 @@ class EntryView(DFrame):
         self.__content = DFrame(self)
         self.__content.pack(expand=True, fill="both")
 
-        self.__table_selector = VCombobox(self.__topbar, state="normal", values=list(table for table in self.__sm.schema))#["Books", "Customers", "Authors", "Invoices"])
+        tables = list(table for table in self.__sm.schema)
+        self.__table_selector = VCombobox(self.__topbar, 
+                state="normal", 
+                on_select= self.__table_selected, #lambda e: self.__viewer.set_table(self.__table_selector.get()),
+                values=[tables, list(table.capitalize() for table in tables)], 
+                use_value_pairs=False, 
+                default_index=tables.index(config.default_table))
         self.__table_selector.pack(side=tk.LEFT)
-        self.__table_selector.insert(0, config.default_table)
-        self.__table_selector.config(state="readonly") # TODO Make setting?
+        #self.__table_selector.insert(0, config.default_table)
+        #self.__table_selector.config(state="readonly") # TODO Make setting?
 
         self.__view_edit_button = tk.Button(self.__topbar, text="Viewing")
         self.__view_edit_button.pack(side="right")
@@ -68,8 +74,8 @@ class EntryView(DFrame):
         self.__viewer = RecordViewer(self, "book", self.__sub_content, sm=self.__sm)
         self.__viewer.pack(fill="x",)
 
-        # Bind update table command from the table selector combobox
-        self.__table_selector.bind('<<ComboboxSelected>>', lambda e: self.__viewer.set_table(self.__table_selector.get()), False)
+    def __table_selected(self, table):
+        self.__viewer.set_table(table[1])
 
 
 w = tk.Tk()

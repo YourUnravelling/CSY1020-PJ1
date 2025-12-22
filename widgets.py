@@ -28,6 +28,7 @@ class VCombobox(ttk.Combobox):
             on_select:callable = None, 
             values:list=[list], # List containing two lists, one of pks, one of other str values
             default_index:int = 0, # Default index
+            use_value_pairs:bool = True,
             **kwargs
             ):
         self.__pk_list:list = values[0] # List of the pks
@@ -35,7 +36,9 @@ class VCombobox(ttk.Combobox):
         self.__index:int = default_index
         self.__on_select = on_select
         self.__raw_list:list[str] # (Set later)
+        self.__use_value_pairs:bool = use_value_pairs # If true, only shows the values and not the pks in the list
 
+        print("I am being created!")
 
         super().__init__(parent, values=None, **kwargs)
 
@@ -44,34 +47,30 @@ class VCombobox(ttk.Combobox):
         if on_select:
             self.bind("<<ComboboxSelected>>", self.__value_selected)
 
-    def __value_selected():
-        """Called when a value is selected by the use from the list"""
+    def __value_selected(self, val):
+        """Called when a value is selected by the user from the list"""
+        print("The value given was", val)
         if self.current() == -1: 
             raise # TODO Maybe return not raise
         self.__index = self.current()
-        on_select(self.__selected_value)
+
+        self.__on_select((self.__index, self.__pk_list[self.__index]))
 
 
-    def update_list(self, pks:list, values:list[str]):
+    def update_list(self, pks:list, values:list[str], default_index:int = 0):
         """Update the contents of the list"""
-        # Create raw list
         
-        raw_list:list[str] = []
-        for i in range(len(pks)): # TODO Change to generator and set __raw_list directly
-            raw_list.append(pks[i] + " - " + values[i])
-        
-        self.__raw_list = raw_list
-        self.values = raw_list
+        print(pks)
+        if self.__use_value_pairs:
+            self.__raw_list = list((pks[i] + " - " + values[i]) for i in range(len(pks)))
+        else:
+            self.__raw_list = list((values[i]) for i in range(len(pks)))
+        self.config(values=self.__raw_list)
         self.__pk_list = pks
         self.__value_list = values
 
-    
-    @property
-    def index(self):
-        return self.__index
-    
-    @index.setter
-    def index(self, val:int):
+
+    def __set_index(self, val:int):
         
         # Save original state and set state to normal because it won't let me insert when it's readonly
         original_state = self.state
@@ -83,3 +82,14 @@ class VCombobox(ttk.Combobox):
 
         # Return state to how it was
         self.config(state=original_state)
+
+    @property
+    def index(self):
+        return self.__index
+
+    @index.setter
+    def index(self, val:int):
+        self.__set_index(val)
+
+
+
