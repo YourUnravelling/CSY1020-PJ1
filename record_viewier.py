@@ -1,26 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-from numpy.random import choice as nprc
 from typing import Literal
 
 from constants import READ_WRITE as RW
 from widgets import DFrame
-
-class DFrame(tk.Frame):
-    """
-    Extension of tk.Frame with an optional debug mode, which randomises the colour within greyscale, for easy debugging frame structure.
-    """
-    DEBUG_MODE = True
-    def __init__(self, master=None, cnf={}, **kw):
-        super().__init__(master, cnf, **kw)
-        if DFrame.DEBUG_MODE:
-            self.config(background="#" + (self.__randhex() + self.__randhex()) * 3)
-        
-    def __randhex(self) -> str:
-        """
-        Returns a random hex digit between A and F
-        """
-        return nprc(list("ABCDEF"))
 
 class RWController(DFrame):
     """

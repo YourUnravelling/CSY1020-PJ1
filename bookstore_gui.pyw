@@ -11,8 +11,9 @@ from tkinter import ttk
 
 # Class imports
 from scrollable_external import ScrollFrame
-from record_viewier import RecordViewer, DFrame
+from record_viewier import RecordViewer
 from resources import config as configuration
+from widgets import DFrame, VCombobox
 
 ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] # TODO remove
 
@@ -49,7 +50,7 @@ class EntryView(DFrame):
         self.__content = DFrame(self)
         self.__content.pack(expand=True, fill="both")
 
-        self.__table_selector = ttk.Combobox(self.__topbar, state="normal", values=list(table for table in self.__sm.schema))#["Books", "Customers", "Authors", "Invoices"])
+        self.__table_selector = VCombobox(self.__topbar, state="normal", values=list(table for table in self.__sm.schema))#["Books", "Customers", "Authors", "Invoices"])
         self.__table_selector.pack(side=tk.LEFT)
         self.__table_selector.insert(0, config.default_table)
         self.__table_selector.config(state="readonly") # TODO Make setting?
