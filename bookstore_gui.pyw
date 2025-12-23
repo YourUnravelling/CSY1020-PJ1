@@ -44,6 +44,7 @@ class EntryView(DFrame):
         super().__init__(parent)
         self.__parent = parent # Private, TODO maybe delete
         self.__sm = sql_manager # Private, Pointer to an SQLManager instance which executes sql
+        self.config = config
 
         self.__topbar = DFrame(self)
         self.__topbar.pack(fill="x", padx=5, pady=5)

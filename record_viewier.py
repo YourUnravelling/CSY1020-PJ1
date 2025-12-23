@@ -5,7 +5,7 @@ from typing import Literal
 from constants import READ_WRITE as RW
 from widgets import DFrame, VCombobox
 
-class RWController(DFrame):
+class BaseFeild(DFrame):
     """
     A frame which has its w/r changed by mode()
     """
@@ -44,7 +44,7 @@ class RWController(DFrame):
         raise NotImplementedError
 
 
-class Text(RWController):
+class Text(BaseFeild):
     """
     Viewer for the TEXT type, used in FeildsGrid
     """
@@ -78,6 +78,7 @@ class FeildsGrid(DFrame):
     `writemode` True if the frame should allow writing to the table.
     ADD `require_apply` If true, the changes are not applied until the apply() method is called.
     """
+    # TODO Make this generaliseable to settings and stuff
     TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
         "TEXT" : Text,
         "REAL" : Text, # TODO
@@ -146,13 +147,13 @@ class RecordViewer(DFrame):
         # TODO Combobox for selecting the viewed field in the main combobox
 
         # Private, combobox for selecting the primary key feild
-        self.__meta_feild_selector = ttk.Combobox(self.__meta_bar, state="readonly", ) # type: ignore
-        self.__meta_feild_selector.bind('<<ComboboxSelected>>', lambda e: self.display_record(), False) # Why the hell does adding and e fix the overload problem
+        self.__meta_feild_selector = VCombobox(self.__meta_bar, self.__pk_selected, [[],[]], 0, False)
         if self.__advanced_mode:
             self.__meta_feild_selector.grid(row=0, column=0)
 
         # Private, selector for spesific record
-        self.__record_selector = ttk.Combobox(self.__meta_bar)
+        self.__record_selector = VCombobox(self.__meta_bar,
+                on_select= self.record_selected)
         self.__record_selector.grid(row=1, column=0)
 
         # Private
@@ -165,6 +166,11 @@ class RecordViewer(DFrame):
 
         self.set_table(tablename)
 
+    def __pk_selected(pk):
+        ...
+
+    def record_selected(value):
+        self.display_record[value[1]]
     
     def set_table(self, new_table:str):
         """
@@ -178,15 +184,19 @@ class RecordViewer(DFrame):
         self.__table = new_table # Change table variable
 
         # Set pk_column selector
-        self.__meta_feild_selector.config(values=list((col[1]) for col in (self.__sm.schema[self.__table])))
-        self.__meta_feild_selector.config(state="normal")
-        self.__meta_feild_selector.delete(0,tk.END) # Remove contents of the box so that we dont get a 'isbnisbn' table not found error
-        self.__meta_feild_selector.insert(0, "isbn")
-        self.__meta_feild_selector.config(state="readonly")
+        #self.__meta_feild_selector.config(values=list((col[1]) for col in (self.__sm.schema[self.__table])))
+        #self.__meta_feild_selector.config(state="normal")
+        #self.__meta_feild_selector.delete(0,tk.END) # Remove contents of the box so that we dont get a 'isbnisbn' table not found error
+        #self.__meta_feild_selector.insert(0, "isbn")
+        #self.__meta_feild_selector.config(state="readonly")
 
+        columns = list((col[1]) for col in (self.__sm.schema[self.__table]))
+        self.__meta_feild_selector.update_list(columns, columns, self.owner.config.pk_defaults[self.__table])
+        
         # Set record selector
-        #all_
-        self.__record_selector.config(values=list(self.__sm.exe(f"SELECT {self.__meta_feild_selector.get()} FROM {self.__table}")))
+        pk_list = list(self.__sm.exe(f"SELECT {self.owner.config.pk_defaults[self.__table]} FROM {self.__table}"))
+        values_list = list(self.__sm.exe(f"SELECT {self.__meta_feild_selector.value} FROM {self.__table}"))
+        self.__record_selector.update_list(pks=pk_list, values=values_list)
 
         try: # Delete the feilds frame (ignore if it doesn't exist yet)
             self.__feilds_frame.pack_forget()
@@ -199,7 +209,7 @@ class RecordViewer(DFrame):
         except: pass
         
         # TODO It needs to make a new feilds_frame when the table changes
-        self.__feilds_frame = FeildsGrid(self, self.__feilds_img_grid, self.__sm, self.__table, pk=self.__meta_feild_selector.get(), pk_column_name=self.__record_selector.get())
+        self.__feilds_frame = FeildsGrid(self, self.__feilds_img_grid, self.__sm, self.__table, pk=self.__meta_feild_selector.value, pk_column_name=self.__record_selector.get())
         self.__feilds_frame.pack(side="left", fill="both", expand=True)
 
         if False:

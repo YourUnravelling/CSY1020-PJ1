@@ -25,6 +25,12 @@ c = ConfigClass(
     custom_commands= {
         "invoice": [generate_invoice]
     },
-    default_table="book"
+    default_table="book",
+    pk_defaults = {
+        "book": "isbn",
+        "author": "id",
+        "invoice": "id",
+        "customer": "id",
+    },
 )
 

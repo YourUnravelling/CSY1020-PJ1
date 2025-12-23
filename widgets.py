@@ -26,7 +26,7 @@ class VCombobox(ttk.Combobox):
     def __init__(self, 
             parent, 
             on_select:callable = None, 
-            values:list=[list], # List containing two lists, one of pks, one of other str values
+            values:list= [[],[]], # List containing two lists, one of pks, one of other str values
             default_index:int = 0, # Default index
             use_value_pairs:bool = True,
             **kwargs
@@ -37,6 +37,8 @@ class VCombobox(ttk.Combobox):
         self.__on_select = on_select
         self.__raw_list:list[str] # (Set later)
         self.__use_value_pairs:bool = use_value_pairs # If true, only shows the values and not the pks in the list
+
+        # TODO Change to primary and secondary values not pk and value lists?
 
         print("I am being created!")
 
@@ -62,7 +64,7 @@ class VCombobox(ttk.Combobox):
         
         print(pks)
         if self.__use_value_pairs:
-            self.__raw_list = list((pks[i] + " - " + values[i]) for i in range(len(pks)))
+            self.__raw_list = list((pks[i] + " - " + str(values[i])) for i in range(len(pks)))
         else:
             self.__raw_list = list((values[i]) for i in range(len(pks)))
         self.config(values=self.__raw_list)
@@ -82,6 +84,11 @@ class VCombobox(ttk.Combobox):
 
         # Return state to how it was
         self.config(state=original_state)
+
+
+    @property
+    def value(self):
+        return self.__pk_list[self.current()]
 
     @property
     def index(self):
