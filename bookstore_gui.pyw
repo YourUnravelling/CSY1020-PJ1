@@ -39,7 +39,7 @@ class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
         return self.__scrollbar
     # No setter as scrollbar shouldn't be changed
 
-class EntryView(DFrame):
+class DBViewer(DFrame):
     def __init__(self, parent, sql_manager, config):
         super().__init__(parent)
         self.__parent = parent # Private, TODO maybe delete
@@ -51,39 +51,42 @@ class EntryView(DFrame):
         self.__content = DFrame(self)
         self.__content.pack(expand=True, fill="both")
 
-        tables = list(table for table in self.__sm.schema)
+        tables_list = list(table for table in self.__sm.schema)
+        #print(config.default_table, self.__sm.schema)
         self.__table_selector = VCombobox(self.__topbar, 
                 state="normal", 
                 on_select= self.__table_selected, #lambda e: self.__viewer.set_table(self.__table_selector.get()),
-                values=[tables, list(table.capitalize() for table in tables)], 
+                values=[tables_list, list(table.capitalize() for table in tables_list)], 
                 use_value_pairs=False, 
-                default_index=tables.index(config.default_table))
+                default_index= tables_list.index(config.default_table))
         self.__table_selector.pack(side=tk.LEFT)
-        #self.__table_selector.insert(0, config.default_table)
-        #self.__table_selector.config(state="readonly") # TODO Make setting?
 
         self.__view_edit_button = tk.Button(self.__topbar, text="Viewing")
         self.__view_edit_button.pack(side="right")
 
 
-        self.__sub_content = DFrame(self.__content, width=400)
+        #self.__sub_content = DFrame(self.__content, width=400)
 
-        self.__sub_content.pack(fill="y", expand=True)
-        self.__sub_content.pack_propagate(False) # Ensure correct size
+        #self.__sub_content.pack(fill="y", expand=True)
+        #self.__sub_content.pack_propagate(False) # Ensure correct size
         self.pack(fill="both", expand=True)
 
-        self.__viewer = RecordViewer(self, "book", self.__sub_content, sm=self.__sm)
-        self.__viewer.pack(fill="x",)
+        self.__viewer = RecordViewer(self, self.__content, "book")
+        self.__viewer.pack(fill="both",expand=True)
 
     def __table_selected(self, table):
         self.__viewer.set_table(table[1])
+
+    @property
+    def sm(self):
+        return self.__sm
 
 
 w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="resources/icon.png"))
 w.minsize(width=600, height=300)
 
-EntryView(w, core.sm, config=configuration.c).pack()
+DBViewer(w, core.sm, config=configuration.c).pack()
 
 def main():
     w.mainloop()

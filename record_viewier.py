@@ -4,6 +4,7 @@ from typing import Literal
 
 from constants import READ_WRITE as RW
 from widgets import DFrame, VCombobox
+import table_viewers as TableViewers
 
 class BaseFeild(DFrame):
     """
@@ -132,42 +133,44 @@ class RecordViewer(DFrame):
     `exe` Function which is called to query the database `(sql,*args)`
 
     """
-    def __init__(self, owner, tablename, parent, sm, advanced_mode:bool=False):
+    def __init__(self, owner, parent, tablename):
         super().__init__(parent)
         self.owner = owner # Public, Pointer to this instance's owner
-        self.__table:str = tablename # Private, The name of the table 
-        self.__sm = sm # Private, Pointer to SQLManager class
-        self.__advanced_mode:bool = advanced_mode # Private
+        self.__table:str = tablename # Private, The name of the current table 
+        #self.__sm = sm # Private, Pointer to SQLManager class
 
-        # Private
-        self.__meta_bar = DFrame(self) # Private, Highest bar, for the controls
-        self.__meta_bar.pack(fill="x")
-        self.__meta_bar.columnconfigure(1, weight=2)
+        # Initialising subframes, private
+        self.__records = DFrame(self)
+        self.__viewer = DFrame(self)
+        self.__records.pack(side="left", expand=True, fill="both")#grid(column=0, row=0, padx=10, pady=10, sticky="nesw")
+        self.__viewer.pack(side="right", expand=True, fill="both")#grid(column=1, row=0, padx=10, pady=10, sticky="nesw")
         
-        # TODO Combobox for selecting the viewed field in the main combobox
+        # -- Table viewer
+        self.__record_viewier = TableViewers.TreeTableViewer(self.__records) # Todo generalise
+        self.__record_viewier.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
 
-        # Private, combobox for selecting the primary key feild
-        self.__meta_feild_selector = VCombobox(self.__meta_bar, self.__pk_selected, [[],[]], 0, False)
-        if self.__advanced_mode:
-            self.__meta_feild_selector.grid(row=0, column=0)
+        # -- Record viewer
 
-        # Private, selector for spesific record
-        self.__record_selector = VCombobox(self.__meta_bar,
-                on_select= self.record_selected)
-        self.__record_selector.grid(row=1, column=0)
-
+        # Private, Highest bar, for the controls
+        self.__top_bar = DFrame(self.__viewer) 
+        self.__top_bar.pack(anchor="n", fill="x", expand=False, padx=10, pady=10)
+        #self.__top_bar.columnconfigure(1, weight=2)
+        
         # Private
-        self.__delete = ttk.Button(self.__meta_bar, text="Delete")
-        self.__delete.grid(row=1, column=3)
+        self.__delete = ttk.Button(self.__top_bar, text="Delete")
+        self.__delete.pack(side="right")#grid(row=1, column=3)
+
+        self.__edit = ttk.Button(self.__top_bar, text="Edit")
+        self.__edit.pack(side="right")
+
+        self.__no_record_text = ttk.Label(self.__viewer, text="No record selected", justify="center")
+        self.__no_record_text.pack(pady=50)
 
         # Private, Frame for the feilds and image if it's present
-        self.__feilds_img_grid = DFrame(self)
+        self.__feilds_img_grid = DFrame(self.__viewer)
         self.__feilds_img_grid.pack()
 
         self.set_table(tablename)
-
-    def __pk_selected(pk):
-        ...
 
     def record_selected(value):
         self.display_record[value[1]]
@@ -181,22 +184,28 @@ class RecordViewer(DFrame):
             print("No tabel")
             return
         
+        # TODO Validate that the table exists
+
         self.__table = new_table # Change table variable
 
-        # Set pk_column selector
-        #self.__meta_feild_selector.config(values=list((col[1]) for col in (self.__sm.schema[self.__table])))
-        #self.__meta_feild_selector.config(state="normal")
-        #self.__meta_feild_selector.delete(0,tk.END) # Remove contents of the box so that we dont get a 'isbnisbn' table not found error
-        #self.__meta_feild_selector.insert(0, "isbn")
-        #self.__meta_feild_selector.config(state="readonly")
-
-        columns = list((col[1]) for col in (self.__sm.schema[self.__table]))
-        self.__meta_feild_selector.update_list(columns, columns, self.owner.config.pk_defaults[self.__table])
+        #columns = list((col[1]) for col in (self.owner.sm.schema[self.__table]))
+        #   self.__pk_selector.update_list(columns, columns, self.owner.config.pk_defaults[self.__table])
         
         # Set record selector
-        pk_list = list(self.__sm.exe(f"SELECT {self.owner.config.pk_defaults[self.__table]} FROM {self.__table}"))
-        values_list = list(self.__sm.exe(f"SELECT {self.__meta_feild_selector.value} FROM {self.__table}"))
-        self.__record_selector.update_list(pks=pk_list, values=values_list)
+        #pk_list = list(self.owner.sm.exe(f"SELECT {self.owner.config.pk_defaults[self.__table]} FROM {self.__table}"))
+        #values_list = list(self.owner.sm.exe(f"SELECT {self.__pk_selector.value} FROM {self.__table}"))
+
+        headings_raw:list[str] = list(head_sch[1] for head_sch in self.owner.sm.schema[self.__table])
+        self.__record_viewier.set_table(
+                table = self.__table,
+                headings = headings_raw,
+                headingsdisplay = list(h.capitalize() for h in headings_raw),
+                table_data = self.owner.sm.read_full(self.__table)
+        )
+
+
+    def set_record(self, record_name:str):
+        # Update record viewer
 
         try: # Delete the feilds frame (ignore if it doesn't exist yet)
             self.__feilds_frame.pack_forget()
@@ -209,7 +218,7 @@ class RecordViewer(DFrame):
         except: pass
         
         # TODO It needs to make a new feilds_frame when the table changes
-        self.__feilds_frame = FeildsGrid(self, self.__feilds_img_grid, self.__sm, self.__table, pk=self.__meta_feild_selector.value, pk_column_name=self.__record_selector.get())
+        self.__feilds_frame = FeildsGrid(self, self.__feilds_img_grid, self.__sm, self.__table, pk=self.__pk_selector.value, pk_column_name=self.__record_selector.get())
         self.__feilds_frame.pack(side="left", fill="both", expand=True)
 
         if False:

@@ -19,7 +19,7 @@ class DFrame(tk.Frame):
         """
         return nprc(list("ABCDEF"))
 
-class VCombobox(ttk.Combobox):
+class VCombobox(ttk.Combobox): # TODO Delete
     """
     Slightly more advanced Combobox which can display multiple lists of things
     """
