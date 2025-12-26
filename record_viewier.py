@@ -179,6 +179,7 @@ class RecordViewer(DFrame):
         print("A record has been selected,", value)
         self.set_record(value)
     
+
     def set_table(self, new_table:str):
         """
         Changes the table being viewed
@@ -215,16 +216,25 @@ class RecordViewer(DFrame):
         except: pass
         
         # TODO It needs to make a new feilds_frame when the table changes
-        self.__feilds_frame = FeildsGrid(self, self.__feilds_img_grid, self.owner.sm, self.__table, pk=self.owner.config.pk_defaults[self.__table], pk_column_name=record_name)
-        self.__feilds_frame.pack(side="left", fill="both", expand=True)
+        #self.__feilds_frame = FeildsGrid(self, self.__feilds_img_grid, self.owner.sm, self.__table, pk=self.owner.config.pk_defaults[self.__table], pk_column_name=record_name)
+        #self.__feilds_frame.pack(side="top", fill="both", expand=True)
 
         if False:
             pass # Pack the image to self.__feilds_img_grid, only if the table has an image
 
-        self.__foreigns_frame = DFrame(self)
+        self.__foreigns_frame = DFrame(self.feilds_frame)
         self.__foreigns_frame.pack(fill="both", expand=True)
 
         tk.Button(self.__foreigns_frame).pack() # TODO Placeholder
 
     def get_table(self):
         return self.__table
+
+class FKCreator(): # 
+    """
+    Frame which displays a list of feilds, 
+    """
+    def __init__(self, 
+                 columns, 
+                 on_confirm, # Function which is called when the thingy is accepted.
+    ):...
