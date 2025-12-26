@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from typing import Literal
+import typing
 
 from constants import READ_WRITE as RW
 from widgets import DFrame, VCombobox
@@ -19,9 +20,10 @@ class BaseFeild(DFrame):
         """
         Changes the mode to read or write
         """
-        if mode in RW:
+        assert mode in typing.get_args(RW) # Make sure input is valid # TODO remove?
+        if mode in list(RW):
             self._mode = mode
-        else: raise
+        
         if mode == "read":
             self._read()
         elif mode == "write":
@@ -146,7 +148,7 @@ class RecordViewer(DFrame):
         self.__viewer.pack(side="right", expand=True, fill="both")#grid(column=1, row=0, padx=10, pady=10, sticky="nesw")
         
         # -- Table viewer
-        self.__record_viewier = TableViewers.TreeTableViewer(self.__records) # Todo generalise
+        self.__record_viewier = TableViewers.TreeTableViewer(self.__records, self.records_selected) # Todo generalise
         self.__record_viewier.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
 
         # -- Record viewer
@@ -172,8 +174,10 @@ class RecordViewer(DFrame):
 
         self.set_table(tablename)
 
-    def record_selected(value):
-        self.display_record[value[1]]
+    def records_selected(self, value):
+        self.__no_record_text.pack_forget()
+        print("A record has been selected,", value)
+        self.set_record(value)
     
     def set_table(self, new_table:str):
         """
@@ -187,13 +191,6 @@ class RecordViewer(DFrame):
         # TODO Validate that the table exists
 
         self.__table = new_table # Change table variable
-
-        #columns = list((col[1]) for col in (self.owner.sm.schema[self.__table]))
-        #   self.__pk_selector.update_list(columns, columns, self.owner.config.pk_defaults[self.__table])
-        
-        # Set record selector
-        #pk_list = list(self.owner.sm.exe(f"SELECT {self.owner.config.pk_defaults[self.__table]} FROM {self.__table}"))
-        #values_list = list(self.owner.sm.exe(f"SELECT {self.__pk_selector.value} FROM {self.__table}"))
 
         headings_raw:list[str] = list(head_sch[1] for head_sch in self.owner.sm.schema[self.__table])
         self.__record_viewier.set_table(
@@ -218,7 +215,7 @@ class RecordViewer(DFrame):
         except: pass
         
         # TODO It needs to make a new feilds_frame when the table changes
-        self.__feilds_frame = FeildsGrid(self, self.__feilds_img_grid, self.__sm, self.__table, pk=self.__pk_selector.value, pk_column_name=self.__record_selector.get())
+        self.__feilds_frame = FeildsGrid(self, self.__feilds_img_grid, self.owner.sm, self.__table, pk=self.owner.config.pk_defaults[self.__table], pk_column_name=record_name)
         self.__feilds_frame.pack(side="left", fill="both", expand=True)
 
         if False:
@@ -231,8 +228,3 @@ class RecordViewer(DFrame):
 
     def get_table(self):
         return self.__table
-
-    def display_record(self, id): # TODO remove handled itself I think
-        """
-        Displays a new record with the id as uid
-        """

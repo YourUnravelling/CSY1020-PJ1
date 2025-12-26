@@ -16,11 +16,13 @@ class TreeTableViewer(BaseTableViewer, ttk.Treeview):
     WIDTH = 5
     MINWIDTH = 5
 
-    def __init__(self, parent):
+    def __init__(self, parent, on_select):
         #BaseTableViewer.__init__(self, parent)
         ttk.Treeview.__init__(self, parent)
+        self.__on_select = on_select
+        
 
-    def set_table(self, table:str, headings:list[str], headingsdisplay:list[str], table_data:list[list]):
+    def set_table(self, table:str, headings:list[str], headingsdisplay:list[str], table_data:list[list]): # TODO Seperate into set_headings and set_data? 
         
         headings_no_pk = headings[1:len(headings)]
         headings_display_no_pk = headingsdisplay[1:len(headingsdisplay)]
@@ -34,11 +36,17 @@ class TreeTableViewer(BaseTableViewer, ttk.Treeview):
             self.heading(headings[i], text= headingsdisplay[i])
             self.column(headings[i], minwidth= TreeTableViewer.MINWIDTH, width= TreeTableViewer.WIDTH)
 
-        print(table_data)
+        self.bind("<<TreeviewSelect>>", self.__record_selected)
+
         for i, record in enumerate(table_data):
             self.insert(
                     parent = "",
                     index = "end",
                     iid = record[0],
                     text = record[0], 
-                    values = record[1:len(record)])
+                    values = record[1:len(record)]
+            )
+
+    def __record_selected(self, event) -> str:
+        """Calls __on_select with the top record selected"""
+        self.__on_select(self.selection()[0])
