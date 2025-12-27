@@ -7,6 +7,24 @@ from constants import READ_WRITE as RW
 from widgets import DFrame, VCombobox
 import table_viewers as TableViewers
 
+TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
+        "TEXT" : Text,
+        "REAL" : Text, # TODO
+        "INTEGER" : Text, # TODO
+        "DATE" : Text, # TODO
+        "BLOB" : Text, # TODO
+    }
+
+PY_TYPE_CLASSES = { # Mapping of python types
+        str : Text,
+        float : Text, # TODO
+        int : Text, # TODO
+        dt.date : Text, # TODO
+        Placeholder : Text, # TODO TODO
+    }
+# TODO Maybe map the sql types to their python types, then python types to subclasses instead
+# TODO Add a "lock" system that locks one feild to the value of another until it's unlocked, eg Name and PreferredName stay the same by default
+
 class BaseFeild(DFrame):
     """
     A frame which has its w/r changed by mode()
@@ -73,27 +91,13 @@ class Text(BaseFeild):
 
 
 class FeildsGrid(DFrame):
-    """A frame containing all feilds of a record
-    `parent` The parent widget
-    `tablename` The table's name in the sql
-    `key` The primary key of the column
-    `schema` (Remove)
-    `writemode` True if the frame should allow writing to the table.
-    ADD `require_apply` If true, the changes are not applied until the apply() method is called.
+    """A frame allowing the editing of a list of various types
+
     """
-    # TODO Make this generaliseable to settings and stuff
-    TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
-        "TEXT" : Text,
-        "REAL" : Text, # TODO
-        "INTEGER" : Text, # TODO
-        "DATE" : Text, # TODO
-        "BLOB" : Text, # TODO
-    }
 
     def __init__(self, 
                  owner, # Pointer to this widget's owner
                  parent, # The parent widget
-                 sm, # Instance of SQLManager class
                  table:str, 
                  pk:int|str = 0, 
                  pk_column_name:str = "id",
