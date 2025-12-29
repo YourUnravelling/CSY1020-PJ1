@@ -1,29 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 from typing import Literal
-import typing
+#import typing
+from datetime import datetime as dt
 
 from constants import READ_WRITE as RW
 from widgets import DFrame, VCombobox
 import table_viewers as TableViewers
-
-TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
-        "TEXT" : Text,
-        "REAL" : Text, # TODO
-        "INTEGER" : Text, # TODO
-        "DATE" : Text, # TODO
-        "BLOB" : Text, # TODO
-    }
-
-PY_TYPE_CLASSES = { # Mapping of python types
-        str : Text,
-        float : Text, # TODO
-        int : Text, # TODO
-        dt.date : Text, # TODO
-        Placeholder : Text, # TODO TODO
-    }
-# TODO Maybe map the sql types to their python types, then python types to subclasses instead
-# TODO Add a "lock" system that locks one feild to the value of another until it's unlocked, eg Name and PreferredName stay the same by default
 
 class BaseFeild(DFrame):
     """
@@ -38,7 +21,6 @@ class BaseFeild(DFrame):
         """
         Changes the mode to read or write
         """
-        assert mode in typing.get_args(RW) # Make sure input is valid # TODO remove?
         if mode in list(RW):
             self._mode = mode
         
@@ -46,6 +28,7 @@ class BaseFeild(DFrame):
             self._read()
         elif mode == "write":
             self._write()
+        else: raise
 
     def get_value(self):
         return self._value
@@ -95,13 +78,33 @@ class FeildsGrid(DFrame):
 
     """
 
+    TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
+            "TEXT" : Text,
+            "REAL" : Text, # TODO
+            "INTEGER" : Text, # TODO
+            "DATE" : Text, # TODO
+            "BLOB" : Text, # TODO
+        }
+
+    PY_TYPE_CLASSES = { # Mapping of python types to display classes
+            str : Text,
+            float : Text, # TODO
+            int : Text, # TODO
+            dt.date : Text, # TODO
+            bool : Text, # TODO TODO CANGE TO blob
+        }
+    
+
+    # TODO Maybe map the sql types to their python types, then python types to subclasses instead
+    # TODO Add a "lock" system that locks one feild to the value of another until it's unlocked, eg Name and PreferredName stay the same by default
+
     def __init__(self, 
-                 owner, # Pointer to this widget's owner
+                 owner, # Pointer to this widget's owner TODO decide if needed
                  parent, # The parent widget
-                 table:str, 
-                 pk:int|str = 0, 
-                 pk_column_name:str = "id",
-                 mode:RW="read"):
+                 feild_types:list,
+                 feild_defaults:list, # List of Nones for no default or var
+                 mode:RW|list = "read"
+                 ):
         super().__init__(parent)
 
         self.owner = owner
@@ -123,14 +126,32 @@ class FeildsGrid(DFrame):
         except: pass
         self.set_mode(mode)
     
-    def set_mode(self, mode:RW):
-        for widget in self.__widgets:
-            widget.mode(mode)
-        self.__mode = mode
+    def set_mode(self, mode:RW|list):
+        """
+        Sets the read/write mode of the widgets, either by accepting a mask list of read/write/None or a str literal.
+        """
+
+        if mode is list:
+            assert len(mode) == len(self.__widgets)
+
+            # Apply the modes in the list to each widget
+            for i in range(len(mode)):
+                if mode[i] in ("read", "write"): # Only change if the mode is read or write
+                    self.__widgets[i].mode(mode[i])
         
-    @property 
-    def mode(self):
-        return self.__mode
+        else: # mode is a single str literal
+            # Set each widget's mode to the value of the literal
+            for widget in self.__widgets:
+                widget.mode(mode)
+
+        self.__mode = mode
+         
+    def get_mode_at(self, index:int):
+        """Gets the mode of a spesific widget at an index"""
+        if self.__mode is list:
+            return self.__mode[index]
+        else:
+            return self.__mode
 
 class RecordViewer(DFrame):
     """A frame which allows viewing of an sqlite table.
@@ -152,8 +173,8 @@ class RecordViewer(DFrame):
         self.__viewer.pack(side="right", expand=True, fill="both")#grid(column=1, row=0, padx=10, pady=10, sticky="nesw")
         
         # -- Table viewer
-        self.__record_viewier = TableViewers.TreeTableViewer(self.__records, self.records_selected) # Todo generalise
-        self.__record_viewier.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+        self.__table_view = TableViewers.TreeTableViewer(self.__records, self.records_selected) # Todo generalise to different table viewers
+        self.__table_view.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
 
         # -- Record viewer
 
@@ -172,13 +193,20 @@ class RecordViewer(DFrame):
         self.__no_record_text = ttk.Label(self.__viewer, text="No record selected", justify="center")
         self.__no_record_text.pack(pady=50)
 
+        # Frame for record info, possibly scrolling
+        self.__record_frame = DFrame(self.__viewer)
+        self.__record_frame.pack()
+
         # Private, Frame for the feilds and image if it's present
-        self.__feilds_img_grid = DFrame(self.__viewer)
+        self.__feilds_img_grid = DFrame(self.__record_frame)
         self.__feilds_img_grid.pack()
 
         self.set_table(tablename)
 
     def records_selected(self, value):
+        """
+        Called when a record is selected in the table
+        """
         self.__no_record_text.pack_forget()
         print("A record has been selected,", value)
         self.set_record(value)
@@ -197,12 +225,17 @@ class RecordViewer(DFrame):
 
         self.__table = new_table # Change table variable
 
+        # Update the table view
         headings_raw:list[str] = list(head_sch[1] for head_sch in self.owner.sm.schema[self.__table])
-        self.__record_viewier.set_table(
+        self.__table_view.set_table(
                 table = self.__table,
                 headings = headings_raw,
                 headingsdisplay = list(h.capitalize() for h in headings_raw),
                 table_data = self.owner.sm.read_full(self.__table)
+        
+        # Upadate the record view
+        
+
         )
 
 
@@ -226,7 +259,7 @@ class RecordViewer(DFrame):
         if False:
             pass # Pack the image to self.__feilds_img_grid, only if the table has an image
 
-        self.__foreigns_frame = DFrame(self.feilds_frame)
+        self.__foreigns_frame = DFrame(self)
         self.__foreigns_frame.pack(fill="both", expand=True)
 
         tk.Button(self.__foreigns_frame).pack() # TODO Placeholder
