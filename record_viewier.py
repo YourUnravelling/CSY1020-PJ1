@@ -7,6 +7,7 @@ from datetime import datetime as dt
 from constants import READ_WRITE as RW
 from widgets import DFrame, VCombobox
 import table_viewers as TableViewers
+import record_viewers as RecordViewer
 
 class BaseFeild(DFrame):
     """
@@ -99,7 +100,6 @@ class FeildsGrid(DFrame):
     # TODO Add a "lock" system that locks one feild to the value of another until it's unlocked, eg Name and PreferredName stay the same by default
 
     def __init__(self, 
-                 owner, # Pointer to this widget's owner TODO decide if needed
                  parent, # The parent widget
                  feild_types:list,
                  feild_defaults:list, # List of Nones for no default or var
@@ -107,25 +107,29 @@ class FeildsGrid(DFrame):
                  ):
         super().__init__(parent)
 
-        self.owner = owner
         self.__widgets:list = []
-        self.__mode:RW = mode # TODO Decide if this should even be a param, TODO decide if this should be "editing" and "viewing" instead
 
-        this_record = sm.read(table, pk, pk_column_name=pk_column_name)
-        try:
-            for i, column_tuple in enumerate(sm.schema[table]): # Iterate over each column
-                print(column_tuple, i)
-                tk.Label(self, text=column_tuple[1]).grid(row=i, column=0, sticky="w")
-
-                # Read widgets
-                pointer_to_class = FeildsGrid.TYPE_CLASSES["TEXT"]
-                
-                type_class_instance = pointer_to_class(self, initial_mode=mode, value=this_record[i])
-                self.__widgets.append(type_class_instance)
-                self.__widgets[i].grid(row=i, column=1, sticky="w")
-        except: pass
+        self.set_feilds(feild_types, feild_defaults)
         self.set_mode(mode)
     
+    def set_feilds(self, feild_types, feild_defaults):
+        """Sets the feilds and sets them to defaults"""
+        assert len(feild_defaults) == len(feild_types)
+
+        for i in range(feild_defaults): # Iterate over each column
+            
+            # Column name label
+            tk.Label(self, text=column_tuple[1]).grid(row=i, column=0, sticky="w")
+
+            # Read/write widget
+            pointer_to_class = FeildsGrid.TYPE_CLASSES["TEXT"]
+            
+            type_class_instance = pointer_to_class(self, initial_mode="read", value=this_record[i])
+            self.__widgets.append(type_class_instance)
+            self.__widgets[i].grid(row=i, column=1, sticky="w")
+        
+        # TODO Possibly in the future don't remove all widgets and replace them but change the existing ones and delete/add extras.
+
     def set_mode(self, mode:RW|list):
         """
         Sets the read/write mode of the widgets, either by accepting a mask list of read/write/None or a str literal.
@@ -152,6 +156,13 @@ class FeildsGrid(DFrame):
             return self.__mode[index]
         else:
             return self.__mode
+    
+
+    # TODO Instead have a variable of all the feilds
+    def get_value_at(self, index:int):
+        ...
+
+    def set_value_at(self):...
 
 class RecordViewer(DFrame):
     """A frame which allows viewing of an sqlite table.
@@ -177,29 +188,8 @@ class RecordViewer(DFrame):
         self.__table_view.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
 
         # -- Record viewer
-
-        # Private, Highest bar, for the controls
-        self.__top_bar = DFrame(self.__viewer) 
-        self.__top_bar.pack(anchor="n", fill="x", expand=False, padx=10, pady=10)
-        #self.__top_bar.columnconfigure(1, weight=2)
-        
-        # Private
-        self.__delete = ttk.Button(self.__top_bar, text="Delete")
-        self.__delete.pack(side="right")#grid(row=1, column=3)
-
-        self.__edit = ttk.Button(self.__top_bar, text="Edit")
-        self.__edit.pack(side="right")
-
-        self.__no_record_text = ttk.Label(self.__viewer, text="No record selected", justify="center")
-        self.__no_record_text.pack(pady=50)
-
-        # Frame for record info, possibly scrolling
-        self.__record_frame = DFrame(self.__viewer)
-        self.__record_frame.pack()
-
-        # Private, Frame for the feilds and image if it's present
-        self.__feilds_img_grid = DFrame(self.__record_frame)
-        self.__feilds_img_grid.pack()
+        self.__record_view = RecordViewers.DefaultRecordViewer(self.__viewer)
+        self.__record_view.pack()
 
         self.set_table(tablename)
 
@@ -234,7 +224,7 @@ class RecordViewer(DFrame):
                 table_data = self.owner.sm.read_full(self.__table)
         
         # Upadate the record view
-        
+
 
         )
 
