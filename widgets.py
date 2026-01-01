@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from datetime import datetime as dt
 from numpy.random import choice as nprc
 
 class DFrame(tk.Frame):
@@ -8,16 +9,25 @@ class DFrame(tk.Frame):
     Extension of tk.Frame with an optional debug mode, which randomises the colour within greyscale, for easy debugging frame structure.
     """
     DEBUG_MODE = True
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, debug_name:str|None= None, cnf={}, **kw):
         super().__init__(master, cnf, **kw)
+        self.__debug_name = debug_name
         if DFrame.DEBUG_MODE:
             self.config(background="#" + (self.__randhex() + self.__randhex()) * 3)
+            self.bind("<Button-1>", self.__print_info)
         
     def __randhex(self) -> str:
         """
         Returns a random hex digit between A and F
         """
         return nprc(list("ABCDEF"))
+
+    def __print_info(self, var):
+        if self.__debug_name:
+            print("This frame is " + self.__debug_name, end=" | ")
+        else:
+            print("No debug name provided for this frame, location: " + str(self), end=" | ")
+        print("Owner class is " + str(self.__class__.__name__))
 
 class VCombobox(ttk.Combobox): # TODO Delete
     """
@@ -191,30 +201,40 @@ class FeildsGrid(DFrame):
 
     def __init__(self, 
                  parent, # The parent widget
-                 feild_types:list,
-                 feild_defaults:list, # List of Nones for no default or var
+                 #feild_types:list,
+                 #feild_defaults:list, # List of Nones for no default or var
                  mode:RW|list = "read"
                  ):
         super().__init__(parent)
 
-        self.__widgets:list = []
+        self.__labels:list = [] # Private, list of column name label widgets
+        self.__widgets:list = [] # Private, list of value/feild __widgets
+        self.__values:list # Private, keeps track of the values, updated when feilds are updated
 
-        self.set_feilds(feild_types, feild_defaults)
-        self.set_mode(mode)
+
+        #self.set_feilds(feild_types, feild_defaults)
+        #self.set_mode(mode)
     
-    def set_feilds(self, feild_types, feild_defaults):
+    def set_feilds(self, feild_types, feild_defaults, feild_names):
         """Sets the feilds and sets them to defaults"""
         assert len(feild_defaults) == len(feild_types)
 
-        for i in range(feild_defaults): # Iterate over each column
+        # Ungrid all existing items in widgets and labels
+        for i in range(len(self.__labels)):
+            self.__labels[i].grid_forget()
+            self.__widgets[i].grid_forget()
+
+
+        self.__values = feild_defaults # Sent values list to defaults
+        for i in range(len(feild_defaults)): # Iterate over each column
             
             # Column name label
-            tk.Label(self, text=column_tuple[1]).grid(row=i, column=0, sticky="w")
+            tk.Label(self, text=feild_names[i]).grid(row=i, column=0, sticky="w")
 
-            # Read/write widget
-            pointer_to_class = FeildsGrid.TYPE_CLASSES["TEXT"]
-            
-            type_class_instance = pointer_to_class(self, initial_mode="read", value=this_record[i])
+            # Create a pointer to the read/write widget matching the field type
+            pointer_to_class = FeildsGrid.TYPE_CLASSES["TEXT"] # TODO To others except text
+
+            type_class_instance = pointer_to_class(self, initial_mode="read", value=feild_defaults[i])
             self.__widgets.append(type_class_instance)
             self.__widgets[i].grid(row=i, column=1, sticky="w")
         
@@ -240,6 +260,9 @@ class FeildsGrid(DFrame):
 
         self.__mode = mode
          
+    def value_updated(self, index, value):
+        self.__values[index] = value
+
     def get_mode_at(self, index:int):
         """Gets the mode of a spesific widget at an index"""
         if self.__mode is list:
@@ -247,9 +270,10 @@ class FeildsGrid(DFrame):
         else:
             return self.__mode
     
-
-    # TODO Instead have a variable of all the feilds
-    def get_value_at(self, index:int):
-        ...
-
-    def set_value_at(self):...
+    @property
+    def values(self):
+        return self.__values
+    
+    def set_values(self, values:list):
+        for widget, i in enumerate(self.__widgets):
+            widget.set_value(values[i])

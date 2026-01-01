@@ -12,21 +12,10 @@ from tkinter import ttk
 # Class imports
 from scrollable_external import ScrollFrame
 from record_viewier import RecordViewer
-from resources import config as configuration
+#from resources import config as configuration
 from widgets import DFrame, VCombobox
 
 ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] # TODO remove
-
-class ThemeManager():
-    all_widgets:list
-
-    def __init__(self, mode):
-        self.__mode = mode
-        ThemeManager.all_widgets.append(self)
-    
-    @property
-    def mode(self):
-        return self.__mode
 
 class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
     def __init__(self, master):
@@ -40,11 +29,12 @@ class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
     # No setter as scrollbar shouldn't be changed
 
 class DBViewer(DFrame):
-    def __init__(self, parent, sql_manager, config):
+    def __init__(self, parent, core):
         super().__init__(parent)
         self.__parent = parent # Private, TODO maybe delete
-        self.__sm = sql_manager # Private, Pointer to an SQLManager instance which executes sql
-        self.config = config
+        self.__sm = core.sm # Private, Pointer to an SQLManager instance which executes sql
+        self.__core = core
+        self.__config = core.config
 
         self.__topbar = DFrame(self)
         self.__topbar.pack(fill="x", padx=5, pady=5)
@@ -58,7 +48,7 @@ class DBViewer(DFrame):
                 on_select= self.__table_selected, #lambda e: self.__viewer.set_table(self.__table_selector.get()),
                 values=[tables_list, list(table.capitalize() for table in tables_list)], 
                 use_value_pairs=False, 
-                default_index= tables_list.index(config.default_table))
+                default_index= tables_list.index(self.__core.config.default_table))
         self.__table_selector.pack(side=tk.LEFT)
 
         self.__view_edit_button = tk.Button(self.__topbar, text="Viewing")
@@ -80,13 +70,17 @@ class DBViewer(DFrame):
     @property
     def sm(self):
         return self.__sm
+    
+    @property
+    def core(self):
+        return self.__core
 
 
 w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="resources/icon.png"))
 w.minsize(width=600, height=300)
 
-DBViewer(w, core.sm, config=configuration.c).pack()
+DBViewer(w, core).pack()
 
 def main():
     w.mainloop()

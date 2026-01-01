@@ -32,5 +32,8 @@ c = ConfigClass(
         "invoice": "id",
         "customer": "id",
     },
+    default_values = {
+        "book": ("", "", "", "", "", "")
+    }
 )
 

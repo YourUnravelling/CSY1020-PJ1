@@ -10,7 +10,8 @@ class ConfigClass():
             custom_commands:dict[str:dict[str:callable]] = {},
             pk_defaults:dict[str:str] = {}, # [table name : default primary key]
             vis_defaults:dict[str:str] = {}, # [table name : default visual key] (only for the default primary key)
-            default_table:str = "" # Default table shown on loadup
+            default_table:str = "", # Default table shown on loadup
+            default_values:dict[str:tuple] = {}, # Default values in a 
             ):
         self.schema = schema # Public, Dictionary schema of the table # TODO Change to raw sql?
         self.default_settings = default_settings
@@ -18,3 +19,4 @@ class ConfigClass():
         self.pk_defaults = pk_defaults
         self.vis_defaults = vis_defaults
         self.default_table = default_table
+        self.default_values = default_values

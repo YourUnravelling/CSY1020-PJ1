@@ -7,10 +7,10 @@ from datetime import datetime as dt
 from constants import READ_WRITE as RW
 from widgets import DFrame, VCombobox
 import table_viewers as TableViewers
-import record_viewers as RecordViewer
+import record_viewers as RecordViewers
 
 class RecordViewer(DFrame):
-    """A frame which allows viewing of an sqlite table.
+    """A frame which allows viewing of an sqlite table and records in two frames.
     `tablename` The name of the table to be viewed
     `parent` The parent of the frame
     `exe` Function which is called to query the database `(sql,*args)`
@@ -23,8 +23,8 @@ class RecordViewer(DFrame):
         #self.__sm = sm # Private, Pointer to SQLManager class
 
         # Initialising subframes, private
-        self.__records = DFrame(self)
-        self.__viewer = DFrame(self)
+        self.__records = DFrame(self, debug_name="Records")
+        self.__viewer = DFrame(self, debug_name="Viewer")
         self.__records.pack(side="left", expand=True, fill="both")#grid(column=0, row=0, padx=10, pady=10, sticky="nesw")
         self.__viewer.pack(side="right", expand=True, fill="both")#grid(column=1, row=0, padx=10, pady=10, sticky="nesw")
         
@@ -33,18 +33,19 @@ class RecordViewer(DFrame):
         self.__table_view.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
 
         # -- Record viewer
-        self.__record_view = RecordViewers.DefaultRecordViewer(self.__viewer)
-        self.__record_view.pack()
+        self.__record_view = RecordViewers.DefaultRecordViewer(self.__viewer, self.owner.core)
+        self.__record_view.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
 
         self.set_table(tablename)
 
-    def records_selected(self, value):
+    def records_selected(self, pk):
         """
         Called when a record is selected in the table
         """
-        self.__no_record_text.pack_forget()
-        print("A record has been selected,", value)
-        self.set_record(value)
+        #self.__no_record_text.pack_forget()
+        print("A record has been selected,", pk)
+        #self.set_record(value)
+        self.__record_view.set_record(pk=pk)
     
 
     def set_table(self, new_table:str):
@@ -60,6 +61,9 @@ class RecordViewer(DFrame):
 
         self.__table = new_table # Change table variable
 
+        self.__record_view.set_table(new_table)
+
+        return
         # Update the table view
         headings_raw:list[str] = list(head_sch[1] for head_sch in self.owner.sm.schema[self.__table])
         self.__table_view.set_table(
@@ -94,18 +98,19 @@ class RecordViewer(DFrame):
         if False:
             pass # Pack the image to self.__feilds_img_grid, only if the table has an image
 
-        self.__foreigns_frame = DFrame(self)
-        self.__foreigns_frame.pack(fill="both", expand=True)
+        #self.__foreigns_frame = DFrame(self)
+        #self.__foreigns_frame.pack(fill="both", expand=True)
 
-        tk.Button(self.__foreigns_frame).pack() # TODO Placeholder
+        #tk.Button(self.__foreigns_frame).pack() # TODO Placeholder
 
     def get_table(self):
         return self.__table
 
-class FKCreator(): # 
+class RecordCreator(): # 
     """
-    Frame which displays a list of feilds, 
+    Frame which creates a record
     """
+    # TODO Probably delete, handled by the record viewers
     def __init__(self, 
                  columns, 
                  on_confirm, # Function which is called when the thingy is accepted.
