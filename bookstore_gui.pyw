@@ -13,7 +13,7 @@ from tkinter import ttk
 from scrollable_external import ScrollFrame
 from record_viewier import RecordViewer
 #from resources import config as configuration
-from widgets import DFrame, VCombobox
+from widgets import DFrame, DoubleCombobox
 
 ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] # TODO remove
 
@@ -42,30 +42,31 @@ class DBViewer(DFrame):
         self.__content.pack(expand=True, fill="both")
 
         tables_list = list(table for table in self.__sm.schema)
-        #print(config.default_table, self.__sm.schema)
-        self.__table_selector = VCombobox(self.__topbar, 
+        self.__table_selector = DoubleCombobox(self.__topbar, 
                 state="normal", 
-                on_select= self.__table_selected, #lambda e: self.__viewer.set_table(self.__table_selector.get()),
-                values=[tables_list, list(table.capitalize() for table in tables_list)], 
-                use_value_pairs=False, 
-                default_index= tables_list.index(self.__core.config.default_table))
+                on_select= self.__table_selected,
+                raw= tables_list, 
+                display= list(table.capitalize() for table in tables_list), 
+                default= tables_list.index(self.__core.config.default_table))
+
         self.__table_selector.pack(side=tk.LEFT)
 
         self.__view_edit_button = tk.Button(self.__topbar, text="Viewing")
         self.__view_edit_button.pack(side="right")
 
-
-        #self.__sub_content = DFrame(self.__content, width=400)
-
-        #self.__sub_content.pack(fill="y", expand=True)
-        #self.__sub_content.pack_propagate(False) # Ensure correct size
         self.pack(fill="both", expand=True)
 
         self.__viewer = RecordViewer(self, self.__content, "book")
         self.__viewer.pack(fill="both",expand=True)
 
-    def __table_selected(self, table):
-        self.__viewer.set_table(table[1])
+
+    def set_table(self, table):
+        """Sets the table"""
+        self.__table_selector.clear
+        self.__table_selected(table)
+
+    def __table_selected(self, index, tablename):
+        self.__viewer.set_table(tablename)
 
     @property
     def sm(self):

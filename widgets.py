@@ -50,8 +50,6 @@ class VCombobox(ttk.Combobox): # TODO Delete
 
         # TODO Change to primary and secondary values not pk and value lists?
 
-        print("I am being created!")
-
         super().__init__(parent, values=None, **kwargs)
 
         self.update_list(self.__pk_list, self.__value_list)
@@ -61,6 +59,9 @@ class VCombobox(ttk.Combobox): # TODO Delete
 
     def __value_selected(self, val):
         """Called when a value is selected by the user from the list"""
+        if self.get().strip() == "":
+            print("Value is null in combobox")
+            return
         print("The value given was", val)
         if self.current() == -1: 
             raise # TODO Maybe return not raise
@@ -107,6 +108,51 @@ class VCombobox(ttk.Combobox): # TODO Delete
     @index.setter
     def index(self, val:int):
         self.__set_index(val)
+
+class DoubleCombobox(ttk.Combobox):
+    """Combobox which displays different values to the stored ones"""
+
+    def __init__(self, 
+                 master, 
+                 raw:list[str] = [], 
+                 display:list[str] = [], 
+                 default:int = 0, 
+                 creation_call:bool = False, 
+                 on_select = None,
+                 **kwargs
+    ):
+        self.display = display
+        self.raw = raw
+        self.__on_select = on_select
+        super().__init__(master, values=display, **kwargs)
+
+        if self.__on_select:
+            self.bind("<<ComboboxSelected>>", self.__get_and_call)
+
+        self.set_value(default, creation_call)
+
+    def __get_and_call(self, something):
+        index = self.current()
+        self.__call_on_select(index, self.raw[index])
+
+    def __call_on_select(self, index, value):
+        """Calls the on_select function, only if it exists"""
+        if self.__on_select:
+            self.__on_select(index, value)
+
+    # No @property because with_call is needed
+    def set_value(self, index, with_call=False):
+        """Sets the value to an index"""
+        self.delete(0, tk.END)
+        self.insert(0, self.display[index])
+        if with_call:
+            self.__call_on_select()
+    
+    def get_value(self):
+        return self.get()
+    
+    def get_index(self):
+        return self.current()
 
 
 
