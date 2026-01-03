@@ -13,6 +13,8 @@ from pathlib import Path
 #Class imports
 from SQLManager import SQLManager
 
+from resources import config as configuration
+
 DEFAULT_PATH:Path = Path("bookstore.sqlite")
 TABLE_SQLS:list[list[str]] = [ # Used for initial creation only
     ["book", "isbn TEXT PRIMARY KEY, author INTEGER, title TEXT, date_published DATE, genre TEXT, price NUMBER"],
@@ -23,6 +25,7 @@ TABLE_SQLS:list[list[str]] = [ # Used for initial creation only
 
 base_path:Path = DEFAULT_PATH
 sm = SQLManager(base_path)
+config = configuration.c
 
 def rangecalc(value:int|float, max:int|float|None=None, min:int|float|None=None) -> bool:
     """

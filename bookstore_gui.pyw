@@ -11,20 +11,11 @@ from tkinter import ttk
 
 # Class imports
 from scrollable_external import ScrollFrame
-from record_viewier import RecordViewer, DFrame
+from record_viewier import RecordViewer
+#from resources import config as configuration
+from widgets import DFrame, DoubleCombobox
 
 ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] # TODO remove
-
-class ThemeManager():
-    all_widgets:list
-
-    def __init__(self, mode):
-        self.__mode = mode
-        ThemeManager.all_widgets.append(self)
-    
-    @property
-    def mode(self):
-        return self.__mode
 
 class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
     def __init__(self, master):
@@ -37,42 +28,61 @@ class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
         return self.__scrollbar
     # No setter as scrollbar shouldn't be changed
 
-class EntryView(DFrame):
-    def __init__(self, parent, sql_manager, default_table:str|None=None):
+class DBViewer(DFrame):
+    def __init__(self, parent, core):
         super().__init__(parent)
         self.__parent = parent # Private, TODO maybe delete
-        self.__sm = sql_manager # Private, Pointer to an SQLManager instance which executes sql
+        self.__sm = core.sm # Private, Pointer to an SQLManager instance which executes sql
+        self.__core = core
+        self.__config = core.config
 
         self.__topbar = DFrame(self)
         self.__topbar.pack(fill="x", padx=5, pady=5)
         self.__content = DFrame(self)
         self.__content.pack(expand=True, fill="both")
 
-        self.__table_selector = ttk.Combobox(self.__topbar, state="readonly", values=list(table for table in self.__sm.schema))
+        tables_list = list(table for table in self.__sm.schema)
+        self.__table_selector = DoubleCombobox(self.__topbar, 
+                state="normal", 
+                on_select= self.__table_selected,
+                raw= tables_list, 
+                display= list(table.capitalize() for table in tables_list), 
+                default= tables_list.index(self.__core.config.default_table),
+                creation_call = True),
+
         self.__table_selector.pack(side=tk.LEFT)
 
         self.__view_edit_button = tk.Button(self.__topbar, text="Viewing")
         self.__view_edit_button.pack(side="right")
 
-
-        self.__sub_content = DFrame(self.__content, width=400)
-
-        self.__sub_content.pack(fill="y", expand=True)
-        self.__sub_content.pack_propagate(False) # Ensure correct size
         self.pack(fill="both", expand=True)
 
-        self.__viewer = RecordViewer("book", self.__sub_content, sm=self.__sm)
-        self.__viewer.pack(fill="x",)
+        self.__viewer = RecordViewer(self, self.__content, "book")
+        self.__viewer.pack(fill="both",expand=True)
 
-        # Set the table to the contents of the table selector box when it is changed
-        self.__table_selector.bind('<<ComboboxSelected>>', lambda e: self.__viewer.set_table(self.__table_selector.get()), False)
+
+    def set_table(self, table):
+        """Sets the table"""
+        self.__table_selector.clear
+        self.__table_selected(table)
+
+    def __table_selected(self, index, tablename):
+        self.__viewer.set_table(tablename)
+
+    @property
+    def sm(self):
+        return self.__sm
+    
+    @property
+    def core(self):
+        return self.__core
 
 
 w = tk.Tk()
-w.iconphoto(True,tk.PhotoImage(file="icon.png"))
+w.iconphoto(True,tk.PhotoImage(file="resources/icon.png"))
 w.minsize(width=600, height=300)
 
-EntryView(w, core.sm).pack()
+DBViewer(w, core).pack()
 
 def main():
     w.mainloop()

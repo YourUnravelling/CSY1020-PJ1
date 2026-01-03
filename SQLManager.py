@@ -9,19 +9,24 @@ class SQLManager():
     def __init__(self, file_path:Path|str) -> None:
         self.__path = Path(file_path) # Private - Convert given path to a pathlib object
         self.__schema = self.__generate_full_schema()
+        print(self.__schema)
 
-    def exe(self, sql:str, args:tuple=(), ret: Literal["one", "desc", "all"]="one"):
+    def exe(self, sql:str, args:tuple|None=None, ret: Literal["one", "desc", "all"]="one"):
         """
         Executes sql on the database at `__path`, returns a tuple of the returned value and cur.description, or the error if an sql error occurs.
         """
         try:
             with sqlite.connect(self.__path) as conn:
                 cur = conn.cursor() # Create cursor object
-                print("Executing:", sql, args)
+                
                 try:
-                    cur.execute(sql, args) # Execute on cursor object
+                    if args:
+                        cur.execute(sql, args) # Execute on cursor object
+                    else:
+                        cur.execute(sql)
+                    print("Executed:", sql, args)
                 except Exception as e:
-                    print(e)
+                    print(f"FAILED TO EXECUTE: {sql}, {args}", e)
                 if ret == "one":
                     return cur.fetchone()
                 elif ret == "all":
@@ -55,6 +60,11 @@ class SQLManager():
         if type(id) == str: # If the id is a string, format the sql query in quotes
             q = "\"" # TODO Decide if needed
         return self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == {q}{id}{q}")
+
+    def read_full(self, table:str) -> list:
+        """Returns a full list of records from a table"""
+
+        return self.exe(f"SELECT * FROM {table}", None, "all")
 
     def format_dict_as_sql(self, inp:dict):
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""
