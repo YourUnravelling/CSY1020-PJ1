@@ -4,6 +4,8 @@ from tkinter import ttk
 from datetime import datetime as dt
 from numpy.random import choice as nprc
 
+from constants import READ_WRITE as RW
+
 class DFrame(tk.Frame):
     """
     Extension of tk.Frame with an optional debug mode, which randomises the colour within greyscale, for easy debugging frame structure.
@@ -28,6 +30,17 @@ class DFrame(tk.Frame):
         else:
             print("No debug name provided for this frame, location: " + str(self), end=" | ")
         print("Owner class is " + str(self.__class__.__name__))
+
+class ScrollFrameOld(tk.Canvas): # TODO delete
+    def __init__(self, master):
+        super().__init__(master=master)
+        self.__scrollbar = ttk.Scrollbar(self)
+        self.__scrollbar.pack(side="right")
+
+    @property # scrollbar getter
+    def scrollbar(self):
+        return self.__scrollbar
+    # No setter as scrollbar shouldn't be changed
 
 class VCombobox(ttk.Combobox): # TODO Delete
     """

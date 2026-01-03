@@ -17,17 +17,6 @@ from widgets import DFrame, DoubleCombobox
 
 ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] # TODO remove
 
-class ScrollFrameOld(tk.Canvas): # TODO delet/move to own file
-    def __init__(self, master):
-        super().__init__(master=master)
-        self.__scrollbar = ttk.Scrollbar(self)
-        self.__scrollbar.pack(side="right")
-
-    @property # scrollbar getter
-    def scrollbar(self):
-        return self.__scrollbar
-    # No setter as scrollbar shouldn't be changed
-
 class DBViewer(DFrame):
     def __init__(self, parent, core):
         super().__init__(parent)
@@ -48,7 +37,7 @@ class DBViewer(DFrame):
                 raw= tables_list, 
                 display= list(table.capitalize() for table in tables_list), 
                 default= tables_list.index(self.__core.config.default_table),
-                creation_call = True),
+                creation_call = True)
 
         self.__table_selector.pack(side=tk.LEFT)
 
@@ -63,7 +52,6 @@ class DBViewer(DFrame):
 
     def set_table(self, table):
         """Sets the table"""
-        self.__table_selector.clear
         self.__table_selected(table)
 
     def __table_selected(self, index, tablename):
