@@ -155,12 +155,15 @@ class RecordViewer(DFrame):
         self.__meta_bar.columnconfigure(1, weight=2)
         
         self.__meta_feild_selector = ttk.Combobox(self.__meta_bar, values=list((col[1]) for col in (self.__sm.schema[self.__table])), state="readonly", ) # type: ignore
-        self.__meta_feild_selector.bind('<<ComboboxSelected>>', lambda e: self.display_record(), False) # Why the hell does adding and e fix the overload problem
         self.__meta_feild_selector.grid(row=0, column=0)
 
         
         self.__record_selector = ttk.Combobox(self.__meta_bar)
         self.__record_selector.grid(row=1, column=0)
+
+        self.__meta_feild_selector.bind('<<ComboboxSelected>>', lambda e: self.display_record(self.__record_selector.get()), False) # Why the hell does adding and e fix the overload problem
+        self.__record_selector.bind('<<ComboboxSelected>>', lambda e: self.display_record(self.__record_selector.get()), False) # Why the hell does adding and e fix the overload problem
+
 
         self.__rename = ttk.Button(self.__meta_bar, text="Rename")
         self.__delete = ttk.Button(self.__meta_bar, text="Delete")
@@ -176,7 +179,7 @@ class RecordViewer(DFrame):
             pass # Pack the image to self.__feilds_img_grid, only if the table has an image
         self.__foreigns_frame = DFrame(self)
         self.__foreigns_frame.pack(fill="both", expand=True)
-        tk.Button(self.__foreigns_frame).pack()
+        tk.Label(self.__foreigns_frame, text= "this is where i'd put the foreign keys.. IF I HAD ANY").pack()
 
     
     def set_table(self, new_table:str):
@@ -196,7 +199,24 @@ class RecordViewer(DFrame):
     def get_table(self):
         return self.__table
 
-    def display_record(self, id): # TODO remove handled itself I think
+    def display_record(self, pk_column_name:str="DEFAULT", id:str|int="DEFAULT"):
         """
         Displays a new record with the id as uid
         """
+
+        # Set params to contents of the comboboxes
+        if pk_column_name == "DEFAULT":
+            pk_column_name = self.__meta_feild_selector.get()
+        if id == "DEFAULT":
+            id = self.__record_selector.get()
+        
+        # Case for if either of the thingies is empty
+        if not pk_column_name.strip():
+            "Select a column to view a record" # TODO display error thingy
+        if type(id) == str:
+            if id.strip == "":
+                "Select a key to view a record"
+        
+        if len(self.__sm.read(self.__table, id, pk_column_name)) == 0:
+            pass
+        
