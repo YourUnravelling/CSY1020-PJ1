@@ -146,7 +146,7 @@ class DoubleCombobox(ttk.Combobox):
         self.delete(0, tk.END)
         self.insert(0, self.display[index])
         if with_call:
-            self.__call_on_select()
+            self.__call_on_select(index, self.raw[index])
     
     def get_value(self):
         return self.get()

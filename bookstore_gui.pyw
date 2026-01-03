@@ -47,7 +47,8 @@ class DBViewer(DFrame):
                 on_select= self.__table_selected,
                 raw= tables_list, 
                 display= list(table.capitalize() for table in tables_list), 
-                default= tables_list.index(self.__core.config.default_table))
+                default= tables_list.index(self.__core.config.default_table),
+                creation_call = True),
 
         self.__table_selector.pack(side=tk.LEFT)
 
