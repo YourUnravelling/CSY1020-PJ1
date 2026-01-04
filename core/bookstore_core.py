@@ -11,7 +11,7 @@ import pickle as pik
 from pathlib import Path
 
 #Class imports
-from SQLManager import SQLManager
+from core.SQLManager import SQLManager
 
 from resources import config as configuration
 

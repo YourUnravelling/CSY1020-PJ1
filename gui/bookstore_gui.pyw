@@ -4,13 +4,13 @@ Autumn Hickinbotham - 12/25
 '''
 
 # Lib imports
-import bookstore_core as core
+import core.bookstore_core as core
 import sys
 import tkinter as tk
 from tkinter import ttk
 
 # Class imports
-from scrollable_external import ScrollFrame
+from external.scrollable_external import ScrollFrame
 from record_viewier import RecordViewer
 #from resources import config as configuration
 from widgets import DFrame, DoubleCombobox

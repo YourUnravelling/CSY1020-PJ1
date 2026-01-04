@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from widgets import DFrame
+from gui.widgets import DFrame
 
 class BaseTableViewer():
     def __init__(self, parent):

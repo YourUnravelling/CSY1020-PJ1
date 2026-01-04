@@ -4,7 +4,7 @@ from tkinter import ttk
 from datetime import datetime as dt
 from numpy.random import choice as nprc
 
-from constants import READ_WRITE as RW
+from core.constants import READ_WRITE as RW
 
 class DFrame(tk.Frame):
     """

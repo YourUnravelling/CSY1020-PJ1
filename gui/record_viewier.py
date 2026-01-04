@@ -4,10 +4,10 @@ from typing import Literal
 #import typing
 from datetime import datetime as dt
 
-from constants import READ_WRITE as RW
-from widgets import DFrame, VCombobox
-import table_viewers as TableViewers
-import record_viewers as RecordViewers
+from core.constants import READ_WRITE as RW
+from gui.widgets import DFrame, VCombobox
+import gui.table_viewers as TableViewers
+import gui.record_viewers as RecordViewers
 
 class RecordViewer(DFrame):
     """A frame which allows viewing of an sqlite table and records in two frames.

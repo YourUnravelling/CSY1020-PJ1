@@ -5,7 +5,7 @@ Unlike the table_viewers, these frames aren't self contained and need to have a 
 import tkinter as tk
 from tkinter import ttk
 
-from widgets import DFrame, FeildsGrid
+from gui.widgets import DFrame, FeildsGrid
 
 class BaseRecordViewer():
     pass
