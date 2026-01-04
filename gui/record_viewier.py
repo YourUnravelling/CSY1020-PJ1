@@ -1,3 +1,7 @@
+"""
+Hate. I hate hate hate hate this file, if the word hate was written on every cell wall, dna strand, unwelcome virus and unknown metal object in my body it would not even equal one billionth of the hate I feel for you in this nanosecond, for you. Stupid useless middle-file. Hate. Hate.
+"""
+
 import tkinter as tk
 from tkinter import ttk
 from typing import Literal
