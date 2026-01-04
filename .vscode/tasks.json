@@ -6,7 +6,7 @@
       "type": "shell",
       "command": "${config:python.defaultInterpreterPath}",
       "args": [
-        "C:\\Users\\Connel\\OneDrive - The University of Northampton\\Software Engineering Bsc\\Assignments\\CSY1020-PJ1\\Repository\\bookstore_gui.pyw"
+        "C:\\Users\\Connel\\OneDrive - The University of Northampton\\Software Engineering Bsc\\Assignments\\CSY1020-PJ1\\Repository\\main.pyw"
       ],
       "presentation": {
         "echo": true,

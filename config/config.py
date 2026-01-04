@@ -4,7 +4,7 @@ All variables spesific to the database, including the schema, and functions
 # TODO Decide if this should be a class that is instanciated to defaultise var names, would make functions more complex?
 # Or just a regular file with spesific var names
 
-from config_class import ConfigClass
+from core.config_class import ConfigClass
 
 table_sqls = {
     "tables": [

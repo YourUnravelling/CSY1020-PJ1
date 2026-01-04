@@ -13,7 +13,7 @@ from pathlib import Path
 #Class imports
 from core.SQLManager import SQLManager
 
-from resources import config as configuration
+from config import config as configuration
 
 DEFAULT_PATH:Path = Path("bookstore.sqlite")
 TABLE_SQLS:list[list[str]] = [ # Used for initial creation only
