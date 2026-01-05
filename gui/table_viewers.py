@@ -12,7 +12,7 @@ class BaseTableViewer():
         raise NotImplementedError
 
 
-class TreeTableViewer(BaseTableViewer, ttk.Treeview):
+class TreeTableViewer(ttk.Treeview):
     WIDTH = 5
     MINWIDTH = 5
 

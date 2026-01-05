@@ -64,7 +64,7 @@ class SQLManager():
     def read_full(self, table:str) -> list:
         """Returns a full list of records from a table"""
 
-        return self.exe(f"SELECT * FROM {table}", None, "all")
+        return self.exe(f"SELECT * FROM {table}", None, "all") # type: ignore
 
     def format_dict_as_sql(self, inp:dict):
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""

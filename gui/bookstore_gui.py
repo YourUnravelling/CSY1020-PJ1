@@ -15,7 +15,37 @@ from record_viewier import RecordViewer
 #from resources import config as configuration
 from widgets import DFrame, DoubleCombobox
 
-ANIMAL_TABLE = [["id","name", "Test bool", "Bool 2"],["INTEGER","TEXT", "BOOL", "BOOL"]] # TODO remove
+class MainLayout(DFrame):
+    """
+    TODO
+    """
+    def __init__(self, master, core) -> None:
+        super().__init__(master)
+        self.__core = core # Private, pointer to core
+
+        self.__topbar = DFrame(self)
+        self.__topbar.pack(fill="x", padx=5, pady=5)
+        self.__content = DFrame(self)
+        self.__content.pack(expand=True, fill="both")
+
+
+
+
+
+
+        
+
+        # self.__table_select = panels.TableSelectButtons(self.__topbar)
+        # self.__table_select.pack()
+
+        # self.__record_select = panels.RecordSelectGrid(self.__topbar)
+        # self.__record_select.pack()
+
+        # self.__record_view = panels.RecordGrid(self.)
+
+    @property
+    def core(self):
+        return self.__core
 
 class DBViewer(DFrame):
     def __init__(self, parent, core):

@@ -168,7 +168,6 @@ class DoubleCombobox(ttk.Combobox):
         return self.current()
 
 
-
 class BaseFeild(DFrame):
     """
     A frame which has its w/r changed by mode()

@@ -2,5 +2,9 @@
     "cSpell.words": [
         "Hickinbotham"
     ],
-    "python.analysis.typeCheckingMode": "standard"
+    "python.analysis.typeCheckingMode": "standard",
+    "launch": {
+        "configurations": [],
+        "compounds": []
+    }
 }
