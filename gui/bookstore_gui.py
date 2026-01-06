@@ -32,8 +32,9 @@ class MainLayout(DFrame):
         self.__content.pack(expand=True, fill="both")
 
 
+        self.__sidebar_image = tk.PhotoImage(file="resources/sidebar_image.png")
+        tk.Label(self.__sidebar, text="test", image=self.__sidebar_image).pack()
 
-        tk.Label(self.__sidebar, image=tk.PhotoImage(file="resources/sidebar_image.png")).pack()
 
         self.__table_select = panels.TableSelectButtons(self.__sidebar)
         self.__table_select.pack(side="right", expand=True, fill="y")
