@@ -28,9 +28,10 @@ class MainLayout(DFrame):
         self.__sidebar.pack(side=tk.LEFT, fill=tk.Y)
         self.__topbar = DFrame(self, "top bar")
         self.__topbar.pack(fill="x", padx=5, pady=5)
-        self.__content = DFrame(self, "content")
-        self.__content.pack(expand=True, fill="both")
-
+        #self.__content = DFrame(self, "content")
+        #self.__content.pack(expand=True, fill="both")
+        self.__right_sidebar = DFrame(self, "sidebar")
+        self.__right_sidebar.pack(side="right", fill="y")
 
         self.__sidebar_image = tk.PhotoImage(file="resources/sidebar_image.png")
         tk.Label(self.__sidebar, text="test", image=self.__sidebar_image).pack()
@@ -39,15 +40,20 @@ class MainLayout(DFrame):
         self.__table_select = panels.TableSelectButtons(self.__sidebar)
         self.__table_select.pack(side="right", expand=True, fill="y")
 
+        self.__record_select = panels.RecordSelectTree(self)
+        self.__record_select.pack(side="top", fill="both", expand=True)
 
-        self.__record = panels.RecordScroll(self.__content)
+        self.__record = panels.RecordScroll(self.__right_sidebar)
         self.__record.pack(side="right", fill="y", expand=True)
 
-        self.__record_select = panels.RecordSelectTree(self.__content)
-        self.__record_select.pack(side=tk.LEFT, fill="both", expand=True)
 
 
-        self.__table_select.set_object(object={"table" : "null"})
+
+
+        self.__table_select.add_bind(self.__record_select.set_object)
+        self.__record_select.add_bind(self.__record.set_object)
+
+        self.__table_select.set_object(object={}, force=True)
 
 
     @property

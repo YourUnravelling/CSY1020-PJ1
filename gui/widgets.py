@@ -31,6 +31,12 @@ class DFrame(tk.Frame):
             print("No debug name provided for this frame, location: " + str(self), end=" | ")
         print("Owner class is " + str(self.__class__.__name__))
 
+class BgButton(ttk.Button): # To delete?
+
+    def __init__(self, master=None, cnf={}, **kw):
+        super().__init__(master, cnf, **kw) # type: ignore
+        #self.config(background=master.)
+
 class ScrollFrameOld(tk.Canvas): # TODO delete
     def __init__(self, master):
         super().__init__(master=master)
@@ -352,6 +358,9 @@ class TreeviewTable(ttk.Treeview):
 
     def set_table(self, table:str, headings:list[str], headingsdisplay:list[str], table_data:list[list]): # TODO Seperate into set_headings and set_data? 
         
+        self.delete(*self.get_children())
+        #ttk.Button(self, text="test").grid(column=1)
+
         headings_no_pk = headings[1:len(headings)]
         headings_display_no_pk = headingsdisplay[1:len(headingsdisplay)]
 
@@ -366,6 +375,7 @@ class TreeviewTable(ttk.Treeview):
 
         self.bind("<<TreeviewSelect>>", self.__record_selected)
 
+        self.insert(parent="", index="end", iid="__null", text="null", values=[])
         for i, record in enumerate(table_data):
             self.insert(
                     parent = "",
