@@ -11,9 +11,10 @@ from tkinter import ttk
 
 # Class imports
 from external.scrollable_external import ScrollFrame
-from record_viewier import RecordViewer
+#from record_viewier import RecordViewer
 #from resources import config as configuration
-from widgets import DFrame, DoubleCombobox
+from gui.widgets import DFrame, DoubleCombobox
+from gui import panels
 
 class MainLayout(DFrame):
     """
@@ -23,25 +24,30 @@ class MainLayout(DFrame):
         super().__init__(master)
         self.__core = core # Private, pointer to core
 
-        self.__topbar = DFrame(self)
+        self.__sidebar = DFrame(self, "sidebar")
+        self.__sidebar.pack(side=tk.LEFT, fill=tk.Y)
+        self.__topbar = DFrame(self, "top bar")
         self.__topbar.pack(fill="x", padx=5, pady=5)
-        self.__content = DFrame(self)
+        self.__content = DFrame(self, "content")
         self.__content.pack(expand=True, fill="both")
 
 
 
+        tk.Label(self.__sidebar, image=tk.PhotoImage(file="resources/sidebar_image.png")).pack()
+
+        self.__table_select = panels.TableSelectButtons(self.__sidebar)
+        self.__table_select.pack(side="right", expand=True, fill="y")
 
 
+        self.__record = panels.RecordScroll(self.__content)
+        self.__record.pack(side="right", fill="y", expand=True)
 
-        
+        self.__record_select = panels.RecordSelectTree(self.__content)
+        self.__record_select.pack(side=tk.LEFT, fill="both", expand=True)
 
-        # self.__table_select = panels.TableSelectButtons(self.__topbar)
-        # self.__table_select.pack()
 
-        # self.__record_select = panels.RecordSelectGrid(self.__topbar)
-        # self.__record_select.pack()
+        self.__table_select.set_object(object={"table" : "null"})
 
-        # self.__record_view = panels.RecordGrid(self.)
 
     @property
     def core(self):
@@ -100,11 +106,8 @@ w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="resources/icon.png"))
 w.minsize(width=600, height=300)
 
-DBViewer(w, core).pack()
+#DBViewer(w, core).pack()
+MainLayout(w, core).pack(expand=True, fill="both")
 
 def main():
     w.mainloop()
-
-if __name__ == "__main__":
-    main()
-    sys.exit()

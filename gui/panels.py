@@ -7,13 +7,28 @@ Description - Description of the instance of the object
 """
 from tkinter import ttk
 
-from widgets import DFrame, FeildsGrid, TreeviewTable
-import base_panels as bp
+from core import bookstore_core as core
+from gui.widgets import DFrame, FeildsGrid, TreeviewTable
+import gui.base_panels as bp
 
-class TableTree(bp.BindablePanel):
+class TableSelectButtons(bp.BindablePanel):
+
+    def __init__(self, master):
+        super().__init__(master, core, debug_name="TableSelectButtons")
+
+    def _set_object_spesific(self):
+        """
+        Just initialises the tables, paramiter does nothing.
+        """
+        tables = core.sm.schema.keys()
+        for table in tables:
+            ttk.Button(self, text=table).pack(pady=5, padx=5)
+
+
+class RecordSelectTree(bp.BindablePanel):
     
-    def __init__(self, master, core):
-        super().__init__(master, core, debug_name="TableTree")
+    def __init__(self, master):
+        super().__init__(master, core, debug_name="RecordSelectTree")
 
         self.__treeview = TreeviewTable(self, self.__record_selected)
 
@@ -22,7 +37,7 @@ class TableTree(bp.BindablePanel):
         self._core.sm
         self.__treeview.set_table(
                 table,
-                self._core.sm.schema,
+                self._core.sm.schema[table],
                 self._core.config,
                 []
                 )
@@ -33,12 +48,12 @@ class TableTree(bp.BindablePanel):
         """
 
 
-class FeildScroll(bp.BasePanel):
-    def __init__(self, master, core):
+class RecordScroll(bp.BasePanel):
+    def __init__(self, master):
         self.__core = core
         self.__table = ""
 
-        super().__init__(master, core, debug_name="Default record viewer")
+        super().__init__(master, core, debug_name="RecordScroll")
 
         # Private, Highest bar, for the controls
         self.__top_bar = DFrame(self, debug_name="Top bar") 

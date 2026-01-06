@@ -5,17 +5,17 @@ class BasePanel(DFrame):
     """
     Docstring for BasePanel
     """
-    def __init__(self, master, core, debug_name: str | None = None, cnf=..., **kw):
+    def __init__(self, master, core, debug_name: str | None = None, cnf={}, **kw):
         super().__init__(master, debug_name, cnf, **kw)
-        self._core = core # Prot, a pointer to core
+        self._core = core # Protected, a pointer to core
 
-        self._object:dict
+        self._object:dict = {}
     
-    def set_object(self, **kwargs):
-        keys = kwargs.keys()
+    def set_object(self, object:dict):
+        keys = object.keys()
 
         for key in keys:
-            self._object[key] = kwargs[key]
+            self._object[key] = object[key]
         
         self._set_object_spesific()
 
@@ -27,8 +27,8 @@ class BindablePanel(BasePanel):
     """
     Panel which can have its selected object bound to one or more methods
     """
-    def __init__(self, master, core, debug_name: str | None = None, cnf=..., **kw):
-        super().__init__(master, debug_name, core, cnf, **kw)
+    def __init__(self, master, core, debug_name: str | None = None, cnf={}, **kw):
+        super().__init__(master, core, debug_name, cnf, **kw)
         self.__binds = [] # Private, list of binds to be called when selected object is updated.
 
     def add_bind(self, bind_callable):
