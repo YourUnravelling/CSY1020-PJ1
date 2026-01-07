@@ -5,6 +5,7 @@ Table/Record/Feild - Object
 Selector/NA - If selector, allows the user to select one of the objects from parent object
 Description - Description of the instance of the object
 """
+import tkinter as tk
 from tkinter import ttk
 
 from core import bookstore_core as core
@@ -71,8 +72,6 @@ class RecordSelectTree(bp.BindablePanel):
 
 class RecordScroll(bp.BasePanel):
     def __init__(self, master):
-        #self.__core = core
-        #self.__table = ""
 
         super().__init__(master, core, debug_name="RecordScroll")
 
@@ -105,8 +104,9 @@ class RecordScroll(bp.BasePanel):
         self.__feilds.grid(column=0, row=0)
 
         # Image
-        if False:
-            pass
+        self.__imagevar = tk.PhotoImage(file="resources/sidebar_image.png") # TODO
+        self.__image = ttk.Label(self.__feilds_img_grid, image=self.__imagevar)
+        self.__image.grid(column=1, row=0)
 
         self.__foreigns_frame = DFrame(self, debug_name="Foreigns frame")
         self.__foreigns_frame.pack()
@@ -117,7 +117,7 @@ class RecordScroll(bp.BasePanel):
 
         column_types = list(col[2] for col in core.sm.schema[table])
         default_values = core.config.default_values[table]
-        column_names = list(col[0] for col in core.sm.schema[table])
+        column_names = list(col[1] for col in core.sm.schema[table])
 
         self.__feilds.set_feilds(column_types, default_values, column_names)
 
@@ -128,6 +128,13 @@ class RecordScroll(bp.BasePanel):
         self.__feilds.set_values(record_values)
 
     def _set_object_spesific(self) -> None:
+        try:
+            if self._object["table"] == None or self._object["record"] == None:
+                self.__no_record_text.pack_forget()
+            else:
+                self.__no_record_text.pack_forget()
+        except: pass
         self.set_table(self._object["table"])
         self.set_record(self._object["record"])
+        print("Record scroll thingy is being updated!", self._object["table"],self._object["record"])
 
