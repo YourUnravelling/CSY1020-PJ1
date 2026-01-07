@@ -259,25 +259,17 @@ class FeildsGrid(DFrame):
             bool : Text, # TODO TODO CANGE TO blob
         }
     
-
     # TODO Maybe map the sql types to their python types, then python types to subclasses instead
     # TODO Add a "lock" system that locks one feild to the value of another until it's unlocked, eg Name and PreferredName stay the same by default
 
-    def __init__(self, 
-                 parent, # The parent widget
-                 #feild_types:list,
-                 #feild_defaults:list, # List of Nones for no default or var
-                 mode:RW|list = "read"
-                 ):
+    def __init__(self, parent, mode:RW|list = "read"):
         super().__init__(parent)
 
         self.__labels:list = [] # Private, list of column name label widgets
         self.__widgets:list = [] # Private, list of value/feild __widgets
         self.__values:list # Private, keeps track of the values, updated when feilds are updated
 
-
-        #self.set_feilds(feild_types, feild_defaults)
-        #self.set_mode(mode)
+        self.columnconfigure(index=1,pad=5)
     
     def set_feilds(self, feild_types, feild_defaults, feild_names):
         """Sets the feilds and sets them to defaults"""
@@ -296,7 +288,7 @@ class FeildsGrid(DFrame):
             tk.Label(self, text=feild_names[i]).grid(row=i, column=0, sticky="w")
 
             # Create a pointer to the read/write widget matching the field type
-            pointer_to_class = FeildsGrid.TYPE_CLASSES["TEXT"] # TODO To others except text
+            pointer_to_class = FeildsGrid.TYPE_CLASSES[feild_types[i]] # TODO To others except text
 
             type_class_instance = pointer_to_class(self, initial_mode="read", value=feild_defaults[i])
             self.__widgets.append(type_class_instance)
@@ -317,7 +309,7 @@ class FeildsGrid(DFrame):
                 if mode[i] in ("read", "write"): # Only change if the mode is read or write
                     self.__widgets[i].mode(mode[i])
         
-        else: # mode is a single str literal
+        else: # If mode is a single str literal
             # Set each widget's mode to the value of the literal
             for widget in self.__widgets:
                 widget.mode(mode)
@@ -339,16 +331,16 @@ class FeildsGrid(DFrame):
         return self.__values
     
     def set_values(self, values:list):
-        for widget, i in enumerate(self.__widgets):
-            widget.set_value(values[i])
+        for i in range(len(self.__widgets)):
+            self.__widgets[i].set_value(values[i])
 
 
 class TreeviewTable(ttk.Treeview):
     """
     A treeview that displays a table
     """
-    WIDTH = 5
-    MINWIDTH = 5
+    WIDTH = 100
+    MINWIDTH = 50
 
     def __init__(self, parent, on_select):
         #BaseTableViewer.__init__(self, parent)

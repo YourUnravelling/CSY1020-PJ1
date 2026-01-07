@@ -22,7 +22,7 @@ class TableSelectButtons(bp.BindablePanel):
         """
         tables = core.sm.schema.keys()
         for table in tables:
-            ttk.Button(self, text=table, command= lambda self=self, table=table: self.__table_button_clicked(table)).pack(pady=5, padx=5)
+            ttk.Button(self, text=table, width=30, command= lambda table=table: self.__table_button_clicked(table)).pack(pady=3, padx=5, ipady=3)
         
     def __table_button_clicked(self, table:str):
         self._call_binds({"table":table})
