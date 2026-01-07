@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 
-from widgets import DFrame
+from gui.widgets import DFrame
 from core.constants import READ_WRITE as RW
 
 
 
-class BaseFeild(DFrame):
+class BaseField(DFrame):
     """
     A frame which has its w/r changed by mode()
     """
@@ -45,9 +45,9 @@ class BaseFeild(DFrame):
         raise NotImplementedError
 
 
-class Text(BaseFeild):
+class Text(BaseField):
     """
-    Viewer for the TEXT type, used in FeildsGrid
+    Viewer for the TEXT type, used in FieldsGrid
     """
     def __init__(self, parent, initial_mode:RW="read", value = "ERROR"):
         super().__init__(parent, initial_mode=initial_mode)

@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from core import bookstore_core as core
-from gui.widgets import DFrame, FeildsGrid, TreeviewTable
+from gui.widgets import DFrame, FieldsGrid, TreeviewTable
 import gui.base_panels as bp
 
 class TableSelectButtons(bp.BindablePanel):
@@ -100,7 +100,7 @@ class RecordScroll(bp.BasePanel):
         self.__feilds_img_grid = DFrame(self.__record_frame, debug_name="Feilds img grid")
         self.__feilds_img_grid.pack()
 
-        self.__feilds = FeildsGrid(self.__feilds_img_grid)
+        self.__feilds = FieldsGrid(self.__feilds_img_grid)
         self.__feilds.grid(column=0, row=0)
 
         # Image

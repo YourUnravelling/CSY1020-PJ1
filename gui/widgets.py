@@ -5,7 +5,7 @@ from datetime import datetime as dt
 from numpy.random import choice as nprc
 
 from core.constants import READ_WRITE as RW
-import fields
+import gui.fields as f
 
 class DFrame(tk.Frame):
     """
@@ -175,7 +175,7 @@ class DoubleCombobox(ttk.Combobox):
         return self.current()
 
 
-class FeildsGrid(DFrame):
+class FieldsGrid(DFrame):
     """A frame allowing the editing of a list of various types
 
     """
