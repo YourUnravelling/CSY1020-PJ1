@@ -9,7 +9,8 @@ import tkinter as tk
 from tkinter import ttk
 
 from core import bookstore_core as core
-from gui.widgets import DFrame, FieldsGrid, TreeviewTable
+from gui.widgets import DFrame, TreeviewTable
+from gui.fields_grid import FieldsGrid
 import gui.base_panels as bp
 
 class TableSelectButtons(bp.BindablePanel):

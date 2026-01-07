@@ -1,3 +1,7 @@
+"""
+Field classes for the FieldsGrid widget
+"""
+
 import tkinter as tk
 from tkinter import ttk
 
