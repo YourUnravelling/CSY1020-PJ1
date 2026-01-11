@@ -25,26 +25,32 @@ class BasePanel(DFrame):
         :type force: bool
         """
         keys = object.keys()
-        #old_object = dict(self._object) # Use constructor to create a copy, otherwise it would just pass the reference
-        objects_to_update:set
-
+        objects_to_update:set = set()
         
         for key in keys:
-            if _object[key] == object[key]: # If old object key value matches new object key value
+            # If the key isn't already present in object property, add it to avoid errors
+            if not key in self._object.keys():
+                self._object[key] = object[key]
+                objects_to_update.add(key) # Also add to updated objs because adding the object is updating it
+                continue
+
+            # If old object key value matches new object key value
+            if self._object[key] != object[key]: 
                 self._object[key] = object[key] # Update object value to have the new object value
                 objects_to_update.add(key)
-
-
         
+        if force: # If force is true set everything to updated
+            for key in keys:
+                objects_to_update.add(key)
+            print("Update being forced,", keys, objects_to_update)
 
-        
-        if (old_object != self._object) or force:
-            self._set_object_spesific()
+        if objects_to_update or force: # Needs an or force here because of table selectors
+            self._set_object_spesific(objects_to_update)
         else:
             print("The object was not changed")
 
 
-    def _set_object_spesific(self, objects_to_update:set[str]) -> None:
+    def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
         """
         Takes objects that are updated?
         """

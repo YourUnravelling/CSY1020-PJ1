@@ -18,7 +18,7 @@ class TableSelectButtons(bp.BindablePanel):
     def __init__(self, master):
         super().__init__(master, core, debug_name="TableSelectButtons")
 
-    def _set_object_spesific(self):
+    def _set_object_spesific(self, updated_objects:set[str]) -> None:
         """
         Just initialises the tables, doesn't read object param.
         """
@@ -44,7 +44,7 @@ class RecordSelectTree(bp.BindablePanel):
             item.pack(padx=5, side="left")
 
 
-    def _set_object_spesific(self) -> None:
+    def _set_object_spesific(self, updated_objects:set[str]) -> None:
         #self.__treeview.pack_forget()
         if not self.__treeview.winfo_ismapped(): # If widgets are not visible, pack it
             self.__top_bar.pack(fill="x", ipady=5)
@@ -114,7 +114,6 @@ class RecordScroll(bp.BasePanel):
 
     def set_table(self, table:str):
         """Sets the types of the feilds"""
-        self.__table = table
 
         column_types = list(col[2] for col in core.sm.schema[table])
         default_values = core.config.default_values[table] # This is called default values but really should just be values MAYBE DISREG
@@ -125,19 +124,24 @@ class RecordScroll(bp.BasePanel):
     def set_record(self, pk:str):
         """Sets the current displayed record to pk"""
 
-        record_values = core.sm.read(self.__table, pk, "isbn") #TODO generalise isbn
+        record_values = core.sm.read(self._object["table"], pk, "isbn") #TODO generalise isbn
         #print("Record values are", record_values)
         self.__feilds.set_values(record_values)
 
-    def _set_object_spesific(self) -> None: # Params here which tell this function which ones updated
+    def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
+
+        # Case to get rid of the no record selected text
         try:
             if self._object["table"] == None or self._object["record"] == None:
                 self.__no_record_text.pack_forget()
             else:
                 self.__no_record_text.pack_forget()
         except: pass
-        if True: # TODO If tbale is not what it already was
-            self.set_table(self._object["table"])
-        self.set_record(self._object["record"])
-        print("Record scroll thingy is being updated!", self._object["table"],self._object["record"])
 
+        if "table" in updated_objects: # TODO If table is not what it already was
+            self.set_table(self._object["table"])
+        if "record" in updated_objects:
+            self.set_record(self._object["record"])
+
+        self.__feilds.set_mode("read")
+        print("Record scroll thingy is being updated!", self._object["table"],self._object["record"], updated_objects, self._object)

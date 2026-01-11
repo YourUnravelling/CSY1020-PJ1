@@ -4,11 +4,13 @@ Fields grid widget, this needs to be in another file to widgets.py to avoid a ci
 
 import tkinter as tk
 from tkinter import ttk
+from datetime import datetime as dt
 
+from core.constants import READ_WRITE as RW
 from gui.widgets import DFrame
 import gui.fields as f
 
-from datetime import datetime as dt
+
 
 class FieldsGrid(DFrame):
     """A frame allowing the editing of a list of various types
@@ -45,6 +47,7 @@ class FieldsGrid(DFrame):
     
     def set_feilds(self, feild_types, feild_defaults, feild_names):
         """Sets the feilds and sets them to defaults"""
+        print("Feildname: Feilds are being set to", feild_names, feild_defaults, feild_types)
         assert len(feild_defaults) == len(feild_types)
 
         # Ungrid all existing items in widgets and labels
@@ -71,8 +74,8 @@ class FieldsGrid(DFrame):
     def set_mode(self, mode:RW|list):
         """
         Sets the read/write mode of the widgets, either by accepting a mask list of read/write/None or a str literal.
+        This must be called to actually display the value widgets
         """
-
         if mode is list:
             assert len(mode) == len(self.__widgets)
 
@@ -80,6 +83,9 @@ class FieldsGrid(DFrame):
             for i in range(len(mode)):
                 if mode[i] in ("read", "write"): # Only change if the mode is read or write
                     self.__widgets[i].mode(mode[i])
+                else:
+                    print("Mode is not read or write", mode)
+                    raise
         
         else: # If mode is a single str literal
             # Set each widget's mode to the value of the literal
@@ -104,8 +110,9 @@ class FieldsGrid(DFrame):
     
     def set_values(self, values:list):
 
-        assert len(self.__widgets) == len(values)
+        if not len(self.__widgets) == len(values):
+            print("Length is not the same", self.__widgets, values)
+            raise
 
         for i in range(len(self.__widgets)):
             self.__widgets[i].set_value(values[i])
-            #self.__widgets[i].set_value("values[i]")
