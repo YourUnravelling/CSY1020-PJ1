@@ -117,7 +117,7 @@ class RecordScroll(bp.BasePanel):
         self.__table = table
 
         column_types = list(col[2] for col in core.sm.schema[table])
-        default_values = core.config.default_values[table]
+        default_values = core.config.default_values[table] # This is called default values but really should just be values MAYBE DISREG
         column_names = list(col[1] for col in core.sm.schema[table])
 
         self.__feilds.set_feilds(column_types, default_values, column_names)
@@ -126,16 +126,18 @@ class RecordScroll(bp.BasePanel):
         """Sets the current displayed record to pk"""
 
         record_values = core.sm.read(self.__table, pk, "isbn") #TODO generalise isbn
+        #print("Record values are", record_values)
         self.__feilds.set_values(record_values)
 
-    def _set_object_spesific(self) -> None:
+    def _set_object_spesific(self) -> None: # Params here which tell this function which ones updated
         try:
             if self._object["table"] == None or self._object["record"] == None:
                 self.__no_record_text.pack_forget()
             else:
                 self.__no_record_text.pack_forget()
         except: pass
-        self.set_table(self._object["table"])
+        if True: # TODO If tbale is not what it already was
+            self.set_table(self._object["table"])
         self.set_record(self._object["record"])
         print("Record scroll thingy is being updated!", self._object["table"],self._object["record"])
 

@@ -1,3 +1,7 @@
+"""
+The base classes for the panels
+"""
+
 from gui.widgets import DFrame
 
 
@@ -21,10 +25,17 @@ class BasePanel(DFrame):
         :type force: bool
         """
         keys = object.keys()
+        #old_object = dict(self._object) # Use constructor to create a copy, otherwise it would just pass the reference
+        objects_to_update:set
 
-        old_object = dict(self._object) # Use constructor to create a copy
+        
         for key in keys:
-            self._object[key] = object[key]
+            if _object[key] == object[key]: # If old object key value matches new object key value
+                self._object[key] = object[key] # Update object value to have the new object value
+                objects_to_update.add(key)
+
+
+        
 
         
         if (old_object != self._object) or force:
@@ -33,7 +44,10 @@ class BasePanel(DFrame):
             print("The object was not changed")
 
 
-    def _set_object_spesific(self) -> None:
+    def _set_object_spesific(self, objects_to_update:set[str]) -> None:
+        """
+        Takes objects that are updated?
+        """
         raise NotImplementedError
 
 class BindablePanel(BasePanel):

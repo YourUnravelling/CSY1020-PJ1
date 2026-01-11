@@ -18,6 +18,7 @@ class BaseField(DFrame):
         super().__init__(parent)
         self._mode:RW = initial_mode # Protected
         self._value = None
+        print("Field is being created")
     
     def mode(self, mode:RW):
         """
@@ -59,10 +60,11 @@ class Text(BaseField):
         self.__readbox = ttk.Label(self, text=value)
         self.__writebox = ttk.Entry(self)
         self.set_value(value)
+        print("setting value to ", value)
 
     def _read(self): # TODO make this a single function with literal
         self.__writebox.pack_forget()
-        self.__readbox.pack()
+        self.__readbox.pack(pady=5)
 
     def _write(self):
         self.__readbox.pack_forget()
@@ -72,4 +74,5 @@ class Text(BaseField):
         self.__readbox.config(text=str(val))
         self.__writebox.delete(0, tk.END)
         self.__writebox.insert(0, str(val))
+        print(self.__readbox.winfo_ismapped(), self.__writebox.winfo_ismapped())
 

@@ -17,18 +17,18 @@ class FieldsGrid(DFrame):
 
     TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
             "TEXT" : f.Text,
-            "NUMBER" : Text, # TODO
-            "INTEGER" : Text, # TODO
-            "DATE" : Text, # TODO
-            "BLOB" : Text, # TODO
+            "NUMBER" : f.Text, # TODO
+            "INTEGER" : f.Text, # TODO
+            "DATE" : f.Text, # TODO
+            "BLOB" : f.Text, # TODO
         }
 
     PY_TYPE_CLASSES = { # Mapping of python types to display classes
             str : f.Text,
-            float : Text, # TODO
-            int : Text, # TODO
-            dt.date : Text, # TODO
-            bool : Text, # TODO TODO CANGE TO blob
+            float : f.Text, # TODO
+            int : f.Text, # TODO
+            dt.date : f.Text, # TODO
+            bool : f.Text, # TODO TODO CANGE TO blob
         }
     
     # TODO Maybe map the sql types to their python types, then python types to subclasses instead
@@ -62,7 +62,7 @@ class FieldsGrid(DFrame):
             # Create a pointer to the read/write widget matching the field type
             pointer_to_class = FieldsGrid.TYPE_CLASSES[feild_types[i]] # TODO To others except text
 
-            type_class_instance = pointer_to_class(self, initial_mode="read", value=feild_defaults[i])
+            type_class_instance = pointer_to_class(self, value=feild_defaults[i])
             self.__widgets.append(type_class_instance)
             self.__widgets[i].grid(row=i, column=1, sticky="w")
         
@@ -103,5 +103,9 @@ class FieldsGrid(DFrame):
         return self.__values
     
     def set_values(self, values:list):
+
+        assert len(self.__widgets) == len(values)
+
         for i in range(len(self.__widgets)):
             self.__widgets[i].set_value(values[i])
+            #self.__widgets[i].set_value("values[i]")
