@@ -41,7 +41,7 @@ class SQLManager():
     def add(self, table:str, values:dict):
         """Helper function to add a record to a table"""
         
-        formatted = self.format_dict_as_sql(values)
+        formatted = self.format_dict_as_comma_list(values)
         self.exe(f"INSERT INTO book VALUES({formatted[0]})", formatted[1])
 
     def delete(self, table:str, pk_row:str, pk_value_to_remove):
@@ -51,7 +51,7 @@ class SQLManager():
     def update(self, table:str, values:dict) -> None:
         """Helper function to ammend a record"""
         
-        formatted = self.format_dict_as_sql(values)
+        formatted = self.format_dict_as_comma_list(values)
         self.exe(f"UPDATE {table} SET ") # TODO
 
     def read(self, table:str, id, pk_column_name:str="id"):
@@ -68,10 +68,6 @@ class SQLManager():
     
     def write_record_list(self, table, pk, values:list|tuple):
         """Writes to a record specified by pk, with a list of values"""
-        #this_table_list_of_cols:list = []
-        #for i in range(len(self.schema[table])):
-        #    this_table_list_of_cols
-
         this_table_list_of_cols = list(self.schema[table][i][1] for i in range(len(self.schema[table])))
         
         assert len(this_table_list_of_cols) == len(values)
@@ -83,13 +79,14 @@ class SQLManager():
         self.write_record_dict(table, pk, colvals_dict)
 
     def write_record_dict(self, table, pk, values:dict):
-        formatted = self.format_dict_as_sql(values)
+        formatted = self.format_dict_as_key_comma_list(values)
         self.exe(f"UPDATE {table} SET {formatted[0]}", formatted[1])
 
     def write_field_index(self, table:str, record_pk, index:int, value):
         """
         Writes a single field specified by an index
         """
+        # Get field name at the index
         field = self.schema[table][index][1]
 
         self.write_field(table, record_pk, field, value)
@@ -100,7 +97,17 @@ class SQLManager():
         """
         self.exe(f"UPDATE {table} SET {field} = ? WHERE isbn = ?", (value, record_pk))
 
-    def format_dict_as_sql(self, inp:dict):
+    def format_dict_as_key_comma_list(self, inp:dict):
+        """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""
+        values = []
+        formatted_string = ""
+        for key in inp:
+            formatted_string = formatted_string + key + " = ?, "
+            values.append(inp[key])
+        formatted_string = formatted_string[0: len(formatted_string) - 2] # Remove last comma # TODO replace with join()
+        return formatted_string, tuple(values)
+
+    def format_dict_as_comma_list(self, inp:dict):
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""
         values = []
         formatted_string = ""

@@ -13,12 +13,16 @@ from gui.widgets import DFrame, TreeviewTable
 from gui.fields_grid import FieldsGrid
 import gui.base_panels as bp
 
+# TODO When a panel that can set things sets something, it needs to send a signal out to ALL other panels that it's updated.
+# TODO When a object changes, it needs to ask all the bindables if they have unsaved stuff, and then display a confirmation thingy if they do.
+
+
 class TableSelectButtons(bp.BindablePanel):
 
     def __init__(self, master):
         super().__init__(master, core, debug_name="TableSelectButtons")
 
-    def _set_object_spesific(self, updated_objects:set[str]) -> None:
+    def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
         """
         Just initialises the tables, doesn't read object param.
         """
@@ -44,7 +48,7 @@ class RecordSelectTree(bp.BindablePanel):
             item.pack(padx=5, side="left")
 
 
-    def _set_object_spesific(self, updated_objects:set[str]) -> None:
+    def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
         #self.__treeview.pack_forget()
         if not self.__treeview.winfo_ismapped(): # If widgets are not visible, pack it
             self.__top_bar.pack(fill="x", ipady=5)
