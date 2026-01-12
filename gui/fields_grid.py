@@ -36,12 +36,13 @@ class FieldsGrid(DFrame):
     # TODO Maybe map the sql types to their python types, then python types to subclasses instead
     # TODO Add a "lock" system that locks one feild to the value of another until it's unlocked, eg Name and PreferredName stay the same by default
 
-    def __init__(self, parent, mode:RW|list = "read"):
+    def __init__(self, parent, mode:RW|list = "read", updated_call = None):
         super().__init__(parent)
 
         self.__labels:list = [] # Private, list of column name label widgets
         self.__widgets:list = [] # Private, list of value/feild __widgets
         self.__values:list # Private, keeps track of the values, updated when feilds are updated
+        self.__call_when_updated = updated_call # Private, callable called when any feild is updated, (index, value)
 
         self.columnconfigure(index=1,pad=5)
     
@@ -65,11 +66,17 @@ class FieldsGrid(DFrame):
             # Create a pointer to the read/write widget matching the field type
             pointer_to_class = FieldsGrid.TYPE_CLASSES[feild_types[i]] # TODO To others except text
 
-            type_class_instance = pointer_to_class(self, value=feild_defaults[i])
+            type_class_instance = pointer_to_class(self, i, updated_call=self.__value_written_to, value=feild_defaults[i])
             self.__widgets.append(type_class_instance)
             self.__widgets[i].grid(row=i, column=1, sticky="w")
         
         # TODO Possibly in the future don't remove all widgets and replace them but change the existing ones and delete/add extras.
+
+    def __value_written_to(self, index):
+        print("value written to")
+        if not self.__call_when_updated:
+            return
+        self.__call_when_updated(index, self.__widgets[index].get_value())
 
     def set_mode(self, mode:RW|list):
         """
@@ -104,6 +111,7 @@ class FieldsGrid(DFrame):
         else:
             return self.__mode
     
+
     @property
     def values(self):
         return self.__values
