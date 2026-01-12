@@ -72,9 +72,12 @@ class RecordSelectTree(bp.BindablePanel):
 
 
 class RecordScroll(bp.BasePanel):
-    def __init__(self, master):
-
+    def __init__(self, master, autosave= False):
         super().__init__(master, core, debug_name="RecordScroll")
+
+        self.__autosave:bool = autosave
+
+        self.__unsaved = False # TODO Set a different way?
 
         # Private, Highest bar, for the controls
         self.__top_bar = DFrame(self, debug_name="Top bar") 
@@ -87,6 +90,9 @@ class RecordScroll(bp.BasePanel):
 
         self.__edit = ttk.Button(self.__top_bar, text="Edit", command=lambda: self.__feilds.set_mode({"read":"write", "write":"read"}[self.__feilds.get_mode_at(0)]))
         self.__edit.pack(side="right")
+
+        self.__apply = ttk.Button(self.__top_bar, text="Apply", command=self.__apply_pressed)
+        self.__apply.pack(side="left")
 
         # Frame for record info, possibly scrolling
         self.__record_frame = DFrame(self, debug_name="Record frame")
@@ -113,7 +119,16 @@ class RecordScroll(bp.BasePanel):
 
     def a_field_was_updated(self, index, value):
         print("A feild was pdated")
-        self._core.sm.write_field_index(self._object["table"], self._object["record"], index, value)
+        if not self.__autosave:
+            self.__to_unsaved()
+        else:
+            self._core.sm.write_field_index(self._object["table"], self._object["record"], index, value)
+    
+    def __apply_pressed(self):
+        """
+        Triggered when apply is pressed, saves the content of the fields to the record
+        """
+        self._core.sm.write_record_list(self._object["table"], self._object["record"], self.__feilds.values)
 
     def set_table(self, table:str):
         """Sets the types of the feilds"""
@@ -127,8 +142,7 @@ class RecordScroll(bp.BasePanel):
     def set_record(self, pk:str):
         """Sets the current displayed record to pk"""
 
-        record_values = core.sm.read(self._object["table"], pk, "isbn") #TODO generalise isbn
-        #print("Record values are", record_values)
+        record_values = core.sm.read(self._object["table"], pk, self._core.config.pk_defaults[self._object["table"]])
         self.__feilds.set_values(record_values)
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
@@ -154,3 +168,9 @@ class RecordScroll(bp.BasePanel):
 
     def __remove_no_record_text(self):
         self.__no_record_text.pack_forget()
+
+    def __to_unsaved(self):
+        self.__unsaved = True
+        self.__apply["state"] = "enabled"
+
+    def __to_saved(self):... # TODO Is this needed?

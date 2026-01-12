@@ -65,6 +65,26 @@ class SQLManager():
         """Returns a full list of records from a table"""
 
         return self.exe(f"SELECT * FROM {table}", None, "all") # type: ignore
+    
+    def write_record_list(self, table, pk, values:list|tuple):
+        """Writes to a record specified by pk, with a list of values"""
+        #this_table_list_of_cols:list = []
+        #for i in range(len(self.schema[table])):
+        #    this_table_list_of_cols
+
+        this_table_list_of_cols = list(self.schema[table][i][1] for i in range(len(self.schema[table])))
+        
+        assert len(this_table_list_of_cols) == len(values)
+
+        colvals_dict:dict = dict()
+        for i in range(len(values)):
+            colvals_dict[this_table_list_of_cols[i]] = values[i]
+        
+        self.write_record_dict(table, pk, colvals_dict)
+
+    def write_record_dict(self, table, pk, values:dict):
+        formatted = self.format_dict_as_sql(values)
+        self.exe(f"UPDATE {table} SET {formatted[0]}", formatted[1])
 
     def write_field_index(self, table:str, record_pk, index:int, value):
         """

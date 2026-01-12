@@ -77,9 +77,6 @@ class Text(BaseField):
         self._updated_call = updated_call
         print("setting value to ", value)
 
-    def __call_call_callable(self, *args):
-        pass
-
     def _read(self): # TODO make this a single function with literal
         self.__writebox.pack_forget()
         self.__readbox.pack(pady=5)
