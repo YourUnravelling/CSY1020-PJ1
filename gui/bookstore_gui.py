@@ -28,10 +28,10 @@ class MainLayout(DFrame):
         self.__sidebar.pack(side=tk.LEFT, fill=tk.Y)
         self.__topbar = DFrame(self, "top bar")
         self.__topbar.pack(fill="x", padx=5, pady=5)
-        #self.__content = DFrame(self, "content")
-        #self.__content.pack(expand=True, fill="both")
         self.__right_sidebar = DFrame(self, "sidebar")
         self.__right_sidebar.pack(side="right", fill="y")
+        self.__content = DFrame(self, "content")
+        self.__content.pack(expand=True, fill="both")
 
         self.__sidebar_image = tk.PhotoImage(file="resources/sidebar_image.png")
         tk.Label(self.__sidebar, text="test", image=self.__sidebar_image).pack()
@@ -40,7 +40,7 @@ class MainLayout(DFrame):
         self.__table_select = panels.TableSelectButtons(self.__sidebar)
         self.__table_select.pack(side="right", expand=True, fill="y")
 
-        self.__record_select = panels.RecordSelectTree(self)
+        self.__record_select = panels.RecordSelectTree(self.__content)
         self.__record_select.pack(side="top", fill="both", expand=True)
 
         self.__record = panels.RecordScroll(self.__right_sidebar)
@@ -111,7 +111,7 @@ class DBViewer(DFrame):
 
 w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="resources/icon.png"))
-w.minsize(width=600, height=300)
+w.minsize(width=1100, height=500)
 
 #DBViewer(w, core).pack()
 MainLayout(w, core).pack(expand=True, fill="both")
