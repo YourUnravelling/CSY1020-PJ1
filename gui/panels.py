@@ -85,7 +85,7 @@ class RecordScroll(bp.BasePanel):
         self.__delete = ttk.Button(self.__top_bar, text="Delete")
         self.__delete.pack(side="right")#grid(row=1, column=3)
 
-        self.__edit = ttk.Button(self.__top_bar, text="Edit")
+        self.__edit = ttk.Button(self.__top_bar, text="Edit", command=lambda: self.__feilds.set_mode({"read":"write", "write":"read"}[self.__feilds.get_mode_at(0)]))
         self.__edit.pack(side="right")
 
         # Frame for record info, possibly scrolling
@@ -93,15 +93,14 @@ class RecordScroll(bp.BasePanel):
         self.__record_frame.pack()
 
         self.__no_record_text = ttk.Label(self.__record_frame, text="No record selected", justify="center")
-        self.__no_record_text.pack(pady=50)
-
+        self.__add_no_record_text()
 
 
         # Private, Frame for the feilds and image if it's present
         self.__feilds_img_grid = DFrame(self.__record_frame, debug_name="Feilds img grid")
         self.__feilds_img_grid.pack()
 
-        self.__feilds = FieldsGrid(self.__feilds_img_grid)
+        self.__feilds = FieldsGrid(self.__feilds_img_grid, updated_call=self.a_field_was_updated)
         self.__feilds.grid(column=0, row=0)
 
         # Image
@@ -111,6 +110,10 @@ class RecordScroll(bp.BasePanel):
 
         self.__foreigns_frame = DFrame(self, debug_name="Foreigns frame")
         self.__foreigns_frame.pack()
+
+    def a_field_was_updated(self, index, value):
+        print("A feild was pdated")
+        self._core.sm.write_field_index(self._object["table"], self._object["record"], index, value)
 
     def set_table(self, table:str):
         """Sets the types of the feilds"""
@@ -133,9 +136,9 @@ class RecordScroll(bp.BasePanel):
         # Case to get rid of the no record selected text
         try:
             if self._object["table"] == None or self._object["record"] == None:
-                self.__no_record_text.pack_forget()
+                self.__add_no_record_text()
             else:
-                self.__no_record_text.pack_forget()
+                self.__remove_no_record_text()
         except: pass
 
         if "table" in updated_objects: # TODO If table is not what it already was
@@ -145,3 +148,9 @@ class RecordScroll(bp.BasePanel):
 
         self.__feilds.set_mode("read")
         print("Record scroll thingy is being updated!", self._object["table"],self._object["record"], updated_objects, self._object)
+
+    def __add_no_record_text(self):
+        self.__no_record_text.pack(pady=50)
+
+    def __remove_no_record_text(self):
+        self.__no_record_text.pack_forget()

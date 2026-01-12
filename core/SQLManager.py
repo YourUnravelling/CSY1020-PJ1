@@ -66,6 +66,20 @@ class SQLManager():
 
         return self.exe(f"SELECT * FROM {table}", None, "all") # type: ignore
 
+    def write_field_index(self, table:str, record_pk, index:int, value):
+        """
+        Writes a single field specified by an index
+        """
+        field = self.schema[table][index][1]
+
+        self.write_field(table, record_pk, field, value)
+
+    def write_field(self, table:str, record_pk, field:str, value):
+        """
+        Writes a single field specified by field name
+        """
+        self.exe(f"UPDATE {table} SET {field} = ? WHERE isbn = ?", (value, record_pk))
+
     def format_dict_as_sql(self, inp:dict):
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""
         values = []
