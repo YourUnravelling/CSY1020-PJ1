@@ -19,9 +19,13 @@ class DFrame(tk.Frame):
     def __init__(self, master=None, debug_name:str|None= None, cnf={}, **kw):
         super().__init__(master, cnf, **kw)
         self.__debug_name = debug_name
+        self.__normal_bg_color = self.cget("background")
+
         if DFrame.DEBUG_MODE:
-            self.config(background="#" + (self.__randhex() + self.__randhex()) * 3)
+            #self.config(background="#" + (self.__randhex() + self.__randhex()) * 3)
             self.bind("<Button-1>", self.__print_info)
+            self.bind("<Enter>", self.__hover)
+            self.bind("<Leave>", self.__unhover)
         
     def __randhex(self) -> str:
         """
@@ -35,6 +39,15 @@ class DFrame(tk.Frame):
         else:
             print("No debug name provided for this frame, location: " + str(self), end=" | ")
         print("Owner class is " + str(self.__class__.__name__))
+    
+    def __hover(self, var):
+        randc = ""
+        for i in range(6):
+            randc = randc + self.__randhex()
+        self.config(background="#" + randc )#"#00ffdd")
+
+    def __unhover(self, var):
+        self.config(background=self.__normal_bg_color)
 
 class BgButton(ttk.Button): # To delete?
 
