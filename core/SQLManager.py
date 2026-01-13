@@ -59,9 +59,6 @@ class SQLManager():
         if not pk_column_name:
             pk_column_name = self.schema[table][0][1] # Set to first column TODO Change to config? but that'll be a circ import
         
-        q = ""
-        if type(id) == str: # If the id is a string, format the sql query in quotes
-            q = "\"" # TODO Decide if needed
         return self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == ?", (id,))
 
     def read_full(self, table:str) -> list:
