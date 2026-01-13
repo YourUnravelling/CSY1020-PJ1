@@ -95,7 +95,7 @@ class RecordScroll(bp.BasePanel):
         self.__edit = ttk.Button(self.__top_bar, text="Edit", command=lambda: self.__feilds.set_mode({"read":"write", "write":"read"}[self.__feilds.get_mode_at(0)]))
         self.__edit.pack(side="right")
 
-        self.__apply = ttk.Button(self.__top_bar, text="Apply", command=self.__apply_pressed)
+        self.__apply = ttk.Button(self.__top_bar, text="Apply", command=self.__apply_pressed, state="disabled")
         self.__apply.pack(side="left")
 
         # Frame for record info, possibly scrolling
@@ -120,9 +120,10 @@ class RecordScroll(bp.BasePanel):
 
         self.__foreigns_frame = DFrame(self, debug_name="Foreigns frame")
         self.__foreigns_frame.pack()
+        
+        self.__to_saved()
 
     def a_field_was_updated(self, index, value):
-        print("A feild was pdated")
         if not self.__autosave:
             self.__to_unsaved()
         else:
@@ -132,7 +133,9 @@ class RecordScroll(bp.BasePanel):
         """
         Triggered when apply is pressed, saves the content of the fields to the record
         """
+
         self._core.sm.write_record_list(self._object["table"], self._object["record"], self.__feilds.values)
+        self.__to_saved()
 
     def set_table(self, table:str):
         """Sets the types of the feilds"""
@@ -165,6 +168,7 @@ class RecordScroll(bp.BasePanel):
             self.set_record(self._object["record"])
 
         self.__feilds.set_mode("read")
+        self.__to_saved()
         print("Record scroll thingy is being updated!", self._object["table"],self._object["record"], updated_objects, self._object)
 
     def __add_no_record_text(self):
@@ -175,6 +179,9 @@ class RecordScroll(bp.BasePanel):
 
     def __to_unsaved(self):
         self.__unsaved = True
-        self.__apply["state"] = "enabled"
+        self.__apply["state"] = "normal"
 
-    def __to_saved(self):... # TODO Is this needed?
+    def __to_saved(self): # TODO Is this needed?
+        self.__unsaved = False
+        self.__apply["state"] = "disabled"
+        print("to saved")
