@@ -54,8 +54,11 @@ class SQLManager():
         formatted = self.format_dict_as_comma_list(values)
         self.exe(f"UPDATE {table} SET ") # TODO
 
-    def read(self, table:str, id, pk_column_name:str="id"):
+    def read(self, table:str, id, pk_column_name:str|None=None):
         """Helper function to read a record"""
+        if not pk_column_name:
+            pk_column_name = self.schema[table][0][1] # Set to first column TODO Change to config? but that'll be a circ import
+        
         q = ""
         if type(id) == str: # If the id is a string, format the sql query in quotes
             q = "\"" # TODO Decide if needed
