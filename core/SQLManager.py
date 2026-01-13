@@ -80,11 +80,13 @@ class SQLManager():
 
     def write_record_dict(self, table, pk, values:dict):
         formatted = self.format_dict_as_key_comma_list(values)
-        self.exe(f"UPDATE {table} SET ?, WHERE {self.schema[table][0][1]} = ?", (formatted[1],pk))
+        # Create a tuple with all the values in dictionary order, then whatever the pk is at the end, and put it into function
+        raise # Work on thus when yoiu wake uo
+        self.exe(f"UPDATE {table} SET {formatted}, WHERE {self.schema[table][0][1]} = ?", (formatted[1],pk))
 
     def write_field_index(self, table:str, record_pk, index:int, value):
         """
-        Writes a single field specified by an index
+        Writes a single field in a record, field specified by an index
         """
         # Get field name at the index
         field = self.schema[table][index][1]
@@ -93,7 +95,7 @@ class SQLManager():
 
     def write_field(self, table:str, record_pk, field:str, value):
         """
-        Writes a single field specified by field name
+        Writes a single field in a record, field specified by field name
         """
         self.exe(f"UPDATE {table} SET {field} = ? WHERE isbn = ?", (value, record_pk))
 
