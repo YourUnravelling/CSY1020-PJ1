@@ -62,7 +62,7 @@ class SQLManager():
         q = ""
         if type(id) == str: # If the id is a string, format the sql query in quotes
             q = "\"" # TODO Decide if needed
-        return self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == {q}{id}{q}")
+        return self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == ?", (id,))
 
     def read_full(self, table:str) -> list:
         """Returns a full list of records from a table"""
