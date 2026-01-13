@@ -80,7 +80,7 @@ class SQLManager():
 
     def write_record_dict(self, table, pk, values:dict):
         formatted = self.format_dict_as_key_comma_list(values)
-        self.exe(f"UPDATE {table} SET {formatted[0]}", formatted[1])
+        self.exe(f"UPDATE {table} SET ?, WHERE {self.schema[table][0][1]} = ?", (formatted[1],pk))
 
     def write_field_index(self, table:str, record_pk, index:int, value):
         """

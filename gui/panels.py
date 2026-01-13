@@ -133,8 +133,19 @@ class RecordScroll(bp.BasePanel):
         """
         Triggered when apply is pressed, saves the content of the fields to the record
         """
+        # Get all values of this record from the db, values currently in the grid, and column names in order
+        saved_values:list = self._core.sm.read(self._object["table"], self._object["record"])
+        unsaved_values:list = self.__feilds.values
+        field_names:list = list(column[2] for column in self._core.sm.schema[self._object["table"]])
 
-        self._core.sm.write_record_list(self._object["table"], self._object["record"], self.__feilds.values)
+        # Create a dictionary of all the values which are modified and what they are modified to
+        modified_values:dict = {}
+        for i, value in enumerate(unsaved_values):
+            if value != saved_values[i]: # If value has been changed from the one in the db
+                modified_values[field_names[i]] = value # Add the value to the dict with a key as col name
+
+        #self._core.sm.write_record_list(self._object["table"], self._object["record"], self.__feilds.values)
+        self._core.sm.write_record_dict(self._object["table"], self._object["record"], modified_values)
         self.__to_saved()
 
     def set_table(self, table:str):
@@ -193,3 +204,7 @@ class RecordScroll(bp.BasePanel):
     # Maybe should just be smart and do them all seperate
     # ADD A CHECK THAT IT ACTUALLY CHANGED FOR VALIDATION, 
     # MAYBE EVEN COMPARE IT TO SAVED VALUE THIS EVERY TIME IT UPDATES!!!!
+
+    # I'm going to change it so it just gets all the widget's values when apply is pressed and only changes them if they are different
+
+    # TODO Check how the values in fields grid update

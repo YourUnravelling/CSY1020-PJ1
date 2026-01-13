@@ -74,9 +74,12 @@ class FieldsGrid(DFrame):
 
     def __value_written_to(self, index):
         print("value written to")
+        value = self.__widgets[index].get_value()
+        #self.__values[index] = value
+
         if not self.__call_when_updated:
             return
-        self.__call_when_updated(index, self.__widgets[index].get_value())
+        self.__call_when_updated(index, value)
 
     def set_mode(self, mode:RW|list):
         """
