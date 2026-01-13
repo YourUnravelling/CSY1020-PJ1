@@ -120,7 +120,7 @@ class RecordScroll(bp.BasePanel):
 
         self.__foreigns_frame = DFrame(self, debug_name="Foreigns frame")
         self.__foreigns_frame.pack()
-        
+
         self.__to_saved()
 
     def a_field_was_updated(self, index, value):
@@ -185,3 +185,11 @@ class RecordScroll(bp.BasePanel):
         self.__unsaved = False
         self.__apply["state"] = "disabled"
         print("to saved")
+    
+
+    # TODO __unsaved should be a set of field names which are unsaved
+    # Apply should remove all from the set
+    # Pressing apply should change them all individually, with a different case for the pk?
+    # Maybe should just be smart and do them all seperate
+    # ADD A CHECK THAT IT ACTUALLY CHANGED FOR VALIDATION, 
+    # MAYBE EVEN COMPARE IT TO SAVED VALUE THIS EVERY TIME IT UPDATES!!!!
