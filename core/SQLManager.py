@@ -79,10 +79,12 @@ class SQLManager():
         self.write_record_dict(table, pk, colvals_dict)
 
     def write_record_dict(self, table, pk, values:dict):
-        formatted = self.format_dict_as_key_comma_list(values)
+        print(values)
+        formatted:tuple = self.format_dict_as_key_comma_list(values)
         # Create a tuple with all the values in dictionary order, then whatever the pk is at the end, and put it into function
-        raise # Work on thus when yoiu wake uo
-        self.exe(f"UPDATE {table} SET {formatted}, WHERE {self.schema[table][0][1]} = ?", (formatted[1],pk))
+
+        #raise # Work on thus when yoiu wake uo
+        self.exe(f"UPDATE {table} SET {formatted[0]} WHERE {self.schema[table][0][1]} = ?", (formatted[1]+(pk,)))
 
     def write_field_index(self, table:str, record_pk, index:int, value):
         """

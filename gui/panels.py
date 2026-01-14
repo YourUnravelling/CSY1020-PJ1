@@ -136,7 +136,7 @@ class RecordScroll(bp.BasePanel):
         # Get all values of this record from the db, values currently in the grid, and column names in order
         saved_values:list = self._core.sm.read(self._object["table"], self._object["record"])
         unsaved_values:list = self.__feilds.values
-        field_names:list = list(column[2] for column in self._core.sm.schema[self._object["table"]])
+        field_names:list = list(column[1] for column in self._core.sm.schema[self._object["table"]])
 
         # Create a dictionary of all the values which are modified and what they are modified to
         modified_values:dict = {}
@@ -145,6 +145,7 @@ class RecordScroll(bp.BasePanel):
                 modified_values[field_names[i]] = value # Add the value to the dict with a key as col name
 
         #self._core.sm.write_record_list(self._object["table"], self._object["record"], self.__feilds.values)
+        print(modified_values)
         self._core.sm.write_record_dict(self._object["table"], self._object["record"], modified_values)
         self.__to_saved()
 

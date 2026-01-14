@@ -13,7 +13,7 @@ from core.constants import READ_WRITE as RW
 
 class DFrame(tk.Frame):
     """
-    Extension of tk.Frame with an optional debug mode, which randomises the colour within greyscale, for easy debugging frame structure.
+    Extension of tk.Frame with an optional debug mode, which highlights on mouseover, for easy debugging frame structure.
     """
     DEBUG_MODE = True
     def __init__(self, master=None, debug_name:str|None= None, cnf={}, **kw):

@@ -117,6 +117,7 @@ class FieldsGrid(DFrame):
 
     @property
     def values(self):
+        return list(wid.get_value() for wid in self.__widgets)
         return self.__values
     
     def set_values(self, values:list):
