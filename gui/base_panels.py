@@ -48,7 +48,34 @@ class BasePanel(DFrame):
             self._set_object_spesific(objects_to_update)
         else:
             print("The object was not changed")
+    
+    def _signal_updated_object(self, updated_object:dict, caller):
+        """
+        Sends a signal that an object was updated, and if that object is contained within the updated one it's refreshed
+        caller is a pointer to the object that called the update, and is not updated
+        """
+        cur_obj:dict = self._object
 
+        need_to_refresh:bool = False
+
+        #while True: # loop so break will work
+        # TODO God please generalise this
+        if updated_object["table"] == cur_obj["table"] and (not "record" in cur_obj) and (not "field" in cur_obj):
+            need_to_refresh = True
+        
+        if updated_object["table"] == cur_obj["table"] and updated_object["record"] == cur_obj["record"] and (not "field" in cur_obj):
+            need_to_refresh = True
+        
+        if updated_object["table"] == cur_obj["table"] and updated_object["record"] == cur_obj["record"] and updated_object["field"] == cur_obj["field"]:
+            need_to_refresh = True
+        
+        # Don't update if caller is pointing to this object, however do if caller is null
+        if caller:
+            if self == caller:
+                need_to_refresh = False
+
+        if need_to_refresh:
+            self.set_object(cur_obj, force=True)
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
         """
