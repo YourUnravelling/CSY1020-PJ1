@@ -15,6 +15,8 @@ from core.SQLManager import SQLManager
 
 from config import config as configuration
 
+VERSION:str = "Generalised RMS Development"
+
 DEFAULT_PATH:Path = Path("bookstore.sqlite")
 TABLE_SQLS:list[list[str]] = [ # Used for initial creation only
     ["book", "isbn TEXT PRIMARY KEY, author INTEGER, title TEXT, date_published DATE, genre TEXT, price NUMBER"],

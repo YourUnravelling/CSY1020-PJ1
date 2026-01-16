@@ -67,6 +67,10 @@ class RecordSelectTree(bp.BindablePanel):
                 headings_raw,#self._core.config,
                 table_data
                 )
+        self._call_binds({
+            "table": None,
+            "record": None
+        })
 
     def __record_selected(self, uid):
         """
@@ -95,8 +99,8 @@ class RecordScroll(bp.BasePanel):
         self.__delete = ttk.Button(self.__top_bar, text="Delete")
         self.__delete.pack(side="right")#grid(row=1, column=3)
 
-        self.__edit = ttk.Button(self.__top_bar, text="Edit", command=lambda: self.__feilds.set_mode({"read":"write", "write":"read"}[self.__feilds.get_mode_at(0)]))
-        self.__edit.pack(side="right")
+        self.__edit = ttk.Button(self.__top_bar, text="Edit", command= self.__to_write)#self.__feilds.set_mode({"read":"write", "write":"read"}[self.__feilds.get_mode_at(0)]))
+        self.__edit.pack(side="left")
 
         self.__apply = ttk.Button(self.__top_bar, text="Apply", command=self.__apply_pressed, state="disabled")
         self.__apply.pack(side="left")
@@ -106,24 +110,25 @@ class RecordScroll(bp.BasePanel):
         self.__record_frame.pack()
 
         self.__no_record_text = ttk.Label(self.__record_frame, text="No record selected", justify="center")
-        self.__add_no_record_text()
+        
 
 
         # Private, Frame for the feilds and image if it's present
-        self.__feilds_img_grid = DFrame(self.__record_frame, debug_name="Feilds img grid")
-        self.__feilds_img_grid.pack()
+        self.__fields_img_grid = DFrame(self.__record_frame, debug_name="Feilds img grid")
+        self.__fields_img_grid.pack()
 
-        self.__feilds = FieldsGrid(self.__feilds_img_grid, updated_call=self.a_field_was_updated)
-        self.__feilds.grid(column=0, row=0)
+        self.__fields = FieldsGrid(self.__fields_img_grid, updated_call=self.a_field_was_updated)
+
 
         # Image
         self.__imagevar = tk.PhotoImage(file="resources/sidebar_image.png") # TODO
-        self.__image = ttk.Label(self.__feilds_img_grid, image=self.__imagevar)
+        self.__image = ttk.Label(self.__fields_img_grid, image=self.__imagevar)
         self.__image.grid(column=1, row=0)
 
         self.__foreigns_frame = DFrame(self, debug_name="Foreigns frame")
         self.__foreigns_frame.pack()
 
+        self.__add_no_record_text()
         self.__to_saved()
 
     def a_field_was_updated(self, index, value):
@@ -138,7 +143,7 @@ class RecordScroll(bp.BasePanel):
         """
         # Get all values of this record from the db, values currently in the grid, and column names in order
         saved_values:list = self._core.sm.read(self._object["table"], self._object["record"])
-        unsaved_values:list = self.__feilds.values
+        unsaved_values:list = self.__fields.values
         field_names:list = list(column[1] for column in self._core.sm.schema[self._object["table"]])
 
         # Create a dictionary of all the values which are modified and what they are modified to
@@ -160,37 +165,45 @@ class RecordScroll(bp.BasePanel):
         default_values = core.config.default_values[table] # This is called default values but really should just be values MAYBE DISREG
         column_names = list(col[1] for col in core.sm.schema[table])
 
-        self.__feilds.set_feilds(column_types, default_values, column_names)
+        self.__fields.set_feilds(column_types, default_values, column_names)
 
     def set_record(self, pk:str):
         """Sets the current displayed record to pk"""
 
         record_values = core.sm.read(self._object["table"], pk, self._core.config.pk_defaults[self._object["table"]])
-        self.__feilds.set_values(record_values)
+        self.__fields.set_values(record_values)
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
 
-        # Case to get rid of the no record selected text
-        try:
-            if self._object["table"] == None or self._object["record"] == None:
-                self.__add_no_record_text()
-            else:
-                self.__remove_no_record_text()
-        except: pass
+        # Ensure object contains table and record TODO maybe add this to base function
+        for sub_obj in ["table", "record"]:
+            if not sub_obj in self._object:
+                self._object[sub_obj] = None
 
-        if "table" in updated_objects: # TODO If table is not what it already was
-            self.set_table(self._object["table"])
-        if "record" in updated_objects:
-            self.set_record(self._object["record"])
+        if self._object["table"] == None or self._object["record"] == None:
+            self.__add_no_record_text()
+        else:
+            if "table" in updated_objects: # TODO If table is not what it already was
+                self.set_table(self._object["table"])
+            if "record" in updated_objects:
+                self.set_record(self._object["record"])
 
-        self.__feilds.set_mode("read")
+            self.__remove_no_record_text()
+        #except: self.__add_no_record_text()
+
+
+        self.__fields.set_mode("read")
         self.__to_saved()
         print("Record scroll thingy is being updated!", self._object["table"],self._object["record"], updated_objects, self._object)
 
     def __add_no_record_text(self):
         self.__no_record_text.pack(pady=50)
+        #try:
+        self.__fields.grid_forget()
+        self.__fields.set_feilds([], [], [])
 
     def __remove_no_record_text(self):
+        self.__fields.grid(column=0, row=0)
         self.__no_record_text.pack_forget()
 
     def __to_unsaved(self):
@@ -201,6 +214,13 @@ class RecordScroll(bp.BasePanel):
         self.__unsaved = False
         self.__apply["state"] = "disabled"
         print("to saved")
+    
+    def __to_write(self):
+        self.__fields.get_mode_at(0)
+
+    def __to_read(self):
+        pass
+        
     
 
     # TODO __unsaved should be a set of field names which are unsaved

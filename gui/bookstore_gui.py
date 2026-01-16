@@ -25,8 +25,12 @@ class MainLayout(DFrame):
         self.__core = core # Private, pointer to core
         self.__panels:dict = {}
 
+
+
         self.__sidebar = DFrame(self, "sidebar")
         self.__sidebar.pack(side=tk.LEFT, fill=tk.Y)
+        self.__sidebar_extra = DFrame(self.__sidebar, "sidebar extra")
+        self.__sidebar_extra.pack(side=tk.BOTTOM, fill=tk.X, pady=3)
         self.__topbar = DFrame(self, "top bar")
         self.__topbar.pack(fill="x", padx=5, pady=5)
         self.__right_sidebar = DFrame(self, "sidebar")
@@ -37,6 +41,10 @@ class MainLayout(DFrame):
         self.__sidebar_image = tk.PhotoImage(file="resources/sidebar_image.png")
         tk.Label(self.__sidebar, text="test", image=self.__sidebar_image).pack()
 
+
+        ttk.Label(self.__sidebar_extra, text=core.VERSION).pack(side="bottom",pady=3, padx=5)
+        ttk.Button(self.__sidebar_extra, text="Log out", width=30, ).pack(side="bottom",pady=3, padx=5, ipady=3)
+        ttk.Button(self.__sidebar_extra, text="Preferences", width=30, ).pack(side="bottom",pady=3, padx=5, ipady=3)
 
         self.__panels["table_select"] = panels.TableSelectButtons(self.__sidebar, self.update_panels)
         self.__panels["table_select"].pack(side="right", expand=True, fill="y")

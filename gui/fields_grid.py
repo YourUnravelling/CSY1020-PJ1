@@ -55,6 +55,8 @@ class FieldsGrid(DFrame):
         for i in range(len(self.__labels)):
             self.__labels[i].grid_forget()
             self.__widgets[i].grid_forget()
+        self.__labels.clear()
+        self.__widgets.clear()
 
 
         self.__values = feild_defaults # Sent values list to defaults
@@ -122,7 +124,9 @@ class FieldsGrid(DFrame):
     def set_values(self, values:list):
 
         if not len(self.__widgets) == len(values):
-            print("Length is not the same", self.__widgets, values)
+            print("Length is not the same", values)
+            for item in self.__widgets:
+                print(item)
             raise
 
         for i in range(len(self.__widgets)):
