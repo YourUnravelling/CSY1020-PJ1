@@ -23,6 +23,7 @@ class MainLayout(DFrame):
     def __init__(self, master, core) -> None:
         super().__init__(master)
         self.__core = core # Private, pointer to core
+        self.__panels:dict = {}
 
         self.__sidebar = DFrame(self, "sidebar")
         self.__sidebar.pack(side=tk.LEFT, fill=tk.Y)
@@ -37,23 +38,27 @@ class MainLayout(DFrame):
         tk.Label(self.__sidebar, text="test", image=self.__sidebar_image).pack()
 
 
-        self.__table_select = panels.TableSelectButtons(self.__sidebar)
-        self.__table_select.pack(side="right", expand=True, fill="y")
+        self.__panels["table_select"] = panels.TableSelectButtons(self.__sidebar, self.update_panels)
+        self.__panels["table_select"].pack(side="right", expand=True, fill="y")
 
-        self.__record_select = panels.RecordSelectTree(self.__content)
-        self.__record_select.pack(side="top", fill="both", expand=True)
+        self.__panels["record_select"] = panels.RecordSelectTree(self.__content, self.update_panels)
+        self.__panels["record_select"].pack(side="top", fill="both", expand=True)
 
-        self.__record = panels.RecordScroll(self.__right_sidebar)
+        self.__record = panels.RecordScroll(self.__right_sidebar, self.update_panels)
         self.__record.pack(side="right", fill="y", expand=True)
 
 
 
 
 
-        self.__table_select.add_bind(self.__record_select.set_object)
-        self.__record_select.add_bind(self.__record.set_object)
+        self.__panels["table_select"].add_bind(self.__panels["record_select"].set_object)
+        self.__panels["record_select"].add_bind(self.__record.set_object)
 
-        self.__table_select.set_object(object={}, force=True)
+        self.__panels["table_select"].set_object(object={}, force=True)
+    
+    def update_panels(self, updated_object:dict, caller):
+        for key in self.__panels:
+            self.__panels[key].signal_updated_object(updated_object, caller)
 
 
     @property

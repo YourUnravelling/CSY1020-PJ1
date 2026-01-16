@@ -55,7 +55,7 @@ class BaseField(DFrame):
         Calls the specified callable with the index as param
         Ignores all args
         """
-        print("call callable")
+        #print("call callable")
         if self._updated_call:
             self._updated_call(self._index)
 

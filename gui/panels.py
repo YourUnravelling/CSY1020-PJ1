@@ -19,8 +19,8 @@ import gui.base_panels as bp
 
 class TableSelectButtons(bp.BindablePanel):
 
-    def __init__(self, master):
-        super().__init__(master, core, debug_name="TableSelectButtons")
+    def __init__(self, master, update_function):
+        super().__init__(master, core, update_function, debug_name="TableSelectButtons")
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
         """
@@ -36,8 +36,8 @@ class TableSelectButtons(bp.BindablePanel):
 
 class RecordSelectTree(bp.BindablePanel):
     
-    def __init__(self, master):
-        super().__init__(master, core, debug_name="RecordSelectTree")
+    def __init__(self, master, update_function):
+        super().__init__(master, core, update_function, debug_name="RecordSelectTree")
 
         self.__treeview = TreeviewTable(self, self.__record_selected)
 
@@ -54,6 +54,9 @@ class RecordSelectTree(bp.BindablePanel):
             self.__top_bar.pack(fill="x", ipady=5)
             self.__treeview.pack(fill="both", expand=True, padx=5, pady=5)
             
+        if not "table" in updated_objects:
+            pass # TODO If table is not updated, only refresh the objects in the table and not the whole thing
+            # Maybe another condition for if the primary key updates? Maybe not needed
 
         table = self._object["table"]
         headings_raw = list(t[1] for t in self._core.sm.schema[table])
@@ -76,8 +79,8 @@ class RecordSelectTree(bp.BindablePanel):
 
 
 class RecordScroll(bp.BasePanel):
-    def __init__(self, master, autosave= False):
-        super().__init__(master, core, debug_name="RecordScroll")
+    def __init__(self, master, update_function, autosave= False):
+        super().__init__(master, core, update_function, debug_name="RecordScroll")
 
         self.__autosave:bool = autosave
 
@@ -148,6 +151,7 @@ class RecordScroll(bp.BasePanel):
         print(modified_values)
         self._core.sm.write_record_dict(self._object["table"], self._object["record"], modified_values)
         self.__to_saved()
+        self._broadcast_object_update(self._object)
 
     def set_table(self, table:str):
         """Sets the types of the feilds"""

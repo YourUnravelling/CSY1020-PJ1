@@ -237,4 +237,6 @@ class TreeviewTable(ttk.Treeview):
 
     def __record_selected(self, event) -> None:
         """Calls __on_select with the top record selected"""
-        self.__on_select(self.selection()[0])
+        try:
+            self.__on_select(self.selection()[0])
+        except: pass

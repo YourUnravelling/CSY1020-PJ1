@@ -9,9 +9,10 @@ class BasePanel(DFrame):
     """
     Docstring for BasePanel
     """
-    def __init__(self, master, core, debug_name: str | None = None, cnf={}, **kw):
+    def __init__(self, master, core, update_function, debug_name: str | None = None, cnf={}, **kw):
         super().__init__(master, debug_name, cnf, **kw)
         self._core = core # Protected, a pointer to core
+        self.__update_function = update_function
 
         self._object:dict = {}
     
@@ -42,32 +43,41 @@ class BasePanel(DFrame):
         if force: # If force is true set everything to updated
             for key in keys:
                 objects_to_update.add(key)
-            print("Update being forced,", keys, objects_to_update)
+            print("Update being forced,", keys, objects_to_update, self)
 
         if objects_to_update or force: # Needs an or force here because of table selectors
+            print("Updating the object", self, self._object, object, objects_to_update)
             self._set_object_spesific(objects_to_update)
         else:
             print("The object was not changed")
     
-    def _signal_updated_object(self, updated_object:dict, caller):
+    def signal_updated_object(self, updated_object:dict, caller):
         """
         Sends a signal that an object was updated, and if that object is contained within the updated one it's refreshed
         caller is a pointer to the object that called the update, and is not updated
         """
         cur_obj:dict = self._object
+        print(self._object)
 
         need_to_refresh:bool = False
 
-        #while True: # loop so break will work
+        print("Updated object:", updated_object, "Current object:", cur_obj, self)
         # TODO God please generalise this
-        if updated_object["table"] == cur_obj["table"] and (not "record" in cur_obj) and (not "field" in cur_obj):
-            need_to_refresh = True
-        
-        if updated_object["table"] == cur_obj["table"] and updated_object["record"] == cur_obj["record"] and (not "field" in cur_obj):
-            need_to_refresh = True
-        
-        if updated_object["table"] == cur_obj["table"] and updated_object["record"] == cur_obj["record"] and updated_object["field"] == cur_obj["field"]:
-            need_to_refresh = True
+        if not cur_obj or not updated_object:
+            return
+
+        for i in range(1): # To allow break statements
+            if updated_object["table"] == cur_obj["table"] and (not "record" in cur_obj) and (not "field" in cur_obj):
+                need_to_refresh = True
+                break
+            
+            if updated_object["table"] == cur_obj["table"] and updated_object["record"] == cur_obj["record"] and (not "field" in cur_obj):
+                need_to_refresh = True
+                break
+            
+            if updated_object["table"] == cur_obj["table"] and updated_object["record"] == cur_obj["record"] and updated_object["field"] == cur_obj["field"]:
+                need_to_refresh = True
+                break
         
         # Don't update if caller is pointing to this object, however do if caller is null
         if caller:
@@ -83,12 +93,18 @@ class BasePanel(DFrame):
         """
         raise NotImplementedError
 
+    def _broadcast_object_update(self, updated_object:dict):
+        """
+        Broadcasts an object update
+        """
+        self.__update_function(updated_object, self)
+
 class BindablePanel(BasePanel):
     """
     Panel which can have its selected object bound to one or more methods
     """
-    def __init__(self, master, core, debug_name: str | None = None, cnf={}, **kw):
-        super().__init__(master, core, debug_name, cnf, **kw)
+    def __init__(self, master, core, update_function, debug_name: str | None = None, cnf={}, **kw):
+        super().__init__(master, core, update_function, debug_name, cnf, **kw)
         self.__binds = [] # Private, list of binds to be called when selected object is updated.
 
     def add_bind(self, bind_callable):
