@@ -225,7 +225,7 @@ class TreeviewTable(ttk.Treeview):
 
         self.bind("<<TreeviewSelect>>", self.__record_selected)
 
-        self.insert(parent="", index="end", iid="__null", text="null", values=[])
+        #self.insert(parent="", index="end", iid="__null", text="null", values=[])
         for i, record in enumerate(table_data):
             self.insert(
                     parent = "",

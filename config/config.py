@@ -33,7 +33,10 @@ c = ConfigClass(
         "customer": "id",
     },
     default_values = {
-        "book": ("", "", "", "", "", "")
+        "book": ("", "", "", "", "", ""),
+        "author": ("", "", "", ""),
+        "customer": ("", "", "", "", ""),
+        "customer": ("", "", "")
     }
 )
 

@@ -56,9 +56,6 @@ class MainLayout(DFrame):
         self.__record.pack(side="right", fill="y", expand=True)
 
 
-
-
-
         self.__panels["table_select"].add_bind(self.__panels["record_select"].set_object)
         self.__panels["record_select"].add_bind(self.__record.set_object)
 

@@ -100,16 +100,14 @@ class RecordScroll(bp.BasePanel):
         self.__delete.pack(side="right")#grid(row=1, column=3)
 
         self.__edit = ttk.Button(self.__top_bar, text="Edit", command= self.__to_write)#self.__feilds.set_mode({"read":"write", "write":"read"}[self.__feilds.get_mode_at(0)]))
-        self.__edit.pack(side="left")
 
-        self.__apply = ttk.Button(self.__top_bar, text="Apply", command=self.__apply_pressed, state="disabled")
-        self.__apply.pack(side="left")
+        self.__apply = ttk.Button(self.__top_bar, text="Apply", command=self.__apply_pressed, state="enabled")
+        self.__cancel = ttk.Button(self.__top_bar, text="Cancel", command=self.__cancel_pressed, state="enabled") # TODO command
 
         # Frame for record info, possibly scrolling
         self.__record_frame = DFrame(self, debug_name="Record frame")
-        self.__record_frame.pack()
 
-        self.__no_record_text = ttk.Label(self.__record_frame, text="No record selected", justify="center")
+        self.__no_record_text = ttk.Label(self, text="No record selected", justify="center")
         
 
 
@@ -118,7 +116,7 @@ class RecordScroll(bp.BasePanel):
         self.__fields_img_grid.pack()
 
         self.__fields = FieldsGrid(self.__fields_img_grid, updated_call=self.a_field_was_updated)
-
+        self.__fields.grid(column=0, row=0)
 
         # Image
         self.__imagevar = tk.PhotoImage(file="resources/sidebar_image.png") # TODO
@@ -128,7 +126,7 @@ class RecordScroll(bp.BasePanel):
         self.__foreigns_frame = DFrame(self, debug_name="Foreigns frame")
         self.__foreigns_frame.pack()
 
-        self.__add_no_record_text()
+        self.__to_null_record()
         self.__to_saved()
 
     def a_field_was_updated(self, index, value):
@@ -137,6 +135,16 @@ class RecordScroll(bp.BasePanel):
         else:
             self._core.sm.write_field_index(self._object["table"], self._object["record"], index, value)
     
+    def __cancel_pressed(self):
+        """
+        When the cancel button is pressed, just reverts the fieldgrid to the saved state
+        """
+        if self.__unsaved: # If it has been modified, we need to set the fields back to the db values
+            pass
+
+        self.__to_read()
+
+
     def __apply_pressed(self):
         """
         Triggered when apply is pressed, saves the content of the fields to the record
@@ -160,10 +168,11 @@ class RecordScroll(bp.BasePanel):
 
     def set_table(self, table:str):
         """Sets the types of the feilds"""
-
-        column_types = list(col[2] for col in core.sm.schema[table])
-        default_values = core.config.default_values[table] # This is called default values but really should just be values MAYBE DISREG
-        column_names = list(col[1] for col in core.sm.schema[table])
+        try:
+            column_types = list(col[2] for col in core.sm.schema[table])
+            default_values = core.config.default_values[table] # This is called default values but really should just be values MAYBE DISREG
+            column_names = list(col[1] for col in core.sm.schema[table])
+        except BaseException as error: print(error)
 
         self.__fields.set_feilds(column_types, default_values, column_names)
 
@@ -181,14 +190,14 @@ class RecordScroll(bp.BasePanel):
                 self._object[sub_obj] = None
 
         if self._object["table"] == None or self._object["record"] == None:
-            self.__add_no_record_text()
+            self.__to_null_record()
         else:
             if "table" in updated_objects: # TODO If table is not what it already was
                 self.set_table(self._object["table"])
             if "record" in updated_objects:
                 self.set_record(self._object["record"])
 
-            self.__remove_no_record_text()
+            self.__to_not_null_record()
         #except: self.__add_no_record_text()
 
 
@@ -196,14 +205,14 @@ class RecordScroll(bp.BasePanel):
         self.__to_saved()
         print("Record scroll thingy is being updated!", self._object["table"],self._object["record"], updated_objects, self._object)
 
-    def __add_no_record_text(self):
+    def __to_null_record(self):
         self.__no_record_text.pack(pady=50)
-        #try:
-        self.__fields.grid_forget()
+        self.__record_frame.pack_forget()
+        #self.__fields.grid_forget()
         self.__fields.set_feilds([], [], [])
 
-    def __remove_no_record_text(self):
-        self.__fields.grid(column=0, row=0)
+    def __to_not_null_record(self):
+        self.__record_frame.pack()
         self.__no_record_text.pack_forget()
 
     def __to_unsaved(self):
@@ -213,13 +222,23 @@ class RecordScroll(bp.BasePanel):
     def __to_saved(self): # TODO Is this needed?
         self.__unsaved = False
         self.__apply["state"] = "disabled"
-        print("to saved")
+        self.__to_read()
     
     def __to_write(self):
-        self.__fields.get_mode_at(0)
+        self.__edit.pack_forget()
+        
+        self.__apply.pack(side="left")
+        self.__cancel.pack(side="left")
 
+        self.__fields.set_mode("write")
+        
     def __to_read(self):
-        pass
+        self.__edit.pack(side="left")
+        
+        self.__apply.pack_forget()
+        self.__cancel.pack_forget()
+
+        self.__fields.set_mode("read")
         
     
 
