@@ -41,6 +41,8 @@ class MainLayout(DFrame):
 
         self.__sidebar_image = tk.PhotoImage(file="resources/sidebar_image.png")
         tk.Label(self.__sidebar, text="test", image=self.__sidebar_image).pack()
+        tk.Label(self.__sidebar, text="Tables").pack()
+
 
 
         ttk.Label(self.__sidebar_extra, text=core.VERSION).pack(side="bottom",pady=3, padx=5)
@@ -63,6 +65,7 @@ class MainLayout(DFrame):
         self.__panels["table_select"].set_object(object={}, force=True)
     
     def update_panels(self, updated_object:dict, caller):
+        print("[Layout] Updating all panels")
         for key in self.__panels:
             self.__panels[key].signal_updated_object(updated_object, caller)
 

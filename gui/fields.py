@@ -183,8 +183,15 @@ class Foreign(BaseField):
     """
     Viewer for a foreign key, used in FieldsGrid
     """
+    DEMO_NAMES = ["Location", "Species"]
+    demo_first = True
+
+
     def __init__(self, parent, index:int, updated_call = None, initial_mode:RW="read", value = "ERROR", target_table:str = "NOTABLE"):
         super().__init__(parent, index, initial_mode=initial_mode)
+
+        target_table = Foreign.DEMO_NAMES[Foreign.demo_first]
+        Foreign.demo_first = False
 
         self.__target_table = target_table
         self.__foreign_value = value
@@ -200,7 +207,7 @@ class Foreign(BaseField):
 
     def _write(self):
         self.__read_button.pack_forget()
-        self.__write_button.pack(pady=3)
+        self.__write_button.pack(pady=0)
     
     def get_value(self):
         return self.__foreign_value

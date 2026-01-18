@@ -20,17 +20,25 @@ import gui.base_panels as bp
 class TableSelectButtons(bp.BindablePanel):
 
     def __init__(self, master, update_function):
+        self.__last_clicked_button = None
         super().__init__(master, core, update_function, debug_name="TableSelectButtons")
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
         """
         Just initialises the tables, doesn't read object param.
         """
-        tables = core.sm.schema.keys()
+        tables:list[str] = list(core.sm.schema.keys())
+        tables.sort()
         for table in tables:
-            ttk.Button(self, text=table, width=30, command= lambda table=table: self.__table_button_clicked(table)).pack(pady=3, padx=5, ipady=3)
+            this_button = ttk.Button(self, text=table, width=30)
+            this_button.configure(command= lambda table=table, this_button=this_button: self.__table_button_clicked(table, this_button))
+            this_button.pack(pady=3, padx=5, ipady=3)
         
-    def __table_button_clicked(self, table:str):
+    def __table_button_clicked(self, table:str, button):
+        button.config(state = "disabled")
+        if self.__last_clicked_button:
+            self.__last_clicked_button.config(state = "enabled")
+        self.__last_clicked_button = button
         self._call_binds({"table":table})
 
 
@@ -44,7 +52,8 @@ class RecordSelectTree(bp.BindablePanel):
         self.__top_bar = DFrame(self, debug_name="Record select top bar")
         
         self.__add_record = ttk.Button(self.__top_bar, text="Add")
-        self.__remove_record = ttk.Button(self.__top_bar, text="Remove")
+        self.__dupe_record = ttk.Button(self.__top_bar, text="Duplicate")
+        self.__remove_record = ttk.Button(self.__top_bar, text="Delete")
         
         self.__search_field = DFrame(self.__top_bar)
         self.__search_column_selector = ttk.Combobox(self.__search_field)
@@ -54,7 +63,7 @@ class RecordSelectTree(bp.BindablePanel):
         self.__search = ttk.Button(self.__search_field, text="Search")
         self.__search.pack(side="left")
         
-        for item in [self.__add_record, self.__remove_record]:
+        for item in [self.__add_record, self.__dupe_record, self.__remove_record]:
             item.pack(padx=5, side="left")
         
         self.__search_field.pack(side="left", padx=5, fill="x", expand=True)
@@ -73,6 +82,8 @@ class RecordSelectTree(bp.BindablePanel):
         if not "table" in updated_objects:
             pass # TODO If table is not updated, only refresh the objects in the table and not the whole thing
             # Maybe another condition for if the primary key updates? Maybe not needed
+        #else:
+        #    self.__surpress_next_signal = True
 
         table = self._object["table"]
         headings_raw = list(t[1] for t in self._core.sm.schema[table])
@@ -92,6 +103,11 @@ class RecordSelectTree(bp.BindablePanel):
         """
         Called when the treeview selects a record
         """
+        #if self.__surpress_next_signal: # If this signal is to be surpressed
+        #    self.__surpress_next_signal = False
+        #    return
+
+        print("[RecordSelectTree] Record was selected with id", uid)
         self._call_binds({
             "table": self._object["table"],
             "record": uid
@@ -145,7 +161,7 @@ class RecordScroll(bp.BasePanel):
         # TODO THIS IS TEMPORARY ---------
         self.__first_one = DFrame(self.__foreigns_frame, debug_name="Example thingy frame")
         self.__first_one.pack(pady=5, padx=10, fill="x")
-        ttk.Button(self.__first_one, text="Sponsors").pack(pady=5, padx=5, fill="x")
+        ttk.Button(self.__first_one, text="AnimalMedicalRecords").pack(pady=5, padx=5, fill="x")
 
         self.__first_one_tree = TreeviewTable(self.__first_one, None)
         self.__first_one_tree.pack(padx=15)
@@ -154,7 +170,7 @@ class RecordScroll(bp.BasePanel):
                                  ["32", "2", "2025-12-1", "45.1", "23.9"]
                                  ])
         
-        for name in ["oeneeee", "Twoorewi"]:
+        for name in ["AnimalTransferHistory", "SponsorableAnimal"]:
             one = DFrame(self.__foreigns_frame)
             one.pack(pady=5, padx=10, fill="x")
             ttk.Button(one, text=name).pack(pady=0, padx=10, fill="x")
@@ -207,16 +223,20 @@ class RecordScroll(bp.BasePanel):
         """Sets the types of the feilds"""
         try:
             column_types = list(col[2] for col in core.sm.schema[table])
-            default_values = core.config.default_values[table] # This is called default values but really should just be values MAYBE DISREG
+            #default_values = core.config.default_values[table] # This is called default values but really should just be values MAYBE DISREG
+            default_values = []
+            for i in range(len(core.sm.schema[table])):
+                default_values.append("")
             column_names = list(col[1] for col in core.sm.schema[table])
-        except BaseException as error: print("There was an error setting the table in recordScroll",error)
+        except BaseException as error: print("There was an error setting the table in recordScroll",error, default_values)
 
         self.__fields.set_feilds(column_types, default_values, column_names)
 
     def set_record(self, pk:str):
         """Sets the current displayed record to pk"""
 
-        record_values = core.sm.read(self._object["table"], pk, self._core.config.pk_defaults[self._object["table"]])
+        #record_values = core.sm.read(self._object["table"], pk, self._core.config.pk_defaults[self._object["table"]])
+        record_values = core.sm.read(self._object["table"], pk, self._core.sm.schema[self._object["table"]][0][1])#.pk_defaults[self._object["table"]])
         self.__fields.set_values(record_values)
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
@@ -227,11 +247,13 @@ class RecordScroll(bp.BasePanel):
                 self._object[sub_obj] = None
 
         if self._object["table"] == None or self._object["record"] == None:
+            print("[Recordscroll] part of object is null, setting to null", self._object)
             self.__to_null_record()
         else:
             if "table" in updated_objects: # TODO If table is not what it already was
                 self.set_table(self._object["table"])
-            if "record" in updated_objects:
+                self.set_record(self._object["record"])
+            elif "record" in updated_objects:
                 self.set_record(self._object["record"])
 
             self.__to_not_null_record()
@@ -240,7 +262,7 @@ class RecordScroll(bp.BasePanel):
 
         self.__fields.set_mode("read")
         self.__to_saved()
-        print("Record scroll thingy is being updated!", self._object["table"],self._object["record"], updated_objects, self._object)
+        print("[Recordscroll] object is being updated!", self._object["table"],self._object["record"], updated_objects, self._object)
 
     def __to_null_record(self):
         self.__no_record_text.pack(pady=50)
@@ -249,6 +271,7 @@ class RecordScroll(bp.BasePanel):
         self.__fields.set_feilds([], [], [])
 
     def __to_not_null_record(self):
+        print("[Recordscroll] To not null record", self._object)
         self.__record_frame.pack()
         self.__no_record_text.pack_forget()
 

@@ -94,6 +94,7 @@ def get_setting(setting:str|None=None):
 def initialise_database() -> None:
     """Creates the sqlite database if it doesn't already exist, also creates files"""
 
+    return # TODO this is temporary
     for table_sql in TABLE_SQLS: # Iterate through the table constant to initialise the tables
         sm.exe(f"CREATE TABLE IF NOT EXISTS {table_sql[0]} ({table_sql[1]})")
 
@@ -115,4 +116,4 @@ def add_book(
     })
 
 initialise_database()
-add_book("3232", "me", "title", dt.datetime.strptime("05/05/2005",r"%d/%m/%Y"), "bad genre", 5000.0)
+#add_book("3232", "me", "title", dt.datetime.strptime("05/05/2005",r"%d/%m/%Y"), "bad genre", 5000.0)

@@ -19,10 +19,13 @@ class FieldsGrid(DFrame):
 
     TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
             "TEXT" : f.Text,
-            "NUMBER" : f.Integer, # TODO
+            "NUMERIC" : f.Integer, # TODO
             "INTEGER" : f.Foreign, # TODO
+            "REAL" : f.Integer, # TODO
             "DATE" : f.Text, # TODO
             "BLOB" : f.Text, # TODO
+            "BOOL" : f.Text, # TODO
+
         }
 
     PY_TYPE_CLASSES = { # Mapping of python types to display classes TODO This is unused
@@ -37,7 +40,8 @@ class FieldsGrid(DFrame):
     # TODO Add a "lock" system that locks one feild to the value of another until it's unlocked, eg Name and PreferredName stay the same by default
 
     def __init__(self, parent, mode:RW|list = "read", updated_call = None):
-        super().__init__(parent)
+        super().__init__(parent, "fields grid", width=50)
+        self.pack_propagate(False)
 
         self.__labels:list = [] # Private, list of column name label widgets
         self.__widgets:list = [] # Private, list of value/feild __widgets
@@ -65,7 +69,7 @@ class FieldsGrid(DFrame):
         for i in range(len(feild_defaults)): # Iterate over each column
             
             # Column name label
-            self.__labels.append(tk.Label(self, text=feild_names[i]))
+            self.__labels.append(tk.Label(self, text=feild_names[i], pady=7))
             self.__labels[i].grid(row=i, column=0, sticky="w")
 
             # Create a pointer to the read/write widget matching the field type

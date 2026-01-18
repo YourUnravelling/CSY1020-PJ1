@@ -15,7 +15,7 @@ class DFrame(tk.Frame):
     """
     Extension of tk.Frame with an optional debug mode, which highlights on mouseover, for easy debugging frame structure.
     """
-    DEBUG_MODE = True#False
+    DEBUG_MODE = False
     def __init__(self, master=None, debug_name:str|None= None, cnf={}, **kw):
         super().__init__(master, cnf, **kw)
         self.__debug_name = debug_name
@@ -201,7 +201,6 @@ class TreeviewTable(ttk.Treeview):
     MINWIDTH = 50
 
     def __init__(self, parent, on_select):
-        #BaseTableViewer.__init__(self, parent)
         ttk.Treeview.__init__(self, parent)
         self.__on_select = on_select
 

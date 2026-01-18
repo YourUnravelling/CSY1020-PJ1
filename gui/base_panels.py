@@ -49,7 +49,7 @@ class BasePanel(DFrame):
             print("[Basepanel] Updating the object", self, self._object, object, objects_to_update)
             self._set_object_spesific(objects_to_update)
         else:
-            print("[Basepanel] The object was not changed")
+            print("[Basepanel] Tried to update object but it was not changed")
     
     def signal_updated_object(self, updated_object:dict, caller):
         """
@@ -122,5 +122,5 @@ class BindablePanel(BasePanel):
         Calls all bound callables with specified object as params
         """
         for bind in self.__binds:
-            print("[Basepanel] A bindable is being called by", self, "as object", object)
+            print("[Bindablepanel] A bindable is being called by", self, "as object", object)
             bind(object)
