@@ -32,9 +32,10 @@ class MainLayout(DFrame):
         self.__sidebar_extra = DFrame(self.__sidebar, "sidebar extra")
         self.__sidebar_extra.pack(side=tk.BOTTOM, fill=tk.X, pady=3)
         self.__topbar = DFrame(self, "top bar")
-        self.__topbar.pack(fill="x", padx=5, pady=5)
-        self.__right_sidebar = DFrame(self, "sidebar")
-        self.__right_sidebar.pack(side="right", fill="y")
+        #self.__topbar.pack(fill="x", padx=5, pady=5)
+        self.__right_sidebar = DFrame(self, "sidebar", width = 450)
+        self.__right_sidebar.pack_propagate(False)
+        self.__right_sidebar.pack(side="right", fill="y", ipadx=10, ipady=10)
         self.__content = DFrame(self, "content")
         self.__content.pack(expand=True, fill="both")
 
@@ -70,7 +71,7 @@ class MainLayout(DFrame):
     def core(self):
         return self.__core
 
-class DBViewer(DFrame):
+class DBViewer(DFrame): # TODO Unused
     def __init__(self, parent, core):
         super().__init__(parent)
         self.__parent = parent # Private, TODO maybe delete

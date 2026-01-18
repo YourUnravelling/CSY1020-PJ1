@@ -15,7 +15,7 @@ class DFrame(tk.Frame):
     """
     Extension of tk.Frame with an optional debug mode, which highlights on mouseover, for easy debugging frame structure.
     """
-    DEBUG_MODE = False
+    DEBUG_MODE = True#False
     def __init__(self, master=None, debug_name:str|None= None, cnf={}, **kw):
         super().__init__(master, cnf, **kw)
         self.__debug_name = debug_name

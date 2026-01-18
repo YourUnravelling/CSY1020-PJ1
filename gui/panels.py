@@ -42,10 +42,26 @@ class RecordSelectTree(bp.BindablePanel):
         self.__treeview = TreeviewTable(self, self.__record_selected)
 
         self.__top_bar = DFrame(self, debug_name="Record select top bar")
+        
         self.__add_record = ttk.Button(self.__top_bar, text="Add")
         self.__remove_record = ttk.Button(self.__top_bar, text="Remove")
+        
+        self.__search_field = DFrame(self.__top_bar)
+        self.__search_column_selector = ttk.Combobox(self.__search_field)
+        self.__search_column_selector.pack(side="left")
+        self.__searchbar = ttk.Entry(self.__search_field)
+        self.__searchbar.pack(side="left", fill="x", expand=True)
+        self.__search = ttk.Button(self.__search_field, text="Search")
+        self.__search.pack(side="left")
+        
         for item in [self.__add_record, self.__remove_record]:
             item.pack(padx=5, side="left")
+        
+        self.__search_field.pack(side="left", padx=5, fill="x", expand=True)
+
+        self.__search_column_selector.insert(0, "Any field")
+
+        
 
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
@@ -116,15 +132,36 @@ class RecordScroll(bp.BasePanel):
         self.__fields_img_grid.pack()
 
         self.__fields = FieldsGrid(self.__fields_img_grid, updated_call=self.a_field_was_updated)
-        self.__fields.grid(column=0, row=0)
+        self.__fields.grid(column=0, row=0, sticky="n")
 
         # Image
-        self.__imagevar = tk.PhotoImage(file="resources/sidebar_image.png") # TODO
+        self.__imagevar = tk.PhotoImage(file="resources/example_animal.png") # TODO
         self.__image = ttk.Label(self.__fields_img_grid, image=self.__imagevar)
         self.__image.grid(column=1, row=0)
 
-        self.__foreigns_frame = DFrame(self, debug_name="Foreigns frame")
-        self.__foreigns_frame.pack()
+        self.__foreigns_frame = DFrame(self.__record_frame, debug_name="Foreigns frame")
+        self.__foreigns_frame.pack(padx=5, pady=0)
+
+        # TODO THIS IS TEMPORARY ---------
+        self.__first_one = DFrame(self.__foreigns_frame, debug_name="Example thingy frame")
+        self.__first_one.pack(pady=5, padx=10, fill="x")
+        ttk.Button(self.__first_one, text="Sponsors").pack(pady=5, padx=5, fill="x")
+
+        self.__first_one_tree = TreeviewTable(self.__first_one, None)
+        self.__first_one_tree.pack(padx=15)
+        self.__first_one_tree.set_table("null", ["ID", "Animal", "Date", "Height", "Weight"], ["ID", "Animal", "Date", "Height", "Weight"], [
+                                 ["46", "1", "2025-12-12", "45.4", "22.2"],
+                                 ["32", "2", "2025-12-1", "45.1", "23.9"]
+                                 ])
+        
+        for name in ["oeneeee", "Twoorewi"]:
+            one = DFrame(self.__foreigns_frame)
+            one.pack(pady=5, padx=10, fill="x")
+            ttk.Button(one, text=name).pack(pady=0, padx=10, fill="x")
+
+
+
+        # --------------------------------
 
         self.__to_null_record()
         self.__to_saved()
@@ -172,7 +209,7 @@ class RecordScroll(bp.BasePanel):
             column_types = list(col[2] for col in core.sm.schema[table])
             default_values = core.config.default_values[table] # This is called default values but really should just be values MAYBE DISREG
             column_names = list(col[1] for col in core.sm.schema[table])
-        except BaseException as error: print(error)
+        except BaseException as error: print("There was an error setting the table in recordScroll",error)
 
         self.__fields.set_feilds(column_types, default_values, column_names)
 

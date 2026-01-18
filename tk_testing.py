@@ -25,8 +25,10 @@ ttk.Combobox(grid,values=["Test1","Test2"],state="readonly").grid(column=1,row=5
 
 #tk.Listbox(grid,{"Test":"test"}).grid(column=0,row=6,padx=10,pady=10)
 
-tk.Spinbox(grid).grid(column=0,row=7,padx=10,pady=10)
-ttk.Spinbox(grid).grid(column=1,row=7,padx=10,pady=10)
+spinbox_var1 = tk.IntVar(value=0)
+tk.Spinbox(grid, textvariable=spinbox_var1).grid(column=0,row=7,padx=10,pady=10)
+spinbox_var2 = tk.IntVar(value=0)
+ttk.Spinbox(grid, textvariable=spinbox_var2).grid(column=1,row=7,padx=10,pady=10)
 
 
 ttk.Separator(grid).grid(column=1,row=8,padx=10,pady=10)

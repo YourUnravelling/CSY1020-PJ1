@@ -43,13 +43,13 @@ class BasePanel(DFrame):
         if force: # If force is true set everything to updated
             for key in keys:
                 objects_to_update.add(key)
-            print("Update being forced,", keys, objects_to_update, self)
+            print("[Basepanel] Update being forced,", keys, objects_to_update, self)
 
         if objects_to_update or force: # Needs an or force here because of table selectors
-            print("Updating the object", self, self._object, object, objects_to_update)
+            print("[Basepanel] Updating the object", self, self._object, object, objects_to_update)
             self._set_object_spesific(objects_to_update)
         else:
-            print("The object was not changed")
+            print("[Basepanel] The object was not changed")
     
     def signal_updated_object(self, updated_object:dict, caller):
         """
@@ -57,7 +57,7 @@ class BasePanel(DFrame):
         caller is a pointer to the object that called the update, and is not updated
         """
         cur_obj:dict = self._object
-        print(self._object)
+        print("An updated object signal is being broadcast by", self, "of", self._object)
 
         need_to_refresh:bool = False
 
@@ -89,7 +89,7 @@ class BasePanel(DFrame):
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
         """
-        Takes objects that are updated?
+        To be overwritten by child classes.
         """
         raise NotImplementedError
 
@@ -122,5 +122,5 @@ class BindablePanel(BasePanel):
         Calls all bound callables with specified object as params
         """
         for bind in self.__binds:
-            print("Calling a bindable")
+            print("[Basepanel] A bindable is being called by", self, "as object", object)
             bind(object)

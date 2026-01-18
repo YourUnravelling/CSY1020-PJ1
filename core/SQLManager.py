@@ -97,7 +97,7 @@ class SQLManager():
         """
         Writes a single field in a record, field specified by field name
         """
-        self.exe(f"UPDATE {table} SET {field} = ? WHERE isbn = ?", (value, record_pk))
+        self.exe(f"UPDATE {table} SET {field} = ? WHERE {self.schema[table][0][1]} = ?", (value, record_pk))
 
     def format_dict_as_key_comma_list(self, inp:dict):
         """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""

@@ -19,13 +19,13 @@ class FieldsGrid(DFrame):
 
     TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
             "TEXT" : f.Text,
-            "NUMBER" : f.Text, # TODO
-            "INTEGER" : f.Text, # TODO
+            "NUMBER" : f.Integer, # TODO
+            "INTEGER" : f.Foreign, # TODO
             "DATE" : f.Text, # TODO
             "BLOB" : f.Text, # TODO
         }
 
-    PY_TYPE_CLASSES = { # Mapping of python types to display classes
+    PY_TYPE_CLASSES = { # Mapping of python types to display classes TODO This is unused
             str : f.Text,
             float : f.Text, # TODO
             int : f.Text, # TODO
@@ -52,18 +52,21 @@ class FieldsGrid(DFrame):
         assert len(feild_defaults) == len(feild_types)
 
         # Ungrid all existing items in widgets and labels
-        for i in range(len(self.__labels)):
-            self.__labels[i].grid_forget()
-            self.__widgets[i].grid_forget()
-        self.__labels.clear()
-        self.__widgets.clear()
+        for label in self.__labels:
+            label.grid_forget()
+        for widget in self.__widgets:
+            widget.grid_forget()
+        self.__labels = []
+        self.__widgets = []
+        #print(self.__widgets, "dewgyftweftyorwe")
 
 
         self.__values = feild_defaults # Sent values list to defaults
         for i in range(len(feild_defaults)): # Iterate over each column
             
             # Column name label
-            tk.Label(self, text=feild_names[i]).grid(row=i, column=0, sticky="w")
+            self.__labels.append(tk.Label(self, text=feild_names[i]))
+            self.__labels[i].grid(row=i, column=0, sticky="w")
 
             # Create a pointer to the read/write widget matching the field type
             pointer_to_class = FieldsGrid.TYPE_CLASSES[feild_types[i]] # TODO To others except text
