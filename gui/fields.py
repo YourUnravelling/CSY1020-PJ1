@@ -135,7 +135,7 @@ class Integer(BaseField):
         
         #self.__writebox.delete(0, tk.END)
         self.__writebox_var.set(val)
-        self.__writebox.set(val)#insert(0, str(val))
+        #self.__writebox.set(val)#insert(0, str(val))
 
 
 class Date_(BaseField):
