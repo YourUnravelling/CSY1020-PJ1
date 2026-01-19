@@ -48,7 +48,16 @@ c = ConfigClass(
     custom_commands= {
         "invoice": [generate_invoice]
     },
-    default_table="book",
+    default_table="author",
+    category_contents = [
+        ("Animal data", ["Animal", "AnimalMeasurement", "AnimalMedicalNote"]),
+        ("Species data", ["Species", "BirdInfo","FishInfo", "FishColor", "MammalInfo", "PlumageColor", "ReptileAmphibianInfo"]),
+        ("Sponsor data", []),
+        ("Membership data", []),
+        ("Visitor data", []),
+    ] # type: ignore
+    #table_categories = ["Animal data", "Species data", "Sponsor data", "Membership data", "Visitor data"]
+
     #pk_defaults = {
     #    "book": "isbn",
     #    "author": "id",

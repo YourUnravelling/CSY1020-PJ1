@@ -39,9 +39,9 @@ class MainLayout(DFrame):
         self.__content = DFrame(self, "content")
         self.__content.pack(expand=True, fill="both")
 
-        self.__sidebar_image = tk.PhotoImage(file="resources/sidebar_image.png")
+        self.__sidebar_image = tk.PhotoImage(file="resources/sidebar.png")
         tk.Label(self.__sidebar, text="test", image=self.__sidebar_image).pack()
-        tk.Label(self.__sidebar, text="Tables").pack()
+        #tk.Label(self.__sidebar, text="Tables").pack()
 
 
 
