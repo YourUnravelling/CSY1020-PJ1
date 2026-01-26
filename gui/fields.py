@@ -102,6 +102,7 @@ class Integer(BaseField):
     """
     def __init__(self, parent, index:int, updated_call = None, initial_mode:RW="read", value = "ERROR"):
         super().__init__(parent, index, initial_mode=initial_mode)
+        self._updated_call = updated_call
 
         self.__readbox = ttk.Label(self, text=value, width=20)
         self.__writebox_var = tk.IntVar()

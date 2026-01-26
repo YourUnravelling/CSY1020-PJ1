@@ -169,13 +169,16 @@ class RecordScroll(bp.BasePanel):
         self.__image.grid(column=1, row=0)
 
         self.__foreigns_frame = DFrame(self.__record_frame, debug_name="Foreigns frame")
-        self.__foreigns_frame.pack(padx=5, pady=0)
+        self.__foreigns_frame.pack(padx=5, pady=0, fill="x")
 
+        self.__to_null_record()
+        self.__to_saved()
 
     def __create_references(self):
 
         table_references:list[tuple[str,str]] = [] # (tablename, referencing column in the other table, referenced column in this table)
 
+        
         for table in core.sm.schema:
             if not table[1] == self._object["table"]: # If the table isnt the current one
                 if True: # If the table has a reference to this one
@@ -190,12 +193,9 @@ class RecordScroll(bp.BasePanel):
                                     ["46", "1", "2025-12-12", "45.4", "22.2"],
                                     ["32", "2", "2025-12-1", "45.1", "23.9"]
                                     ])
-            
             this.pack(pady=5, padx=10, fill="x")
-            
 
-        self.__to_null_record()
-        self.__to_saved()
+
 
     def a_field_was_updated(self, index, value):
         if not self.__autosave:
@@ -208,7 +208,7 @@ class RecordScroll(bp.BasePanel):
         When the cancel button is pressed, just reverts the fieldgrid to the saved state
         """
         if self.__unsaved: # If it has been modified, we need to set the fields back to the db values
-            pass
+            pass # TODO
 
         self.__to_read()
 

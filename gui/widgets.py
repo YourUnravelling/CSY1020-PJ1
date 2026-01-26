@@ -17,15 +17,17 @@ class DFrame(tk.Frame):
     """
     Extension of tk.Frame with an optional debug mode, which highlights on mouseover, for easy debugging frame structure.
     """
-    DEBUG_MODE = False
+    DEBUG_PRINT = False
+    DEBUG_SHOW  = False
     def __init__(self, master=None, debug_name:str|None= None, cnf={}, **kw):
         super().__init__(master, cnf, **kw)
         self.__debug_name = debug_name
         self.__normal_bg_color = self.cget("background")
 
-        if DFrame.DEBUG_MODE:
+        if DFrame.DEBUG_PRINT:
             #self.config(background="#" + (self.__randhex() + self.__randhex()) * 3)
             self.bind("<Button-1>", self.__print_info)
+        if DFrame.DEBUG_SHOW:
             self.bind("<Enter>", self.__hover)
             self.bind("<Leave>", self.__unhover)
         
