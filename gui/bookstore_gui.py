@@ -51,7 +51,7 @@ class MainLayout(DFrame):
         ttk.Button(self.__sidebar_extra, text="Preferences", width=30, ).pack(side="bottom",pady=3, padx=5, ipady=3)
 
         self.__panels["table_select"] = panels.TableSelectButtons(self.__sidebar, self.update_panels)
-        self.__panels["table_select"].pack(side="right", expand=True, fill="y")
+        self.__panels["table_select"].pack(side="right", expand=True, fill="both")
 
         self.__panels["record_select"] = panels.RecordSelectTree(self.__content, self.update_panels)
         self.__panels["record_select"].pack(side="top", fill="both", expand=True)
@@ -128,9 +128,9 @@ w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="resources/icon.png"))
 w.minsize(width=1100, height=500)
 
+# Initialise the icons here because images need a window to be created
 cr.initialise_icons()
 
-#DBViewer(w, core).pack()
 MainLayout(w, core).pack(expand=True, fill="both")
 
 def main():

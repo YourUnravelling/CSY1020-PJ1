@@ -44,7 +44,7 @@ class TableSelectButtons(bp.BindablePanel):
                 ttk.Label(category_frame.content, text="No tables in this category").pack(pady=3, padx=5, ipady=3)
 
 
-            category_frame.pack(ipady=5)
+            category_frame.pack(fill="x", ipady=5)
 
         
     def __table_button_clicked(self, table:str, button):

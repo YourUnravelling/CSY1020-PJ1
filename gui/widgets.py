@@ -51,7 +51,7 @@ class DFrame(tk.Frame):
     def __unhover(self, var):
         self.config(background=self.__normal_bg_color)
 
-class BgButton(ttk.Button): # To delete?
+class BgButton(ttk.Button): # TODO delete?
 
     def __init__(self, master=None, cnf={}, **kw):
         super().__init__(master, cnf, **kw) # type: ignore
@@ -202,14 +202,16 @@ class HideShowFrame(DFrame):
         self.__hidden = False
 
         # Creating the title bar
-        catnameframe = DFrame(self) # Private, Frame holding category name 
-        catnameframe.pack()
-        self.__image_label = tk.Label(catnameframe)
+        wide_label_frame = DFrame(self) # Private, Frame holding category name 
+        wide_label_frame.pack(fill="x")
+        label_frame = DFrame(wide_label_frame) # Private, Frame holding category name 
+        label_frame.pack()
+        self.__image_label = tk.Label(label_frame)
         self.__image_label.pack(side="left")
-        self.__label = tk.Label(catnameframe, text=label)
+        self.__label = tk.Label(label_frame, text=label)
         self.__label.pack(side="right")
 
-        for item in [catnameframe, self.__image_label, self.__label]:
+        for item in [wide_label_frame, label_frame, self.__image_label, self.__label]:
             item.bind("<Button-1>", self.__toggle)
 
         self.__content = DFrame(self) # Private, Frame containing the actual content
