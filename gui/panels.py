@@ -171,26 +171,28 @@ class RecordScroll(bp.BasePanel):
         self.__foreigns_frame = DFrame(self.__record_frame, debug_name="Foreigns frame")
         self.__foreigns_frame.pack(padx=5, pady=0)
 
-        # TODO THIS IS TEMPORARY ---------
-        self.__first_one = DFrame(self.__foreigns_frame, debug_name="Example thingy frame")
-        self.__first_one.pack(pady=5, padx=10, fill="x")
-        ttk.Button(self.__first_one, text="AnimalMedicalRecords").pack(pady=5, padx=5, fill="x")
 
-        self.__first_one_tree = TreeviewTable(self.__first_one, None)
-        self.__first_one_tree.pack(padx=15)
-        self.__first_one_tree.set_table("null", ["ID", "Animal", "Date", "Height", "Weight"], ["ID", "Animal", "Date", "Height", "Weight"], [
-                                 ["46", "1", "2025-12-12", "45.4", "22.2"],
-                                 ["32", "2", "2025-12-1", "45.1", "23.9"]
-                                 ])
+    def __create_references(self):
+
+        table_references:list[tuple[str,str]] = [] # (tablename, referencing column in the other table, referenced column in this table)
+
+        for table in core.sm.schema:
+            if not table[1] == self._object["table"]: # If the table isnt the current one
+                if True: # If the table has a reference to this one
+                    table_references.append((table[1], "the column that is referencing it"))
         
-        for name in ["AnimalTransferHistory", "SponsorableAnimal"]:
-            one = DFrame(self.__foreigns_frame)
-            one.pack(pady=5, padx=10, fill="x")
-            ttk.Button(one, text=name).pack(pady=0, padx=10, fill="x")
-
-
-
-        # --------------------------------
+        for i in range(4): # TODO Replace with list of references
+            this = HideShowFrame(self.__foreigns_frame, label="test " + str(i))
+            
+            tree = TreeviewTable(this.content, None)
+            tree.pack(padx=15)
+            tree.set_table("null", ["ID", "Animal", "Date", "Height", "Weight"], ["ID", "Animal", "Date", "Height", "Weight"], [
+                                    ["46", "1", "2025-12-12", "45.4", "22.2"],
+                                    ["32", "2", "2025-12-1", "45.1", "23.9"]
+                                    ])
+            
+            this.pack(pady=5, padx=10, fill="x")
+            
 
         self.__to_null_record()
         self.__to_saved()
@@ -232,7 +234,7 @@ class RecordScroll(bp.BasePanel):
         self.__to_saved()
         self._broadcast_object_update(self._object)
 
-    def set_table(self, table:str):
+    def __set_table(self, table:str):
         """Sets the types of the feilds"""
         try:
             column_types = list(col[2] for col in core.sm.schema[table])
@@ -245,12 +247,14 @@ class RecordScroll(bp.BasePanel):
 
         self.__fields.set_feilds(column_types, default_values, column_names)
 
-    def set_record(self, pk:str):
+    def __set_record(self, pk:str): # TODO make priv
         """Sets the current displayed record to pk"""
 
         #record_values = core.sm.read(self._object["table"], pk, self._core.config.pk_defaults[self._object["table"]])
         record_values = core.sm.read(self._object["table"], pk, self._core.sm.schema[self._object["table"]][0][1])#.pk_defaults[self._object["table"]])
         self.__fields.set_values(record_values)
+
+        self.__create_references()
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
 
@@ -264,10 +268,10 @@ class RecordScroll(bp.BasePanel):
             self.__to_null_record()
         else:
             if "table" in updated_objects: # TODO If table is not what it already was
-                self.set_table(self._object["table"])
-                self.set_record(self._object["record"])
+                self.__set_table(self._object["table"])
+                self.__set_record(self._object["record"])
             elif "record" in updated_objects:
-                self.set_record(self._object["record"])
+                self.__set_record(self._object["record"])
 
             self.__to_not_null_record()
         #except: self.__add_no_record_text()
