@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from core import bookstore_core as core
-from gui.widgets import DFrame, TreeviewTable
+from gui.widgets import DFrame, TreeviewTable, HideShowFrame
 from gui.fields_grid import FieldsGrid
 import gui.base_panels as bp
 
@@ -23,9 +23,6 @@ class TableSelectButtons(bp.BindablePanel):
         self.__last_clicked_button = None
         super().__init__(master, core, update_function, debug_name="TableSelectButtons")
 
-        self.__open = tk.PhotoImage(file="core_resources/closed.png")
-        self.__closed = tk.PhotoImage(file="core_resources/open.png")
-
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
         """
         Just initialises the tables, doesn't read object param.
@@ -35,31 +32,19 @@ class TableSelectButtons(bp.BindablePanel):
 
         cats = core.config.category_contents
         for category in cats:
-            category_frame = DFrame(self)
+            category_frame = HideShowFrame(self, label=category[0])
             
-            catnameframe = DFrame(category_frame)
-            catnameframe.pack()
-            image_label = tk.Label(catnameframe)
-            image_label.pack(side="left")
-            label = tk.Label(catnameframe, text=category[0])
-            label.pack(side="right")
-            
-            if category[1]:
-                image_label.configure(image=self.__open)
-            else:
-                image_label.configure(image=self.__closed)
-                #tk.Label(category_frame, text=category[0], image=self.__open).pack()
-            
-
-
 
             for tablename in category[1]:
-                this_button = ttk.Button(category_frame, text=tablename, width=30)
+                this_button = ttk.Button(category_frame.content, text=tablename, width=30)
                 this_button.configure(command=lambda table=tablename, this_button=this_button: self.__table_button_clicked(table, this_button))
                 this_button.pack(pady=3, padx=5, ipady=3)
+            
+            if not category[1]:
+                ttk.Label(category_frame.content, text="No tables in this category").pack(pady=3, padx=5, ipady=3)
 
 
-            category_frame.pack(pady=5)
+            category_frame.pack(ipady=5)
 
         
     def __table_button_clicked(self, table:str, button):

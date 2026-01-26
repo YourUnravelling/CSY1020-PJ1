@@ -10,6 +10,8 @@ from numpy.random import choice as nprc
 
 from core.constants import READ_WRITE as RW
 
+from gui.core_resources import icons
+
 
 class DFrame(tk.Frame):
     """
@@ -146,7 +148,7 @@ class VCombobox(ttk.Combobox): # TODO Delete
     def index(self, val:int):
         self.__set_index(val)
 
-class DoubleCombobox(ttk.Combobox):
+class DoubleCombobox(ttk.Combobox): # TODO Delete unused
     """Combobox which displays different values to the stored ones"""
 
     def __init__(self, 
@@ -191,7 +193,69 @@ class DoubleCombobox(ttk.Combobox):
     def get_index(self):
         return self.current()
 
+class HideShowFrame(DFrame):
+    """Frame with a title that can be shown and hidden"""
 
+    def __init__(self, master=None, debug_name: str | None = None, label:str = "No label", cnf={}, **kw):
+        super().__init__(master, debug_name, cnf, **kw)
+
+        self.__hidden = False
+
+        # Creating the title bar
+        catnameframe = DFrame(self) # Private, Frame holding category name 
+        catnameframe.pack()
+        self.__image_label = tk.Label(catnameframe)
+        self.__image_label.pack(side="left")
+        self.__label = tk.Label(catnameframe, text=label)
+        self.__label.pack(side="right")
+
+        for item in [catnameframe, self.__image_label, self.__label]:
+            item.bind("<Button-1>", self.__toggle)
+
+        self.__content = DFrame(self) # Private, Frame containing the actual content
+
+        self.__hide()
+    
+    def __toggle(self, ignore = None):
+        if self.__hidden:
+            self.__show()
+        else:
+            self.__hide()
+    
+    def __hide(self): 
+        self.__hidden = True
+        self.__image_label.config(image=icons["closed"])
+        self.__content.pack_forget()
+
+    def __show(self):
+        self.__hidden = False
+        self.__image_label.config(image=icons["open"])
+        self.__content.pack(fill="x")
+    
+    @property
+    def hidden(self):
+        return self.__hidden
+    
+    @hidden.setter
+    def hidden(self, hidden:bool):
+        if hidden:
+            self.__hide()
+        else:
+            self.__show()
+        
+    @property
+    def label(self):
+        return self.__label.cget("text")
+    
+    @label.setter
+    def label(self, text:str):
+        self.__label.config(text=text)
+    
+    @property
+    def content(self):
+        return self.__content
+
+    
 
 class TreeviewTable(ttk.Treeview):
     """

@@ -15,6 +15,7 @@ from external.scrollable_external import ScrollFrame
 #from resources import config as configuration
 from gui.widgets import DFrame, DoubleCombobox
 from gui import panels
+import gui.core_resources as cr
 
 class MainLayout(DFrame):
     """
@@ -126,6 +127,8 @@ class DBViewer(DFrame): # TODO Unused
 w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="resources/icon.png"))
 w.minsize(width=1100, height=500)
+
+cr.initialise_icons()
 
 #DBViewer(w, core).pack()
 MainLayout(w, core).pack(expand=True, fill="both")
