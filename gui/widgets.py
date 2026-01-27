@@ -273,10 +273,9 @@ class TreeviewTable(ttk.Treeview):
         self.__on_select = on_select
 
 
-    def set_table(self, table:str, headings:list[str], headingsdisplay:list[str], table_data:list[list]): # TODO Seperate into set_headings and set_data? 
+    def set_headings(self, table:str, headings:list[str], headingsdisplay:list[str]):
         
         self.delete(*self.get_children())
-        #ttk.Button(self, text="test").grid(column=1)
 
         headings_no_pk = headings[1:len(headings)]
         headings_display_no_pk = headingsdisplay[1:len(headingsdisplay)]
@@ -292,7 +291,8 @@ class TreeviewTable(ttk.Treeview):
 
         self.bind("<<TreeviewSelect>>", self.__record_selected)
 
-        #self.insert(parent="", index="end", iid="__null", text="null", values=[])
+    def set_table_data(self, table_data:list[list]):
+
         for i, record in enumerate(table_data):
             self.insert(
                     parent = "",

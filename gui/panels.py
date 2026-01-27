@@ -73,8 +73,8 @@ class RecordSelectTree(bp.BindablePanel):
         self.__search_column_selector.pack(side="left")
         self.__searchbar = ttk.Entry(self.__search_field)
         self.__searchbar.pack(side="left", fill="x", expand=True)
-        self.__search = ttk.Button(self.__search_field, text="Search")
-        self.__search.pack(side="left")
+        self.__search_button = ttk.Button(self.__search_field, text="Search")
+        self.__search_button.pack(side="left")
         
         for item in [self.__add_record, self.__dupe_record, self.__remove_record]:
             item.pack(padx=5, side="left")
@@ -84,11 +84,12 @@ class RecordSelectTree(bp.BindablePanel):
         self.__search_column_selector.insert(0, "Any field")
 
         
-
+    def __filter(self):
+        pass
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
         #self.__treeview.pack_forget()
-        if not self.__treeview.winfo_ismapped(): # If widgets are not visible, pack it
+        if not self.__treeview.winfo_ismapped(): # If treeview is not visible, pack it and the top bar
             self.__top_bar.pack(fill="x", ipady=5)
             self.__treeview.pack(fill="both", expand=True, padx=5, pady=5)
             
@@ -99,14 +100,20 @@ class RecordSelectTree(bp.BindablePanel):
         #    self.__surpress_next_signal = True
 
         table = self._object["table"]
+
+        # Get a headings list and a table data list
         headings_raw = list(t[1] for t in self._core.sm.schema[table])
         table_data = self._core.sm.read_full(table)
-        self.__treeview.set_table(
+
+        self.__treeview.set_headings(
                 table,
                 headings_raw,
-                headings_raw,#self._core.config,
-                table_data
+                headings_raw
                 )
+        
+        self.__treeview.set_table_data(table_data)
+        
+        # Call binds as null when a new table is loaded
         self._call_binds({
             "table": None,
             "record": None
@@ -171,10 +178,16 @@ class RecordScroll(bp.BasePanel):
         self.__foreigns_frame = DFrame(self.__record_frame, debug_name="Foreigns frame")
         self.__foreigns_frame.pack(padx=5, pady=0, fill="x")
 
+        self.__foreigns:list = [] # List of pointers to the foreign showhide frames, used to delete them when new ones are to be made.
+
         self.__to_null_record()
         self.__to_saved()
 
     def __create_references(self):
+
+        for item in self.__foreigns:
+            item.pack_forget()
+        self.__foreigns.clear()
 
         table_references:list[tuple[str,str]] = [] # (tablename, referencing column in the other table, referenced column in this table)
 
@@ -189,10 +202,15 @@ class RecordScroll(bp.BasePanel):
             
             tree = TreeviewTable(this.content, None)
             tree.pack(padx=15)
-            tree.set_table("null", ["ID", "Animal", "Date", "Height", "Weight"], ["ID", "Animal", "Date", "Height", "Weight"], [
-                                    ["46", "1", "2025-12-12", "45.4", "22.2"],
-                                    ["32", "2", "2025-12-1", "45.1", "23.9"]
-                                    ])
+            tree.set_headings("null", 
+                           ["ID", "Animal", "Date", "Height", "Weight"], 
+                           ["ID", "Animal", "Date", "Height", "Weight"], 
+                           )
+            tree.set_table_data([
+                            ["46", "1", "2025-12-12", "45.4", "22.2"],
+                            ["32", "2", "2025-12-1", "45.1", "23.9"]
+                        ])
+            self.__foreigns.append(this)
             this.pack(pady=5, padx=10, fill="x")
 
 
