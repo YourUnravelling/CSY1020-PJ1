@@ -71,6 +71,7 @@ class RecordSelectTree(bp.BindablePanel):
         self.__search_field = DFrame(self.__top_bar)
         self.__search_column_selector = ttk.Combobox(self.__search_field)
         self.__search_column_selector.pack(side="left")
+        self.__search_column_selector["state"] = "readonly"
         self.__searchbar = ttk.Entry(self.__search_field)
         self.__searchbar.pack(side="left", fill="x", expand=True)
         self.__search_button = ttk.Button(self.__search_field, text="Search")
@@ -85,10 +86,28 @@ class RecordSelectTree(bp.BindablePanel):
 
         
     def __filter(self):
-        pass
+        column = self.__search_column_selector.get()
+        # No strip here to allow precise filtering, for example the user might want to search "we" without bringing up "ewes", so they search " we "
+        filter_str = self.__searchbar.get() 
+
+        if column == "Any field" or not filter_str:
+            pass # No filter
+        else:
+            self.__load_table_data()
+
+
+    def __load_table_data(self, filters:list[tuple[str, str]]|None = None):
+        """
+        Sets the table data by getting it with an sql query. Filters according to filters
+        """
+        table = self._object["table"]
+        table_data = self._core.sm.read_full(table)
+
+
+        self.__treeview.set_table_data(table_data)
+
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
-        #self.__treeview.pack_forget()
         if not self.__treeview.winfo_ismapped(): # If treeview is not visible, pack it and the top bar
             self.__top_bar.pack(fill="x", ipady=5)
             self.__treeview.pack(fill="both", expand=True, padx=5, pady=5)
@@ -101,17 +120,16 @@ class RecordSelectTree(bp.BindablePanel):
 
         table = self._object["table"]
 
-        # Get a headings list and a table data list
+        # Get a headings list
         headings_raw = list(t[1] for t in self._core.sm.schema[table])
-        table_data = self._core.sm.read_full(table)
 
         self.__treeview.set_headings(
                 table,
                 headings_raw,
                 headings_raw
                 )
-        
-        self.__treeview.set_table_data(table_data)
+        self.__search_column_selector["values"] = ["Any column"] + headings_raw
+        self.__load_table_data()
         
         # Call binds as null when a new table is loaded
         self._call_binds({

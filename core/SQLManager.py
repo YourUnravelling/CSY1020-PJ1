@@ -61,11 +61,15 @@ class SQLManager():
         
         return self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == ?", (id,))
 
-    def read_full(self, table:str) -> list:
+    def read_full(self, table:str, filters:list[tuple]|None = None, sort:tuple[str, bool]|None = None) -> list:
         """Returns a full list of records from a table"""
 
-        return self.exe(f"SELECT * FROM {table}", None, "all") # type: ignore
-    
+        # Case for no filter and no sort to save resources
+        if not (filters or sort):
+            return self.exe(f"SELECT * FROM {table}", None, "all") # type: ignore
+
+        return self.exe(f"SELECT * FROM {table} WHERE {filters[0][0]} = ?", (filters[0][1]), "all") # type: ignore
+
     def write_record_list(self, table, pk, values:list|tuple):
         """Writes to a record specified by pk, with a list of values"""
         this_table_list_of_cols = list(self.schema[table][i][1] for i in range(len(self.schema[table])))
