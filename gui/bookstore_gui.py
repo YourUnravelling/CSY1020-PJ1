@@ -33,7 +33,7 @@ class MainLayout(DFrame):
         self.__sidebar_extra = DFrame(self.__sidebar, "sidebar extra")
         self.__sidebar_extra.pack(side=tk.BOTTOM, fill=tk.X, pady=3)
         self.__topbar = DFrame(self, "top bar")
-        #self.__topbar.pack(fill="x", padx=5, pady=5)
+
         self.__right_sidebar = DFrame(self, "sidebar", width = 450)
         self.__right_sidebar.pack_propagate(False)
         self.__right_sidebar.pack(side="right", fill="y", ipadx=10, ipady=10)

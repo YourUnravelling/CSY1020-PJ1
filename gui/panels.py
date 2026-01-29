@@ -75,27 +75,19 @@ class RecordSelectTree(bp.BindablePanel):
         self.__searchbar = ttk.Entry(self.__search_field)
         #self.__searchbar.pack(side="left", fill="x", expand=True, padx=5)
         self.__search_button = ttk.Button(self.__search_field, text="Search", command=self.__filter)
-        self.__search_button.pack(side="left", padx=5)
+        #self.__search_button.pack(side="left", padx=5)
+        self.__discard_search_button = ttk.Button(self.__search_field, text="Remove search", command=self.__remove_filter)
 
-        pack_list = [
-                self.__add_record,
-                self.__dupe_record,
-                self.__remove_record,
+        PADXVAL = 5
 
-                self.__search_column_selector, 
-                
-                self.__search_button,
-                self.__searchbar, 
-                self.__search_field,
-        ] 
-        expand_list = [False, False, False, False, True, False, False]
-        
-        for i in range(len(pack_list)):
-            if expand_list[i]:
-                pack_list[i].pack(padx=5, side="left", expand=True, fill="x")
-            else:
-                pack_list[i].pack(padx=5, side="left")
-            print("packing", i)
+        self.__add_record            .pack(padx=PADXVAL, side="left")
+        self.__dupe_record           .pack(padx=PADXVAL, side="left")
+        self.__remove_record         .pack(padx=PADXVAL, side="left")
+        self.__search_column_selector.pack(padx=PADXVAL, side="left")
+        self.__discard_search_button .pack(padx=PADXVAL, side="right")
+        self.__search_button         .pack(padx=PADXVAL, side="right")
+        self.__search_field          .pack(padx=PADXVAL, side="left", expand=True, fill="x")
+        self.__searchbar             .pack(padx=PADXVAL, side="left", expand=True, fill="x")
         
         self.__search_column_selector.insert(0, "Any field")
 
@@ -105,15 +97,19 @@ class RecordSelectTree(bp.BindablePanel):
         # No strip here to allow precise filtering, for example the user might want to search "we" without bringing up "ewes", so they search " we "
 
         filter_column = self.__search_column_selector.get()
-        if filter_column == "Any column":
-            filter_column = "*"
         filter_str = self.__searchbar.get() 
         print("searching", filter_column, filter_str)
 
-        if column == "Any field" or not filter_str:
+        if not filter_str:
             self.__load_table_data()
         else:
             self.__load_table_data(filters=[(filter_column, filter_str)])
+            self.__discard_search_button["state"] = "disabled"
+
+    def __remove_filter(self):
+        self.__searchbar.clear()
+        self.__load_table_data()
+        self.__discard_search_button["state"] = "disabled"
 
 
     def __load_table_data(self, filters:list[tuple[str, str]]|None = None):
