@@ -292,6 +292,8 @@ class TreeviewTable(ttk.Treeview):
         self.bind("<<TreeviewSelect>>", self.__record_selected)
 
     def set_table_data(self, table_data:list[list]):
+        # Delete all records in the treeview
+        self.delete(*self.get_children())
 
         for i, record in enumerate(table_data):
             self.insert(

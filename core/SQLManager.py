@@ -61,14 +61,36 @@ class SQLManager():
         
         return self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == ?", (id,))
 
-    def read_full(self, table:str, filters:list[tuple]|None = None, sort:tuple[str, bool]|None = None) -> list:
+    def read_full(self, table:str, 
+                filters:list[tuple[str, str|int|float, Literal(["in", "is", "starts", "ends"])]]|None = None, # list[tuple[columnname:str, value:variant, ]]
+                sort:tuple[str, bool]|None = None 
+                ) -> list:
         """Returns a full list of records from a table"""
 
-        # Case for no filter and no sort to save resources
-        if not (filters or sort):
-            return self.exe(f"SELECT * FROM {table}", None, "all") # type: ignore
+        sort_str:str = ""
+        if sort:
+            sort_str = f"ORDER BY {sort[0]} {["ASC", "DESC"][sort[1]]}"
+        
+        filt_str:str = ""
+        filt_list = []
+        if filters:
+            filt_dict = {}
+            for filt in filters:
+                column_to_filter = filt[0]
+                filt_dict[filt[0]] = "%" + str(filt[1]) + "%"
+            format_result = self.format_dict_as_key_comma_list(filt_dict, sep="LIKE")
 
-        return self.exe(f"SELECT * FROM {table} WHERE {filters[0][0]} = ?", (filters[0][1]), "all") # type: ignore
+            filt_str = "WHERE " + format_result[0]
+
+            filt_list = format_result[1]#list(filt[1] for filt in filters)
+        print("reading full", filt_str, filt_list)
+        
+        #if not filters: # If no filters are specified
+            # Search
+        #    return self.exe(f"SELECT * FROM {table} {sort_str}", filt_list, "all") # type: ignore
+
+
+        return self.exe(f"SELECT * FROM {table} {filt_str}", (filt_list), "all") # type: ignore
 
     def write_record_list(self, table, pk, values:list|tuple):
         """Writes to a record specified by pk, with a list of values"""
@@ -103,12 +125,12 @@ class SQLManager():
         """
         self.exe(f"UPDATE {table} SET {field} = ? WHERE {self.schema[table][0][1]} = ?", (value, record_pk))
 
-    def format_dict_as_key_comma_list(self, inp:dict):
-        """Returns a string of keys and ?s seperated by colons, seperated by commas, and a corresponding list of the values"""
+    def format_dict_as_key_comma_list(self, inp:dict, sep="="):
+        """Returns a string of keys and ?s seperated by equals, seperated by commas, and a corresponding list of the values"""
         values = []
         formatted_string = ""
         for key in inp:
-            formatted_string = formatted_string + key + " = ?, "
+            formatted_string = formatted_string + key + f" {sep} ?, "
             values.append(inp[key])
         formatted_string = formatted_string[0: len(formatted_string) - 2] # Remove last comma # TODO replace with join()
         return formatted_string, tuple(values)

@@ -74,7 +74,7 @@ class RecordSelectTree(bp.BindablePanel):
         self.__search_column_selector["state"] = "readonly"
         self.__searchbar = ttk.Entry(self.__search_field)
         self.__searchbar.pack(side="left", fill="x", expand=True)
-        self.__search_button = ttk.Button(self.__search_field, text="Search")
+        self.__search_button = ttk.Button(self.__search_field, text="Search", command=self.__filter)
         self.__search_button.pack(side="left")
         
         for item in [self.__add_record, self.__dupe_record, self.__remove_record]:
@@ -88,12 +88,17 @@ class RecordSelectTree(bp.BindablePanel):
     def __filter(self):
         column = self.__search_column_selector.get()
         # No strip here to allow precise filtering, for example the user might want to search "we" without bringing up "ewes", so they search " we "
+
+        filter_column = self.__search_column_selector.get()
+        if filter_column == "Any column":
+            filter_column = "*"
         filter_str = self.__searchbar.get() 
+        print("searching", filter_column, filter_str)
 
         if column == "Any field" or not filter_str:
-            pass # No filter
-        else:
             self.__load_table_data()
+        else:
+            self.__load_table_data(filters=[(filter_column, filter_str)])
 
 
     def __load_table_data(self, filters:list[tuple[str, str]]|None = None):
@@ -101,7 +106,7 @@ class RecordSelectTree(bp.BindablePanel):
         Sets the table data by getting it with an sql query. Filters according to filters
         """
         table = self._object["table"]
-        table_data = self._core.sm.read_full(table)
+        table_data = self._core.sm.read_full(table, filters)
 
 
         self.__treeview.set_table_data(table_data)
@@ -128,7 +133,7 @@ class RecordSelectTree(bp.BindablePanel):
                 headings_raw,
                 headings_raw
                 )
-        self.__search_column_selector["values"] = ["Any column"] + headings_raw
+        self.__search_column_selector["values"] = headings_raw
         self.__load_table_data()
         
         # Call binds as null when a new table is loaded
