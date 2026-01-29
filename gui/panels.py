@@ -70,18 +70,33 @@ class RecordSelectTree(bp.BindablePanel):
         
         self.__search_field = DFrame(self.__top_bar)
         self.__search_column_selector = ttk.Combobox(self.__search_field)
-        self.__search_column_selector.pack(side="left")
+        #self.__search_column_selector.pack(side="left", padx=5)
         self.__search_column_selector["state"] = "readonly"
         self.__searchbar = ttk.Entry(self.__search_field)
-        self.__searchbar.pack(side="left", fill="x", expand=True)
+        #self.__searchbar.pack(side="left", fill="x", expand=True, padx=5)
         self.__search_button = ttk.Button(self.__search_field, text="Search", command=self.__filter)
-        self.__search_button.pack(side="left")
-        
-        for item in [self.__add_record, self.__dupe_record, self.__remove_record]:
-            item.pack(padx=5, side="left")
-        
-        self.__search_field.pack(side="left", padx=5, fill="x", expand=True)
+        self.__search_button.pack(side="left", padx=5)
 
+        pack_list = [
+                self.__add_record,
+                self.__dupe_record,
+                self.__remove_record,
+
+                self.__search_column_selector, 
+                
+                self.__search_button,
+                self.__searchbar, 
+                self.__search_field,
+        ] 
+        expand_list = [False, False, False, False, True, False, False]
+        
+        for i in range(len(pack_list)):
+            if expand_list[i]:
+                pack_list[i].pack(padx=5, side="left", expand=True, fill="x")
+            else:
+                pack_list[i].pack(padx=5, side="left")
+            print("packing", i)
+        
         self.__search_column_selector.insert(0, "Any field")
 
         
@@ -134,6 +149,12 @@ class RecordSelectTree(bp.BindablePanel):
                 headings_raw
                 )
         self.__search_column_selector["values"] = headings_raw
+
+        # Set the value in the combobox (need to enable then disable because tkinter sucks)
+        self.__search_column_selector["state"] = "enabled"
+        self.__search_column_selector.insert(0, headings_raw[0])
+        self.__search_column_selector["state"] = "readonly"
+        
         self.__load_table_data()
         
         # Call binds as null when a new table is loaded
