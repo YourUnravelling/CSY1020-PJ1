@@ -77,8 +77,8 @@ class SQLManager():
             filt_dict = {}
 
             for filt in filters:
-                wildcards = {
-                        "in": ("%", "%"), 
+                wildcards = { # TODO make param
+                        "contains": ("%", "%"), 
                         "is": ("", ""),
                         "starts": ("", "%"),
                         "ends": ("%", ""),

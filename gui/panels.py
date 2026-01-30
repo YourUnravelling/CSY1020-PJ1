@@ -75,10 +75,10 @@ class RecordSelectTree(bp.BindablePanel):
         self.__search_column_selector["state"] = "readonly"
         self.__search_column_selector.bind(sequence="<<ComboboxSelected>>", func=self.__search_column_selectors_updated) # type: ignore
 
-        self.__search_type_selector = ttk.Combobox(self.__search_field, width=5) # type: ignore
+        self.__search_type_selector = ttk.Combobox(self.__search_field, width=8) # type: ignore
         self.__search_type_selector["state"] = "readonly"
         self.__search_type_selector.bind(sequence="<<ComboboxSelected>>", func=self.__search_column_selectors_updated) # type: ignore
-        self.__search_type_selector["values"] = ["in", "is", "starts", "ends"]
+        self.__search_type_selector["values"] = ["contains", "is", "starts", "ends"]
 
         self.__searchbar_var = tk.StringVar()
         self.__searchbar_var.set("")
@@ -86,19 +86,19 @@ class RecordSelectTree(bp.BindablePanel):
         self.__searchbar_var.trace("w", self.__searchbar_updated)
 
         self.__search_button = ttk.Button(self.__search_field, text="Search", command=self.__filter)
-        self.__discard_search_button = ttk.Button(self.__search_field, text="Remove search", command=self.__remove_filter)
+        self.__discard_search_button = ttk.Button(self.__search_field, text="Reset search", command=self.__remove_filter)
 
         PADXVAL = 5
 
         self.__add_record            .pack(padx=PADXVAL, side="left")
         self.__dupe_record           .pack(padx=PADXVAL, side="left")
         self.__remove_record         .pack(padx=PADXVAL, side="left")
+        #self.__search_button         .pack(padx=PADXVAL, side="right") # No search button, because it dynamically updates
         self.__search_column_selector.pack(padx=PADXVAL, side="left")
-        self.__discard_search_button .pack(padx=PADXVAL, side="right")
-        #self.__search_button         .pack(padx=PADXVAL, side="right")
         self.__search_type_selector  .pack(padx=PADXVAL, side="left")
-        self.__search_field          .pack(padx=PADXVAL, side="left", expand=True, fill="x")
         self.__searchbar             .pack(padx=PADXVAL, side="left", expand=True, fill="x")
+        self.__discard_search_button .pack(padx=PADXVAL, side="left")
+        self.__search_field          .pack(padx=PADXVAL, side="left", expand=True, fill="x")
         
         #self.__search_column_selector.insert(0, "Any field")
         
