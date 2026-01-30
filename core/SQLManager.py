@@ -62,7 +62,7 @@ class SQLManager():
         return self.exe(f"SELECT * FROM {table} WHERE {pk_column_name} == ?", (id,))
 
     def read_full(self, table:str, 
-                filters:list[tuple[str, str|int|float, Literal(["in", "is", "starts", "ends"])]]|None = None, # list[tuple[columnname:str, value:variant, ]]
+                filters:list[tuple[str, str|int|float, Literal["in", "is", "starts", "ends"]]]|None = None, # list[tuple[columnname:str, value:variant, ]]
                 sort:tuple[str, bool]|None = None 
                 ) -> list:
         """Returns a full list of records from a table"""
@@ -75,7 +75,16 @@ class SQLManager():
         filt_list = []
         if filters:
             filt_dict = {}
+
             for filt in filters:
+                wildcards = {
+                        "in": ("%", "%"), 
+                        "is": ("", ""),
+                        "starts": ("", "%"),
+                        "ends": ("%", ""),
+                        "": ("%", "%")
+                        }[filt[2]]
+
                 column_to_filter = filt[0]
                 filt_dict[filt[0]] = "%" + str(filt[1]) + "%"
             format_result = self.format_dict_as_key_comma_list(filt_dict, sep="LIKE")

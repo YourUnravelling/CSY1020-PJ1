@@ -60,6 +60,8 @@ class RecordSelectTree(bp.BindablePanel):
     def __init__(self, master, update_function):
         super().__init__(master, core, update_function, debug_name="RecordSelectTree")
 
+        self.__filtering:bool = False
+
         self.__treeview = TreeviewTable(self, self.__record_selected)
 
         self.__top_bar = DFrame(self, debug_name="Record select top bar")
@@ -69,13 +71,21 @@ class RecordSelectTree(bp.BindablePanel):
         self.__remove_record = ttk.Button(self.__top_bar, text="Delete")
         
         self.__search_field = DFrame(self.__top_bar)
-        self.__search_column_selector = ttk.Combobox(self.__search_field)
-        #self.__search_column_selector.pack(side="left", padx=5)
+        self.__search_column_selector = ttk.Combobox(self.__search_field) # type: ignore
         self.__search_column_selector["state"] = "readonly"
-        self.__searchbar = ttk.Entry(self.__search_field)
-        #self.__searchbar.pack(side="left", fill="x", expand=True, padx=5)
+        self.__search_column_selector.bind(sequence="<<ComboboxSelected>>", func=self.__search_column_selectors_updated) # type: ignore
+
+        self.__search_type_selector = ttk.Combobox(self.__search_field, width=5) # type: ignore
+        self.__search_type_selector["state"] = "readonly"
+        self.__search_type_selector.bind(sequence="<<ComboboxSelected>>", func=self.__search_column_selectors_updated) # type: ignore
+        self.__search_type_selector["values"] = ["in", "is", "starts", "ends"]
+
+        self.__searchbar_var = tk.StringVar()
+        self.__searchbar_var.set("")
+        self.__searchbar = ttk.Entry(self.__search_field, textvariable=self.__searchbar_var)
+        self.__searchbar_var.trace("w", self.__searchbar_updated)
+
         self.__search_button = ttk.Button(self.__search_field, text="Search", command=self.__filter)
-        #self.__search_button.pack(side="left", padx=5)
         self.__discard_search_button = ttk.Button(self.__search_field, text="Remove search", command=self.__remove_filter)
 
         PADXVAL = 5
@@ -85,34 +95,48 @@ class RecordSelectTree(bp.BindablePanel):
         self.__remove_record         .pack(padx=PADXVAL, side="left")
         self.__search_column_selector.pack(padx=PADXVAL, side="left")
         self.__discard_search_button .pack(padx=PADXVAL, side="right")
-        self.__search_button         .pack(padx=PADXVAL, side="right")
+        #self.__search_button         .pack(padx=PADXVAL, side="right")
+        self.__search_type_selector  .pack(padx=PADXVAL, side="left")
         self.__search_field          .pack(padx=PADXVAL, side="left", expand=True, fill="x")
         self.__searchbar             .pack(padx=PADXVAL, side="left", expand=True, fill="x")
         
-        self.__search_column_selector.insert(0, "Any field")
-
+        #self.__search_column_selector.insert(0, "Any field")
         
-    def __filter(self):
-        column = self.__search_column_selector.get()
-        # No strip here to allow precise filtering, for example the user might want to search "we" without bringing up "ewes", so they search " we "
+        self.__discard_search_button["state"] = "disabled"
 
+
+    def __search_column_selectors_updated(self, v):
+        self.__filter()
+
+    def __searchbar_updated(self, a, b, c):
+        self.__filter()
+    
+    
+    def __filter(self):
+
+        # No strip here to allow precise filtering, for example the user might want to search "we" without bringing up "ewes", so they search " we "
         filter_column = self.__search_column_selector.get()
+        filter_type = self.__search_type_selector.get()
         filter_str = self.__searchbar.get() 
-        print("searching", filter_column, filter_str)
+        print("[RecordSelectTree] searching", filter_column, filter_str)
 
         if not filter_str:
-            self.__load_table_data()
+            if self.__filtering:
+                self.__filtering = False
+                self.__remove_filter()
         else:
-            self.__load_table_data(filters=[(filter_column, filter_str)])
-            self.__discard_search_button["state"] = "disabled"
+            self.__filtering = True
+            self.__load_table_data(filters=[(filter_column, filter_str, filter_type)])
+            self.__discard_search_button["state"] = "enabled"
 
     def __remove_filter(self):
-        self.__searchbar.clear()
+        self.__filtering = False
+        self.__searchbar.delete(0, tk.END)
         self.__load_table_data()
         self.__discard_search_button["state"] = "disabled"
 
 
-    def __load_table_data(self, filters:list[tuple[str, str]]|None = None):
+    def __load_table_data(self, filters:list[tuple[str, str, str]]|None = None):
         """
         Sets the table data by getting it with an sql query. Filters according to filters
         """
@@ -150,6 +174,11 @@ class RecordSelectTree(bp.BindablePanel):
         self.__search_column_selector["state"] = "enabled"
         self.__search_column_selector.insert(0, headings_raw[0])
         self.__search_column_selector["state"] = "readonly"
+
+        self.__search_type_selector["state"] = "enabled"
+        self.__search_type_selector.insert(0, "in")
+        self.__search_type_selector["state"] = "readonly"
+
         
         self.__load_table_data()
         
