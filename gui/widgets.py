@@ -271,6 +271,8 @@ class TreeviewTable(ttk.Treeview):
     def __init__(self, parent, on_select):
         ttk.Treeview.__init__(self, parent)
         self.__on_select = on_select
+        self.__current_selected_iid = None
+        self.__surpress_calls:int = 0
 
 
     def set_headings(self, table:str, headings:list[str], headingsdisplay:list[str]):
@@ -292,12 +294,10 @@ class TreeviewTable(ttk.Treeview):
         self.bind("<<TreeviewSelect>>", self.__record_selected)
 
     def set_table_data(self, table_data:list[list], keep_selected_item:bool = True):
+        # Make note of previously selected item
+        prev_selected_item = self.__current_selected_iid
+
         # Delete all records in the treeview
-        selection = self.selection()
-        prev_selected_item = None # TODO broken
-        if selection and len(selection) > 0:
-            prev_selected_item = selection[0]
-            print(prev_selected_item, "was the prev selected item")
         self.delete(*self.get_children())
 
         for i, record in enumerate(table_data):
@@ -311,9 +311,27 @@ class TreeviewTable(ttk.Treeview):
         
         if keep_selected_item and prev_selected_item:
             self.selection_add([prev_selected_item])
+            #self.__surpress_calls = 0
+            # TODO Make sure the method is NOT called to not trigger the other panel again, ABOVE LINE DID NOT WORK
+        else:
+            # reset the selected value to null
+            self.__current_selected_iid = None
     
     def __record_selected(self, event) -> None:
         """Calls __on_select with the top record selected"""
+
+        self.__current_selected_iid = self.selection()[0]
+
+        # Surpresses call and moves surpression ticker down one if so.
+        # TODO currently not used if fixing the updating when saving thing doesnt work
+        if self.__surpress_calls > 0:
+            self.__surpress_calls -= 1
+            return
+        
         try:
-            self.__on_select(self.selection()[0])
+            self.__on_select(self.__current_selected_iid)
         except: pass
+    
+    @property
+    def current_selected_iid(self):
+        return self.__current_selected_iid

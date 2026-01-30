@@ -172,14 +172,15 @@ class RecordSelectTree(bp.BindablePanel):
 
         # Set the value in the combobox (need to enable then disable because tkinter sucks)
         self.__search_column_selector["state"] = "enabled"
+        self.__search_column_selector.delete(0, tk.END)
         self.__search_column_selector.insert(0, headings_raw[0])
         self.__search_column_selector["state"] = "readonly"
 
         self.__search_type_selector["state"] = "enabled"
-        self.__search_type_selector.insert(0, "in")
+        self.__search_type_selector.delete(0, tk.END)
+        self.__search_type_selector.insert(0, "contains")
         self.__search_type_selector["state"] = "readonly"
 
-        
         self.__load_table_data()
         
         # Call binds as null when a new table is loaded
@@ -316,7 +317,7 @@ class RecordScroll(bp.BasePanel):
                 modified_values[field_names[i]] = value # Add the value to the dict with a key as col name
 
         #self._core.sm.write_record_list(self._object["table"], self._object["record"], self.__feilds.values)
-        print(modified_values)
+        #print(modified_values)
         self._core.sm.write_record_dict(self._object["table"], self._object["record"], modified_values)
         self.__to_saved()
         self._broadcast_object_update(self._object)

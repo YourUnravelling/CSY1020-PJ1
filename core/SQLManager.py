@@ -82,11 +82,10 @@ class SQLManager():
                         "is": ("", ""),
                         "starts": ("", "%"),
                         "ends": ("%", ""),
-                        "": ("%", "%")
                         }[filt[2]]
 
                 column_to_filter = filt[0]
-                filt_dict[filt[0]] = "%" + str(filt[1]) + "%"
+                filt_dict[filt[0]] = wildcards[0] + str(filt[1]) + wildcards[1]
             format_result = self.format_dict_as_key_comma_list(filt_dict, sep="LIKE")
 
             filt_str = "WHERE " + format_result[0]
