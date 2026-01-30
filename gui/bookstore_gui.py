@@ -65,10 +65,13 @@ class MainLayout(DFrame):
 
         self.__panels["table_select"].set_object(object={}, force=True)
     
-    def update_panels(self, updated_object:dict, caller):
+    def update_panels(self, updated_object:dict, caller_uid):
         print("[Layout] Updating all panels")
         for key in self.__panels:
-            self.__panels[key].signal_updated_object(updated_object, caller)
+            if not self.__panels[key].uid == caller_uid:
+                self.__panels[key].signal_updated_object(updated_object, caller_uid)
+            else:
+                print("[MainLayout] A panel was not updated because it was the caller", caller_uid)
 
 
     @property

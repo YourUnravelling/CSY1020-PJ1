@@ -7,14 +7,20 @@ from gui.widgets import DFrame
 
 class BasePanel(DFrame):
     """
-    Docstring for BasePanel
+    The base class of all panels, used for panels which don't control the object of other panels
     """
+    current_id:int = 0 # Used to set the id of panels
+
     def __init__(self, master, core, update_function, debug_name: str | None = None, cnf={}, **kw):
         super().__init__(master, debug_name, cnf, **kw)
         self._core = core # Protected, a pointer to core
-        self.__update_function = update_function
+        self.__update_function = update_function # Private, function which is called which updates all other panels
 
         self._object:dict = {}
+
+        # Setting uid to a unique value
+        self.uid = BasePanel.current_id
+        BasePanel.current_id += 1
     
     def set_object(self, object:dict, force:bool=False):
         """
@@ -51,10 +57,10 @@ class BasePanel(DFrame):
         else:
             print("[Basepanel] Tried to update object but it was not changed")
     
-    def signal_updated_object(self, updated_object:dict, caller):
+    def signal_updated_object(self, updated_object:dict, caller_uid):
         """
         Sends a signal that an object was updated, and if that object is contained within the updated one it's refreshed
-        caller is a pointer to the object that called the update, and is not updated
+        caller uid is the id of the object that called the update, and thus is not updated
         """
         cur_obj:dict = self._object
         print("An updated object signal is being broadcast by", self, "of", self._object)
@@ -80,8 +86,8 @@ class BasePanel(DFrame):
                 break
         
         # Don't update if caller is pointing to this object, however do if caller is null
-        if caller:
-            if self == caller:
+        if caller_uid:
+            if self.uid == caller_uid:
                 need_to_refresh = False
 
         if need_to_refresh:
@@ -97,7 +103,7 @@ class BasePanel(DFrame):
         """
         Broadcasts an object update
         """
-        self.__update_function(updated_object, self)
+        self.__update_function(updated_object, self.uid)
 
 class BindablePanel(BasePanel):
     """

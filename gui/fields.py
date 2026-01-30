@@ -21,7 +21,6 @@ class BaseField(DFrame):
         self._value = None
 
         self._index = index
-        print("Field is being created")
     
     def mode(self, mode:RW):
         """
