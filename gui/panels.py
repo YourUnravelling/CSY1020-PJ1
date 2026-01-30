@@ -66,7 +66,7 @@ class RecordSelectTree(bp.BindablePanel):
 
         self.__top_bar = DFrame(self, debug_name="Record select top bar")
         
-        self.__add_record = ttk.Button(self.__top_bar, text="Add")
+        self.__add_record = ttk.Button(self.__top_bar, text="Add", command=self.__add_button_pressed)
         self.__dupe_record = ttk.Button(self.__top_bar, text="Duplicate")
         self.__remove_record = ttk.Button(self.__top_bar, text="Delete")
         
@@ -104,6 +104,9 @@ class RecordSelectTree(bp.BindablePanel):
         
         self.__discard_search_button["state"] = "disabled"
 
+
+    def __add_button_pressed(self):
+        self._core.sm.add(self._object["table"], None)
 
     def __search_column_selectors_updated(self, v):
         self.__filter()
@@ -316,8 +319,6 @@ class RecordScroll(bp.BasePanel):
             if value != saved_values[i]: # If value has been changed from the one in the db
                 modified_values[field_names[i]] = value # Add the value to the dict with a key as col name
 
-        #self._core.sm.write_record_list(self._object["table"], self._object["record"], self.__feilds.values)
-        #print(modified_values)
         self._core.sm.write_record_dict(self._object["table"], self._object["record"], modified_values)
         self.__to_saved()
         self._broadcast_object_update(self._object)

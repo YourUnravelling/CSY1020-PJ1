@@ -38,11 +38,14 @@ class SQLManager():
             print("There has been an error:", error)
             return error
     
-    def add(self, table:str, values:dict):
+    def add(self, table:str, values:dict|None = None):
         """Helper function to add a record to a table"""
         
-        formatted = self.format_dict_as_comma_list(values)
-        self.exe(f"INSERT INTO book VALUES({formatted[0]})", formatted[1])
+        if values:
+            formatted = self.format_dict_as_comma_list(values)
+            self.exe(f"INSERT INTO {table} VALUES({formatted[0]})", formatted[1])
+        else:
+            self.exe(f"INSERT INTO {table} DEFAULT VALUES")
 
     def delete(self, table:str, pk_row:str, pk_value_to_remove):
         """Helper function to delete a record."""
