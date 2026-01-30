@@ -291,8 +291,13 @@ class TreeviewTable(ttk.Treeview):
 
         self.bind("<<TreeviewSelect>>", self.__record_selected)
 
-    def set_table_data(self, table_data:list[list]):
+    def set_table_data(self, table_data:list[list], keep_selected_item:bool = True):
         # Delete all records in the treeview
+        selection = self.selection()
+        prev_selected_item = None # TODO broken
+        if selection and len(selection) > 0:
+            prev_selected_item = selection[0]
+            print(prev_selected_item, "was the prev selected item")
         self.delete(*self.get_children())
 
         for i, record in enumerate(table_data):
@@ -303,7 +308,10 @@ class TreeviewTable(ttk.Treeview):
                     text = record[0], 
                     values = record[1:len(record)]
             )
-
+        
+        if keep_selected_item and prev_selected_item:
+            self.selection_add([prev_selected_item])
+    
     def __record_selected(self, event) -> None:
         """Calls __on_select with the top record selected"""
         try:

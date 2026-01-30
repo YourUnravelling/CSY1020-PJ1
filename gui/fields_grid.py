@@ -82,6 +82,9 @@ class FieldsGrid(DFrame):
         # TODO Possibly in the future don't remove all widgets and replace them but change the existing ones and delete/add extras.
 
     def __value_written_to(self, index):
+        if len(self.__widgets) - 1 < index or not self.__widgets:
+            print("[FieldsGrid] A child grid object tried to call its method during initialisation, this should not happen.")
+            return
         value = self.__widgets[index].get_value()
         #self.__values[index] = value
 
