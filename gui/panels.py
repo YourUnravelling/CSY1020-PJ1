@@ -83,7 +83,7 @@ class RecordSelectTree(bp.BindablePanel):
         self.__searchbar_var = tk.StringVar()
         self.__searchbar_var.set("")
         self.__searchbar = ttk.Entry(self.__search_field, textvariable=self.__searchbar_var)
-        self.__searchbar_var.trace("w", self.__searchbar_updated)
+        self.__searchbar_var.trace_add("write", self.__searchbar_updated)
 
         self.__search_button = ttk.Button(self.__search_field, text="Search", command=self.__filter)
         self.__discard_search_button = ttk.Button(self.__search_field, text="Reset search", command=self.__remove_filter)

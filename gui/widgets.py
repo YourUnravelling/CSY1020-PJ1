@@ -265,7 +265,7 @@ class TreeviewTable(ttk.Treeview):
     """
     A treeview that displays a table
     """
-    WIDTH = 100
+    WIDTH = 10
     MINWIDTH = 50
 
     def __init__(self, parent, on_select):
