@@ -276,7 +276,7 @@ class RecordScroll(bp.BasePanel):
             this = HideShowFrame(self.__foreigns_frame, label="test " + str(i))
             
             tree = TreeviewTable(this.content, None)
-            tree.pack(padx=15)
+            tree.pack(padx=15, fill="x")
             tree.set_headings("null", 
                            ["ID", "Animal", "Date", "Height", "Weight"], 
                            ["ID", "Animal", "Date", "Height", "Weight"], 
@@ -286,7 +286,7 @@ class RecordScroll(bp.BasePanel):
                             ["32", "2", "2025-12-1", "45.1", "23.9"]
                         ])
             self.__foreigns.append(this)
-            this.pack(pady=5, padx=10, fill="x")
+            this.pack(pady=5, padx=10, fill="x", expand=True)
 
 
 

@@ -90,7 +90,10 @@ class Text(BaseField):
         return self.__writebox.get()
 
     def set_value(self, val):
-        self.__readbox.config(text=str(val))
+        if val:
+            self.__readbox.config(text=str(val), foreground="#000000")
+        else:
+            self.__readbox.config(text="None", foreground="#999999")
         self.__writebox.delete(0, tk.END)
         self.__writebox.insert(0, str(val))
 
