@@ -33,15 +33,17 @@ class TableSelectButtons(bp.BindablePanel):
         cats = core.config.category_contents
         for category in cats:
             category_frame = HideShowFrame(self, label=category[0])
-            
 
             for tablename in category[1]:
                 this_button = ttk.Button(category_frame.content, text=tablename, width=30)
                 this_button.configure(command=lambda table=tablename, this_button=this_button: self.__table_button_clicked(table, this_button))
                 this_button.pack(pady=3, padx=5, ipady=3)
             
-            if not category[1]:
+            if not category[1]: # Case for no tables in the category
                 ttk.Label(category_frame.content, text="No tables in this category").pack(pady=3, padx=5, ipady=3)
+
+            if category[2]: # If the config has enabled by default value as true, make hidden false
+                category_frame.hidden = False
 
 
             category_frame.pack(fill="x", ipady=5)
