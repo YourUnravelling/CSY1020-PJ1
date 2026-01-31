@@ -319,8 +319,14 @@ class TreeviewTable(ttk.Treeview):
     
     def __record_selected(self, event) -> None:
         """Calls __on_select with the top record selected"""
+        selection = self.selection()
 
-        self.__current_selected_iid = self.selection()[0]
+        if not selection:
+            print("[TreeViewTable] No selection")
+            return
+
+
+        self.__current_selected_iid = selection[0]
 
         # Surpresses call and moves surpression ticker down one if so.
         # TODO currently not used if fixing the updating when saving thing doesnt work
