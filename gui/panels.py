@@ -70,7 +70,7 @@ class RecordSelectTree(bp.BindablePanel):
         
         self.__add_record = ttk.Button(self.__top_bar, text="Add", command=self.__add_button_pressed)
         self.__dupe_record = ttk.Button(self.__top_bar, text="Duplicate")
-        self.__remove_record = ttk.Button(self.__top_bar, text="Delete")
+        self.__remove_record = ttk.Button(self.__top_bar, text="Delete", command=self.__delete_button_pressed)
         
         self.__search_field = DFrame(self.__top_bar)
         self.__search_column_selector = ttk.Combobox(self.__search_field) # type: ignore
@@ -109,6 +109,11 @@ class RecordSelectTree(bp.BindablePanel):
 
     def __add_button_pressed(self):
         self._core.sm.add(self._object["table"], None)
+        self.__filter()
+
+    def __delete_button_pressed(self):
+        self._core.sm.delete(self.selection_get()[0])
+        self.__filter()
 
     def __search_column_selectors_updated(self, v):
         self.__filter()
