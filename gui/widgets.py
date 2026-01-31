@@ -324,7 +324,9 @@ class TreeviewTable(ttk.Treeview):
         if not selection:
             print("[TreeViewTable] No selection")
             return
-
+        if self.__current_selected_iid == selection[0]:
+            print("[TreeViewTable] Not called bause the selected object is the same")
+            return
 
         self.__current_selected_iid = selection[0]
 

@@ -146,7 +146,7 @@ class RecordSelectTree(bp.BindablePanel):
         self.__discard_search_button["state"] = "disabled"
 
 
-    def __load_table_data(self, filters:list[tuple[str, str, str]]|None = None):
+    def __load_table_data(self, filters:list[tuple[str, str, str]]|None = None, keep_selected_item:bool = True):
         """
         Sets the table data by getting it with an sql query. Filters according to filters
         """
@@ -154,7 +154,7 @@ class RecordSelectTree(bp.BindablePanel):
         table_data = self._core.sm.read_full(table, filters)
 
 
-        self.__treeview.set_table_data(table_data)
+        self.__treeview.set_table_data(table_data, keep_selected_item=keep_selected_item)
 
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
@@ -191,11 +191,11 @@ class RecordSelectTree(bp.BindablePanel):
         self.__search_type_selector.insert(0, "contains")
         self.__search_type_selector["state"] = "readonly"
 
-        self.__load_table_data()
+        self.__load_table_data(keep_selected_item= ("table" in updated_objects))
         
         # Call binds as null when a new table is loaded
         self._call_binds({
-            "table": None,
+            "table": None, # TODO stop the error that happens if the correct table is called here
             "record": None
         })
 
