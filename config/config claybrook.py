@@ -6,22 +6,13 @@ All variables spesific to the database, including the schema, and functions
 
 from core.config_class import ConfigClass
 
-table_sqls_old = {
-    "tables": [
-        ["book", "isbn TEXT PRIMARY KEY, author INTEGER, title TEXT, date_published DATE, genre TEXT, price NUMBER"],
-        ["author", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, nationality TEXT"],
-        ["customer", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, phone TEXT, email TEXT"],
-        ["invoice", "id INTEGER PRIMARY KEY AUTOINCREMENT, customer INTEGER, book INTEGER"]
-    ]
-}
-table_sqls = {}
 
 
 def generate_invoice(record):...
 
 # Old config class for bs
 bsc = ConfigClass(
-    schema=table_sqls,
+#    schema=table_sqls,
     default_settings={},
     custom_commands= {
         "invoice": [generate_invoice]
@@ -43,7 +34,7 @@ bsc = ConfigClass(
 
 
 c = ConfigClass(
-    schema=table_sqls,
+    #schema=table_sqls,
     default_settings={},
     custom_commands= {
         "invoice": [generate_invoice]

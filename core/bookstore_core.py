@@ -1,6 +1,5 @@
 '''
-Core functions of the bookstore app
-Autumn Hickinbotham - 11/25
+Core functions of the bookstore app, as well as some helper functions
 '''
 
 # Lib imports
@@ -18,12 +17,6 @@ from config import config as configuration
 VERSION:str = "Generalised RMS Development"
 
 DEFAULT_PATH:Path = Path("database.sqlite")
-TABLE_SQLS:list[list[str]] = [ # Used for initial creation only
-    ["book", "isbn TEXT PRIMARY KEY, author INTEGER, title TEXT, date_published DATE, genre TEXT, price NUMBER"],
-    ["author", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, nationality TEXT"],
-    ["customer", "id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, surname TEXT, phone TEXT, email TEXT"],
-    ["invoice", "id INTEGER PRIMARY KEY AUTOINCREMENT, customer INTEGER, book INTEGER"]
-]
 
 base_path:Path = DEFAULT_PATH
 sm = SQLManager(base_path)
@@ -90,14 +83,6 @@ def get_setting(setting:str|None=None):
     else:
         return settings_dict
 
-
-def initialise_database() -> None:
-    """Creates the sqlite database if it doesn't already exist, also creates files"""
-
-    return # TODO this is temporary
-    for table_sql in TABLE_SQLS: # Iterate through the table constant to initialise the tables
-        sm.exe(f"CREATE TABLE IF NOT EXISTS {table_sql[0]} ({table_sql[1]})")
-
 def add_book(
         ISBN:str|None,
         author:str|None=None,
@@ -115,5 +100,4 @@ def add_book(
             "price": price,
     })
 
-initialise_database()
 #add_book("3232", "me", "title", dt.datetime.strptime("05/05/2005",r"%d/%m/%Y"), "bad genre", 5000.0)
