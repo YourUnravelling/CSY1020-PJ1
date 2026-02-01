@@ -130,3 +130,6 @@ class BindablePanel(BasePanel):
         for bind in self.__binds:
             print("[Bindablepanel] A bindable is being called by", self, "as object", object)
             bind(object)
+
+# TODO for revamp Function in basepanel which returns true if it needs to be updated, which be default just matches the object but can be overwritten
+# Maybe even have exact notes on which record and field(s) have changed?
