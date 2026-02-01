@@ -87,8 +87,8 @@ class RecordSelectTree(bp.BindablePanel):
         self.__searchbar = ttk.Entry(self.__search_field, textvariable=self.__searchbar_var)
         self.__searchbar_var.trace_add("write", self.__searchbar_updated)
 
-        self.__search_button = ttk.Button(self.__search_field, text="Search", command=self.__filter)
-        self.__discard_search_button = ttk.Button(self.__search_field, text="Reset search", command=self.__remove_filter)
+        self.__search_button = ttk.Button(self.__search_field, text="Search", command=self.__filter_and_load)
+        self.__discard_search_button = ttk.Button(self.__search_field, text="Reset search", command=self.__remove_filter_and_load)
 
         PADXVAL = 5
 
@@ -109,50 +109,55 @@ class RecordSelectTree(bp.BindablePanel):
 
     def __add_button_pressed(self):
         self._core.sm.add(self._object["table"], None)
-        self.__filter()
+        self.__filter_and_load()
 
     def __delete_button_pressed(self):
         self._core.sm.delete(self.selection_get()[0])
-        self.__filter()
+        self.__filter_and_load()
 
     def __search_column_selectors_updated(self, v):
-        self.__filter()
+        self.__filter_and_load()
 
     def __searchbar_updated(self, a, b, c):
-        self.__filter()
+        self.__filter_and_load()
     
     
-    def __filter(self):
+    def __filter_and_load(self):
+        """Gets the filter info from the widgets and """
 
+        # Get filter info from the widgets
         # No strip here to allow precise filtering, for example the user might want to search "we" without bringing up "ewes", so they search " we "
         filter_column = self.__search_column_selector.get()
         filter_type = self.__search_type_selector.get()
-        filter_str = self.__searchbar.get() 
-        print("[RecordSelectTree] searching", filter_column, filter_str)
+        filter_str = self.__searchbar.get()
+        #print("[RecordSelectTree] searching", filter_column, filter_str)
+
+        filter_list:list = []
 
         if not filter_str:
             if self.__filtering:
                 self.__filtering = False
-                self.__remove_filter()
+                # Don't add anything to the filter list
         else:
             self.__filtering = True
-            self.__load_table_data(filters=[(filter_column, filter_str, filter_type)])
+            filter_list.append((filter_column, filter_str, filter_type))
             self.__discard_search_button["state"] = "enabled"
+        
+        self.__load_table_data(filters=filter_list, keep_selected_item=True)
 
-    def __remove_filter(self):
+    def __remove_filter_and_load(self):
         self.__filtering = False
         self.__searchbar.delete(0, tk.END)
-        self.__load_table_data()
         self.__discard_search_button["state"] = "disabled"
+        self.__load_table_data()
 
 
     def __load_table_data(self, filters:list[tuple[str, str, str]]|None = None, keep_selected_item:bool = True):
         """
-        Sets the table data by getting it with an sql query. Filters according to filters
+        Sets the table data by getting it with an sql query. Filters according to a param
         """
         table = self._object["table"]
         table_data = self._core.sm.read_full(table, filters)
-
 
         self.__treeview.set_table_data(table_data, keep_selected_item=keep_selected_item)
 
@@ -325,10 +330,17 @@ class RecordScroll(bp.BasePanel):
         for i, value in enumerate(unsaved_values):
             if value != saved_values[i]: # If value has been changed from the one in the db
                 modified_values[field_names[i]] = value # Add the value to the dict with a key as col name
+    
 
         self._core.sm.write_record_dict(self._object["table"], self._object["record"], modified_values)
         self.__to_saved()
         self._broadcast_object_update(self._object)
+
+        #print([self._object["table"]][0][1], modified_values.keys())
+        #if self._core.sm.schema[self._object["table"]][0][1] in modified_values.keys():
+        #    # If one of the objects that was updated was the primary key, reset object to null
+        #    self.set_object({})
+        #    print("GHYJKFEWYUGFLIUYEWGFUYOWEUYOTRWOFITYUROUYWEUYKRWEGUYRFGEWYFGUWEFUYWEGFFUYWEFFWEF")
 
     def __set_table(self, table:str):
         """Sets the types of the feilds"""
