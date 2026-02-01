@@ -112,8 +112,8 @@ class RecordSelectTree(bp.BindablePanel):
         self.__filter_and_load()
 
     def __delete_button_pressed(self):
-        self._core.sm.delete(self.selection_get()[0])
-        self.__filter_and_load()
+        self._core.sm.delete(self._object["table"], self.__treeview.current_selected_iid)
+        self.__filter_and_load(False)
 
     def __search_column_selectors_updated(self, v):
         self.__filter_and_load()
@@ -122,7 +122,7 @@ class RecordSelectTree(bp.BindablePanel):
         self.__filter_and_load()
     
     
-    def __filter_and_load(self):
+    def __filter_and_load(self, keep_selected_item=True):
         """Gets the filter info from the widgets and """
 
         # Get filter info from the widgets
@@ -143,7 +143,7 @@ class RecordSelectTree(bp.BindablePanel):
             filter_list.append((filter_column, filter_str, filter_type))
             self.__discard_search_button["state"] = "enabled"
         
-        self.__load_table_data(filters=filter_list, keep_selected_item=True)
+        self.__load_table_data(filters=filter_list, keep_selected_item=keep_selected_item)
 
     def __remove_filter_and_load(self):
         self.__filtering = False

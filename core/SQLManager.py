@@ -47,9 +47,10 @@ class SQLManager():
         else:
             self.exe(f"INSERT INTO {table} DEFAULT VALUES")
 
-    def delete(self, table:str, pk_row:str, pk_value_to_remove):
+    def delete(self, table:str, id):
         """Helper function to delete a record."""
-        self.exe(f"DELETE FROM {table} WHERE ({pk_row}={pk_value_to_remove})")
+        primary_key = self.schema[table][0][1]
+        self.exe(f"DELETE FROM {table} WHERE ({primary_key}=?)", (id,))
     
     def update(self, table:str, values:dict) -> None:
         """Helper function to ammend a record"""
