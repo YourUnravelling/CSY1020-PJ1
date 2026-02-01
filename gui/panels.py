@@ -70,7 +70,7 @@ class RecordSelectTree(bp.BindablePanel):
         
         self.__add_record = ttk.Button(self.__top_bar, text="Add", command=self.__add_button_pressed)
         self.__dupe_record = ttk.Button(self.__top_bar, text="Duplicate")
-        self.__remove_record = ttk.Button(self.__top_bar, text="Delete", command=self.__delete_button_pressed)
+        self.__remove_record = ttk.Button(self.__top_bar, text="Delete", command=self.__delete_button_pressed, state="disabled")
         
         self.__search_field = DFrame(self.__top_bar)
         self.__search_column_selector = ttk.Combobox(self.__search_field) # type: ignore
@@ -93,7 +93,7 @@ class RecordSelectTree(bp.BindablePanel):
         PADXVAL = 5
 
         self.__add_record            .pack(padx=PADXVAL, side="left")
-        self.__dupe_record           .pack(padx=PADXVAL, side="left")
+        #self.__dupe_record           .pack(padx=PADXVAL, side="left") # TODO Gotta fix the pk copying stuff them implement duplication button
         self.__remove_record         .pack(padx=PADXVAL, side="left")
         #self.__search_button         .pack(padx=PADXVAL, side="right") # No search button, because it dynamically updates
         self.__search_column_selector.pack(padx=PADXVAL, side="left")
@@ -156,6 +156,10 @@ class RecordSelectTree(bp.BindablePanel):
         """
         Sets the table data by getting it with an sql query. Filters according to a param
         """
+
+        if not keep_selected_item: # When table switches?
+            self.__remove_record["state"] = "disabled"
+
         table = self._object["table"]
         table_data = self._core.sm.read_full(table, filters)
 
@@ -212,6 +216,7 @@ class RecordSelectTree(bp.BindablePanel):
         #    self.__surpress_next_signal = False
         #    return
 
+        self.__remove_record["state"] = "enabled"
         print("[RecordSelectTree] Record was selected with id", uid)
         self._call_binds({
             "table": self._object["table"],
