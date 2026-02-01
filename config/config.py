@@ -12,11 +12,11 @@ def generate_invoice(record):...
 # Old config class for bs
 c = ConfigClass(
     default_settings={},
-    custom_commands= {
-        "invoice": [generate_invoice]
+    table_custom_commands= {
+        "invoice": {"Create invoice": generate_invoice}
     },
     default_table="book",
     category_contents = [
-        ("Tables", ["book", "author", "customer", "customer"], True),
+        ("Tables", ["book", "author", "customer", "invoice"], True),
     ]
 )
