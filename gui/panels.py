@@ -205,8 +205,8 @@ class RecordSelectTree(bp.BindablePanel):
         self.__load_table_data(keep_selected_item= ("table" in updated_objects))
         
         # Remove all previous custom buttons
-        for item in self.__custom_command_buttons:
-            item.pack_forget()
+        for key in self.__custom_command_buttons:
+            self.__custom_command_buttons[key].pack_forget()
         self.__custom_command_buttons = {}
         
         if "table" in self._object:
