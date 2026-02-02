@@ -13,7 +13,8 @@ class ConfigClass():
             #vis_defaults:dict[str,str] = {}, # [table name : default visual key] (only for the default primary key) TODO del
             default_table:str = "", # Default table shown on loadup
             default_values:dict[str,tuple] = {}, # Default values in a table? TODO del
-            category_contents:list[tuple[str,list[str]|str, bool]] = [("Tables", "*", True)]
+            category_contents:list[tuple[str,list[str]|str, bool]] = [("Tables", "*", True)],
+            window_name:str = "SQLite Manager"
             ):
         # All public
         #self.schema = schema
@@ -25,3 +26,4 @@ class ConfigClass():
         self.default_table = default_table
         self.default_values = default_values
         self.category_contents = category_contents
+        self.window_name = window_name

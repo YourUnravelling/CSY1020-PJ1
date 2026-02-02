@@ -106,6 +106,8 @@ class RecordSelectTree(bp.BindablePanel):
         
         self.__discard_search_button["state"] = "disabled"
 
+        self.__custom_command_buttons:dict = {}
+
 
     def __add_button_pressed(self):
         self._core.sm.add(self._object["table"], None)
@@ -202,6 +204,16 @@ class RecordSelectTree(bp.BindablePanel):
 
         self.__load_table_data(keep_selected_item= ("table" in updated_objects))
         
+
+        self.__custom_command_buttons = {}
+        if "table" in self._object:
+            this_table_custom_commands_dict = core.config.table_custom_commands[self._object["table"]]
+
+            for key in this_table_custom_commands_dict:
+                self.__custom_command_buttons[key] = ttk.Button(self.__search_field, text=key, command=lambda: this_table_custom_commands_dict[key](core, {"record":self.__treeview.current_selected_iid}) )
+                self.__custom_command_buttons[key].pack()
+                self.__custom_command_buttons[key]["state"] = "disabled"
+
         # Call binds as null when a new table is loaded
         self._call_binds({
             "table": None, # TODO stop the error that happens if the correct table is called here
@@ -217,6 +229,10 @@ class RecordSelectTree(bp.BindablePanel):
         #    return
 
         self.__remove_record["state"] = "enabled"
+
+        for key in self.__custom_command_buttons: # Enable custom buttons when a record is pressed
+            self.__custom_command_buttons[key]["state"] = "enabled"
+
         print("[RecordSelectTree] Record was selected with id", uid)
         self._call_binds({
             "table": self._object["table"],
