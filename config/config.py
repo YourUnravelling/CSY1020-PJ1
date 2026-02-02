@@ -1,8 +1,6 @@
 """
-All variables spesific to the database, including the schema, and functions
+All variables spesific to the database that are not present within it, like display names and functions.
 """
-# TODO Decide if this should be a class that is instanciated to defaultise var names, would make functions more complex?
-# Or just a regular file with spesific var names
 
 import tkinter as tk
 from tkinter import ttk
@@ -10,9 +8,11 @@ from tkinter import messagebox
 
 from gui.widgets import DFrame
 from core.config_class import ConfigClass
-#import core.bookstore_core as core
 
 def to_pounds(input:float):
+    """
+    Converts a float to formatted pounds and pence
+    """
     strinp = str(input)
     if not "." in strinp:
         return "£" + strinp + ".00"
@@ -50,9 +50,9 @@ def generate_invoice(core, object:dict):
         return
 
 
-    date = "2/2/2026" # Wow I typed in the correct data by accident TODO Switch to proper date rooting from invoice
+    date = "2/2/2026" # Wow I typed in the correct date by accident TODO Switch to proper date rooting from invoice
     customer_full_name = f"{customer[1]} {customer[2]}"
-    customer_email = customer[3]
+    customer_email = customer[4]
     if not customer_email:
         customer_email = "No email provided"
     book_name = book[3]
@@ -62,15 +62,15 @@ def generate_invoice(core, object:dict):
     delivery_ind = invoice[3]
     delivery_str:str
     delivery_price:float 
-    if delivery_ind == 0: # No shipping
-        delivery_str = "No shipping"
-        delivery_price = 0.0
-    elif delivery_ind == 1: # Normal
+    if delivery_ind == "Normal":                # Normal
         delivery_str = "Normal shipping"
         delivery_price = NORMAL_SHIPPING_PRICE
-    else: # Delivery ind is 2, priority
+    elif delivery_ind == "Priority":            # Priority
         delivery_str = "Priority shipping"
         delivery_price = PRIORITY_SHIPPING_PRICE
+    else:                                       # None
+        delivery_str = "No shipping"
+        delivery_price = 0.0
     
     no_vat_total = delivery_price + raw_book_price
     vat = no_vat_total * VAT_MULTIPLIER

@@ -1,6 +1,5 @@
 '''
-GUI for the bookstore app
-Autumn Hickinbotham - 12/25
+Main GUI/Layout file, mainloop
 '''
 
 # Lib imports
@@ -10,9 +9,6 @@ import tkinter as tk
 from tkinter import ttk
 
 # Class imports
-from external.scrollable_external import ScrollFrame
-#from record_viewier import RecordViewer
-#from resources import config as configuration
 from gui.widgets import DFrame, DoubleCombobox
 from gui import panels
 import gui.core_resources as cr
@@ -21,8 +17,9 @@ from config.config import c
 
 class MainLayout(DFrame):
     """
-    TODO
+    A mainlayout which has a table list, table view, and a fields grid.
     """
+    # TODO Split this into a base class and a custom Layout class
     def __init__(self, master, core) -> None:
         super().__init__(master)
         self.__core = core # Private, pointer to core
@@ -42,7 +39,7 @@ class MainLayout(DFrame):
         self.__content = DFrame(self, "content")
         self.__content.pack(expand=True, fill="both")
 
-        self.__sidebar_image = tk.PhotoImage(file="resources/sidebar.png")
+        self.__sidebar_image = tk.PhotoImage(file="resources/rms_fire.gif")
         tk.Label(self.__sidebar, text="test", image=self.__sidebar_image).pack()
         #tk.Label(self.__sidebar, text="Tables").pack()
 
@@ -80,7 +77,7 @@ class MainLayout(DFrame):
     def core(self):
         return self.__core
 
-
+# Create window
 w = tk.Tk()
 w.iconphoto(True,tk.PhotoImage(file="resources/icon.png"))
 w.minsize(width=1100, height=500)

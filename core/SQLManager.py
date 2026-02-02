@@ -1,15 +1,17 @@
+"""
+Contains the SQLManager class
+"""
 import sqlite3 as sqlite
 from pathlib import Path
 from typing import Literal
 
 class SQLManager():
     """
-    Creates an object which can execute sql on an sqlite file.
+    An object which can execute sql on an sqlite file.
     """
     def __init__(self, file_path:Path|str) -> None:
         self.__path = Path(file_path) # Private - Convert given path to a pathlib object
-        self.__schema = self.__generate_full_schema()
-        print(self.__schema)
+        self.__schema = self.__generate_full_schema() # Private - Schema of the database
 
     def exe(self, sql:str, args:tuple|None=None, ret: Literal["one", "desc", "all"]="one"):
         """
@@ -117,7 +119,6 @@ class SQLManager():
         self.write_record_dict(table, pk, colvals_dict)
 
     def write_record_dict(self, table, pk, values:dict):
-        print(values)
         formatted:tuple = self.format_dict_as_key_comma_list(values)
         # Create a tuple with all the values in dictionary order, then whatever the pk is at the end, and put it into function
         self.exe(f"UPDATE {table} SET {formatted[0]} WHERE {self.schema[table][0][1]} = ?", (formatted[1]+(pk,)))

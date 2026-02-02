@@ -1,5 +1,5 @@
 """
-The base classes for the panels
+The base classes for all panels
 """
 
 from gui.widgets import DFrame

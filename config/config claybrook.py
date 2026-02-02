@@ -1,5 +1,5 @@
 """
-All variables spesific to the database, including the schema, and functions
+Old config for claybrook (unused)
 """
 # TODO Decide if this should be a class that is instanciated to defaultise var names, would make functions more complex?
 # Or just a regular file with spesific var names
