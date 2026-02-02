@@ -204,8 +204,11 @@ class RecordSelectTree(bp.BindablePanel):
 
         self.__load_table_data(keep_selected_item= ("table" in updated_objects))
         
-
+        # Remove all previous custom buttons
+        for item in self.__custom_command_buttons:
+            item.pack_forget()
         self.__custom_command_buttons = {}
+        
         if "table" in self._object:
             this_table_custom_commands_dict = core.config.table_custom_commands[self._object["table"]]
 
