@@ -386,7 +386,7 @@ class RecordScroll(bp.BasePanel):
         record_values = core.sm.read(self._object["table"], pk, self._core.sm.schema[self._object["table"]][0][1])#.pk_defaults[self._object["table"]])
         self.__fields.set_values(record_values)
 
-        self.__create_references()
+        #self.__create_references()
 
     def _set_object_spesific(self, updated_objects:set[str] = set()) -> None:
 

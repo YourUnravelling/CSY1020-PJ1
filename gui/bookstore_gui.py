@@ -46,7 +46,7 @@ class MainLayout(DFrame):
 
 
         ttk.Label(self.__sidebar_extra, text=core.VERSION).pack(side="bottom",pady=3, padx=5)
-        ttk.Button(self.__sidebar_extra, text="Log out", width=30, ).pack(side="bottom",pady=3, padx=5, ipady=3)
+        #ttk.Button(self.__sidebar_extra, text="Log out", width=30, ).pack(side="bottom",pady=3, padx=5, ipady=3)
         ttk.Button(self.__sidebar_extra, text="Preferences", width=30, ).pack(side="bottom",pady=3, padx=5, ipady=3)
 
         self.__panels["table_select"] = panels.TableSelectButtons(self.__sidebar, self.update_panels)
