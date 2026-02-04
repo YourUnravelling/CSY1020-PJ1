@@ -53,14 +53,8 @@ class DFrame(tk.Frame):
     def __unhover(self, var):
         self.config(background=self.__normal_bg_color)
 
-class BgButton(ttk.Button): # TODO delete?
-
-    def __init__(self, master=None, cnf={}, **kw):
-        super().__init__(master, cnf, **kw) # type: ignore
-        #self.config(background=master.)
-
 class HideShowFrame(DFrame):
-    """Frame with a title that can be shown and hidden"""
+    """Frame with a title, that when clicked can be shown and hidden"""
 
     def __init__(self, master=None, debug_name: str | None = None, label:str = "No label", cnf={}, **kw):
         super().__init__(master, debug_name, cnf, **kw)
@@ -85,17 +79,20 @@ class HideShowFrame(DFrame):
         self.__hide()
     
     def __toggle(self, ignore = None):
+        """Toggles hidden"""
         if self.__hidden:
             self.__show()
         else:
             self.__hide()
     
     def __hide(self): 
+        """Hides the frame"""
         self.__hidden = True
         self.__image_label.config(image=icons["closed"])
         self.__content.pack_forget()
 
     def __show(self):
+        """Shows the frame"""
         self.__hidden = False
         self.__image_label.config(image=icons["open"])
         self.__content.pack(fill="x")
@@ -140,6 +137,7 @@ class TreeviewTable(ttk.Treeview):
 
 
     def set_headings(self, table:str, headings:list[str], headingsdisplay:list[str]):
+        """Sets the headings/columns of the table"""
         
         self.delete(*self.get_children())
 
@@ -158,6 +156,7 @@ class TreeviewTable(ttk.Treeview):
         self.bind("<<TreeviewSelect>>", self.__record_selected)
 
     def set_table_data(self, table_data:list[list], keep_selected_item:bool = True):
+        """Sets records within the table"""
         # Make note of previously selected item
         prev_selected_item = self.__current_selected_iid
 

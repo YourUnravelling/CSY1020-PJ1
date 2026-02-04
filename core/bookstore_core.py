@@ -60,15 +60,6 @@ def validate_int(inp:str|int, max:int|None = None, min:int|None = None):
     
     return True
 
-# TODO Delete unused?
-def sanitise_date(date_string, form):
-    
-    try:
-        date = dt.datetime.strptime(date_string, form)
-        return date
-    except:
-        return False
-
 def get_setting(setting:str|None=None):
     """
     Returns the value of a specified `setting`

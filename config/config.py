@@ -114,7 +114,7 @@ def generate_invoice(core, object:dict):
     invoice_win.mainloop()
 
 
-
+# Bookstore spesific class
 c = ConfigClass(
     default_settings={},
     table_custom_commands= {

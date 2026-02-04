@@ -24,5 +24,5 @@ class ConfigClass():
         self.display_keys =                 display_keys            # Keys that are shown when a table is referenced
         self.default_table =                default_table           # Default table shown on loadup
         self.default_values =               default_values          # Default values in a table? TODO del
-        self.category_contents =            category_contents       # Contents and order of categories on the sidebar TODO Move to 
+        self.category_contents =            category_contents       # Contents and order of categories on the sidebar TODO Move to property of the frame panel that uses it
         self.window_name =                  window_name             # Window name
