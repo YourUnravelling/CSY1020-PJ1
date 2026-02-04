@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 
 # Class imports
-from gui.widgets import DFrame, DoubleCombobox
+from gui.widgets import DFrame
 from gui import panels
 import gui.core_resources as cr
 
@@ -25,15 +25,13 @@ class MainLayout(DFrame):
         self.__core = core # Private, pointer to core
         self.__panels:dict = {}
 
-
-
         self.__sidebar = DFrame(self, "sidebar")
         self.__sidebar.pack(side=tk.LEFT, fill=tk.Y)
         self.__sidebar_extra = DFrame(self.__sidebar, "sidebar extra")
         self.__sidebar_extra.pack(side=tk.BOTTOM, fill=tk.X, pady=3)
         self.__topbar = DFrame(self, "top bar")
 
-        self.__right_sidebar = DFrame(self, "sidebar", width = 450)
+        self.__right_sidebar = DFrame(self, "sidebar", width = 250)
         self.__right_sidebar.pack_propagate(False)
         self.__right_sidebar.pack(side="right", fill="y", ipadx=10, ipady=10)
         self.__content = DFrame(self, "content")
@@ -56,7 +54,7 @@ class MainLayout(DFrame):
         self.__panels["record_select"].pack(side="top", fill="both", expand=True)
 
         self.__record = panels.RecordScroll(self.__right_sidebar, self.update_panels)
-        self.__record.pack(side="right", fill="y", expand=True)
+        self.__record.pack(side="right", fill="both", expand=True)
 
 
         self.__panels["table_select"].add_bind(self.__panels["record_select"].set_object)

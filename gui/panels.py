@@ -275,7 +275,7 @@ class RecordScroll(bp.BasePanel):
         
         # Private
         self.__delete = ttk.Button(self.__top_bar, text="Delete")
-        self.__delete.pack(side="right")#grid(row=1, column=3)
+        #self.__delete.pack(side="right")#grid(row=1, column=3)
 
         self.__edit = ttk.Button(self.__top_bar, text="Edit", command= self.__to_write)#self.__feilds.set_mode({"read":"write", "write":"read"}[self.__feilds.get_mode_at(0)]))
 
@@ -299,7 +299,8 @@ class RecordScroll(bp.BasePanel):
         # Image
         self.__imagevar = tk.PhotoImage(file="resources/example_animal.png") # TODO
         self.__image = ttk.Label(self.__fields_img_grid, image=self.__imagevar)
-        self.__image.grid(column=1, row=0)
+        #self.__image.grid(column=1, row=0)
+        # TODO Image is unimplemented
 
         self.__foreigns_frame = DFrame(self.__record_frame, debug_name="Foreigns frame")
         self.__foreigns_frame.pack(padx=5, pady=0, fill="x")
