@@ -1,5 +1,5 @@
 """
-Custom widgets
+Custom tkinter widgets
 """
 
 import tkinter as tk
