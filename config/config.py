@@ -74,7 +74,7 @@ def generate_invoice(core, object:dict):
     
     no_vat_total = delivery_price + raw_book_price
     vat = no_vat_total * VAT_MULTIPLIER
-    vat_total = no_vat_total + no_vat_total
+    vat_total = no_vat_total + vat
 
 
     invoice_win = tk.Tk()

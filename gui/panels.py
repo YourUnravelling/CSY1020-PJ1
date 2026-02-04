@@ -82,7 +82,7 @@ class RecordSelectTree(bp.BindablePanel):
         self.__remove_record = ttk.Button(self.__top_bar, text="Delete", command=self.__delete_button_pressed, state="disabled")
         
         self.__search_field = DFrame(self.__top_bar)
-        self.__search_column_selector = ttk.Combobox(self.__search_field) # type: ignore
+        self.__search_column_selector = ttk.Combobox(self.__search_field, width=14) # type: ignore
         self.__search_column_selector["state"] = "readonly"
         self.__search_column_selector.bind(sequence="<<ComboboxSelected>>", func=self.__search_column_selectors_updated) # type: ignore
 
