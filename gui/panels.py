@@ -209,13 +209,15 @@ class RecordSelectTree(bp.BindablePanel):
             self.__custom_command_buttons[key].pack_forget()
         self.__custom_command_buttons = {}
         
-        if "table" in self._object:
-            this_table_custom_commands_dict = core.config.table_custom_commands[self._object["table"]]
+        if "table" in self._object: # TODO Check if first arg is actually
 
-            for key in this_table_custom_commands_dict:
-                self.__custom_command_buttons[key] = ttk.Button(self.__search_field, text=key, command=lambda: this_table_custom_commands_dict[key](core, {"record":self.__treeview.current_selected_iid}) )
-                self.__custom_command_buttons[key].pack()
-                self.__custom_command_buttons[key]["state"] = "disabled"
+            if self._object["table"] in core.config.table_custom_commands.keys():
+                this_table_custom_commands_dict = core.config.table_custom_commands[self._object["table"]]
+
+                for key in this_table_custom_commands_dict:
+                    self.__custom_command_buttons[key] = ttk.Button(self.__search_field, text=key, command=lambda: this_table_custom_commands_dict[key](core, {"record":self.__treeview.current_selected_iid}) )
+                    self.__custom_command_buttons[key].pack()
+                    self.__custom_command_buttons[key]["state"] = "disabled"
 
         # Call binds as null when a new table is loaded
         self._call_binds({
@@ -356,6 +358,7 @@ class RecordScroll(bp.BasePanel):
                 modified_values[field_names[i]] = value # Add the value to the dict with a key as col name
     
 
+        self.__set_record(self._object["record"]) # TODO Bodge
         self._core.sm.write_record_dict(self._object["table"], self._object["record"], modified_values)
         self.__to_saved()
         self._broadcast_object_update(self._object)

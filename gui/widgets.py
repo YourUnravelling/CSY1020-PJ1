@@ -308,14 +308,15 @@ class TreeviewTable(ttk.Treeview):
                     text = record[0], 
                     values = record[1:len(record)]
             )
-        
-        if keep_selected_item and prev_selected_item:
-            self.selection_add([prev_selected_item])
-            #self.__surpress_calls = 0
-            # TODO Make sure the method is NOT called to not trigger the other panel again, ABOVE LINE DID NOT WORK
-        else:
-            # reset the selected value to null
-            self.__current_selected_iid = None
+        try:
+            if keep_selected_item and prev_selected_item:
+                self.selection_add([prev_selected_item])
+                #self.__surpress_calls = 0
+                # TODO Make sure the method is NOT called to not trigger the other panel again, ABOVE LINE DID NOT WORK
+            else:
+                # reset the selected value to null
+                self.__current_selected_iid = None
+        except: pass
     
     def __record_selected(self, event) -> None:
         """Calls __on_select with the top record selected"""

@@ -20,7 +20,7 @@ class FieldsGrid(DFrame):
     TYPE_CLASSES = { # Mapping of sqlite type strings to their corresponding display classes
             "TEXT" : f.Text,
             "NUMERIC" : f.Integer, # TODO
-            "INTEGER" : f.Foreign, # TODO
+            "INTEGER" : f.Integer, # TODO
             "REAL" : f.Integer, # TODO
             "DATE" : f.Text, # TODO
             "BLOB" : f.Text, # TODO

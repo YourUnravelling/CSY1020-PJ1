@@ -108,19 +108,11 @@ class Integer(BaseField):
 
         self.__readbox = ttk.Label(self, text=value, width=20)
         self.__writebox_var = tk.IntVar()
-        self.__writebox = ttk.Spinbox(self, width=20, textvariable=self.__writebox_var)
+        self.__writebox = ttk.Spinbox(self, width=20, textvariable=self.__writebox_var, from_=0, to=999)
 
-        # Bind spinbox buttons to go up and down by 1
-        #self.__writebox.bind("<<Change>>", lambda e: self._call_callable())
-        #self.__writebox.bind("<<Modified>>", self._call_callable)
         self.__writebox_var.trace_add("write", self._call_callable)
         self.set_value(value)
         self._updated_call = updated_call
-        print("setting value to ", value)
-
-    #def __spin(self, by:int|float):
-    #    self.__writebox_var.set(self.__writebox_var.get() + by) # type: ignore
-
 
     def _read(self): # TODO make this a single function with literal
         self.__writebox.pack_forget()
