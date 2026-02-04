@@ -1,0 +1,6 @@
+digraph "packages" {
+rankdir=BT
+charset="utf-8"
+"core.bookstore_core" [color="black", label=<core.bookstore_core>, shape="box", style="solid"];
+"main" [color="black", label=<main>, shape="box", style="solid"];
+}
