@@ -18,6 +18,9 @@ import gui.base_panels as bp
 
 
 class TableSelectButtons(bp.BindablePanel):
+    """
+    Vertical list of buttons for each table, in categories
+    """
 
     def __init__(self, master, update_function):
         self.__last_clicked_button = None
@@ -50,6 +53,9 @@ class TableSelectButtons(bp.BindablePanel):
 
         
     def __table_button_clicked(self, table:str, button):
+        """
+        Called when a button is pressed
+        """
         button.config(state = "disabled")
         if self.__last_clicked_button:
             self.__last_clicked_button.config(state = "enabled")
@@ -58,6 +64,9 @@ class TableSelectButtons(bp.BindablePanel):
 
 
 class RecordSelectTree(bp.BindablePanel):
+    """
+    Treeview representation of the table, with filtering
+    """
     
     def __init__(self, master, update_function):
         super().__init__(master, core, update_function, debug_name="RecordSelectTree")
@@ -118,9 +127,11 @@ class RecordSelectTree(bp.BindablePanel):
         self.__filter_and_load(False)
 
     def __search_column_selectors_updated(self, v):
+        """Called when the search column combobox is updated, with a dummy param"""
         self.__filter_and_load()
 
     def __searchbar_updated(self, a, b, c):
+        """Called when the searchbar is updated, with a dummy param"""
         self.__filter_and_load()
     
     
@@ -148,6 +159,7 @@ class RecordSelectTree(bp.BindablePanel):
         self.__load_table_data(filters=filter_list, keep_selected_item=keep_selected_item)
 
     def __remove_filter_and_load(self):
+        """Removes any filters, resets the searchbar, and loads the table"""
         self.__filtering = False
         self.__searchbar.delete(0, tk.END)
         self.__discard_search_button["state"] = "disabled"
@@ -209,7 +221,7 @@ class RecordSelectTree(bp.BindablePanel):
             self.__custom_command_buttons[key].pack_forget()
         self.__custom_command_buttons = {}
         
-        if "table" in self._object: # TODO Check if first arg is actually
+        if "table" in self._object: # TODO Check if this is needed
 
             if self._object["table"] in core.config.table_custom_commands.keys():
                 this_table_custom_commands_dict = core.config.table_custom_commands[self._object["table"]]
@@ -246,6 +258,9 @@ class RecordSelectTree(bp.BindablePanel):
 
 
 class RecordScroll(bp.BasePanel):
+    """
+    List of all feild names and values, with the ability to be edited, also unimplemented photo and references
+    """
     def __init__(self, master, update_function, autosave= False):
         super().__init__(master, core, update_function, debug_name="RecordScroll")
 
@@ -295,6 +310,7 @@ class RecordScroll(bp.BasePanel):
         self.__to_saved()
 
     def __create_references(self):
+        """Creates tables showing references to this table in other tables"""
 
         for item in self.__foreigns:
             item.pack_forget()
@@ -324,9 +340,8 @@ class RecordScroll(bp.BasePanel):
             self.__foreigns.append(this)
             this.pack(pady=5, padx=10, fill="x", expand=True)
 
-
-
     def a_field_was_updated(self, index, value):
+        """Called by the fields grid when a field is updated"""
         if not self.__autosave:
             self.__to_unsaved()
         else:
