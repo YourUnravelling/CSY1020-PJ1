@@ -1,0 +1,25 @@
+digraph "packages_testrefewotyorgfwed" {
+rankdir=BT
+charset="utf-8"
+"CSY102-PJ1.CSY1020-PJ1" [color="black", label=<CSY102-PJ1.CSY1020-PJ1>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.config" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.config>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.config.config" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.config.config>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.config.config claybrook" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.config.config claybrook>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.core" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.core>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.core.SQLManager" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.core.SQLManager>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.core.bookstore_core" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.core.bookstore_core>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.core.config_class" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.core.config_class>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.core.constants" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.core.constants>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.gui" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.gui>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.gui.base_panels" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.gui.base_panels>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.gui.bookstore_gui" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.gui.bookstore_gui>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.gui.core_resources" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.gui.core_resources>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.gui.fields" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.gui.fields>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.gui.fields_grid" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.gui.fields_grid>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.gui.panels" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.gui.panels>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.gui.widgets" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.gui.widgets>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.init" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.init>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.tk_testing" [color="black", label=<CSY102-PJ1.CSY1020-PJ1.tk_testing>, shape="box", style="solid"];
+"CSY102-PJ1.CSY1020-PJ1.init" -> "CSY102-PJ1.CSY1020-PJ1.gui" [arrowhead="open", arrowtail="none"];
+"CSY102-PJ1.CSY1020-PJ1.init" -> "CSY102-PJ1.CSY1020-PJ1.gui.bookstore_gui" [arrowhead="open", arrowtail="none"];
+}

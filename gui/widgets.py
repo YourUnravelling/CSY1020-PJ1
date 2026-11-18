@@ -52,24 +52,6 @@ class DFrame(tk.Frame):
 
     def __unhover(self, var):
         self.config(background=self.__normal_bg_color)
-
-class BgButton(ttk.Button): # TODO delete?
-
-    def __init__(self, master=None, cnf={}, **kw):
-        super().__init__(master, cnf, **kw) # type: ignore
-        #self.config(background=master.)
-
-class ScrollFrameOld(tk.Canvas): # TODO delete
-    def __init__(self, master):
-        super().__init__(master=master)
-        self.__scrollbar = ttk.Scrollbar(self)
-        self.__scrollbar.pack(side="right")
-
-    @property # scrollbar getter
-    def scrollbar(self):
-        return self.__scrollbar
-    # No setter as scrollbar shouldn't be changed
-
 class VCombobox(ttk.Combobox): # TODO Delete
     """
     Slightly more advanced Combobox which can display multiple lists of things

@@ -1,0 +1,18 @@
+@startuml
+class MainLayout {
+    update_panels()
+    core()
+    main()
+        __core
+    __panels : dict 
+    __sidebar
+    __sidebar_extra
+    __topbar
+    __right_sidebar
+    __content
+    __sidebar_image
+    __record
+    __init__(__panels: dict )
+}
+DFrame <|-- MainLayout
+@enduml
